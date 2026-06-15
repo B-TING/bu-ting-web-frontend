@@ -1,5 +1,190 @@
-<!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
+# AGENTS.md
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-<!-- END:nextjs-agent-rules -->
+이 레포는 부산 지역 특화 여행 계획 웹 서비스를 개발하는 프로젝트입니다.
+AI 에이전트(Claude Code, Codex 등)는 작업 전 이 문서를 먼저 확인해야 합니다.
+
+## 프로젝트 개요
+
+초기 개발 단계에서는 다음을 우선합니다.
+
+- 안정적인 프로젝트 구조 설계
+- 지역/장소/일정 도메인 모델 정리
+- 클라이언트 상태와 서버 상태 분리
+- 추후 지도, 장소 API, 일정 추천 로직을 붙일 수 있는 구조 확보
+
+## 기술 스택
+
+- Next.js App Router
+- TypeScript
+- Tailwind CSS
+- shadcn/ui
+- Zustand
+- TanStack Query
+
+## 작업 분류
+
+### Level 0 — 단순 수정
+
+예시:
+
+- 오타 수정
+- 스타일 일부 수정
+- 텍스트 변경
+- 작은 컴포넌트 수정
+
+규칙:
+
+- 바로 수정 가능
+- 변경 파일과 이유를 간단히 설명
+
+### Level 1 — 일반 기능 구현
+
+예시:
+
+- 입력 폼 추가
+- 카드 UI 구현
+- Zustand store 추가
+- TanStack Query hook 추가
+- 페이지 단위 UI 구현
+
+규칙:
+
+- 구현 전 간단한 계획 제시
+- 사용자 승인 후 수정
+- 완료 후 실행/검증 방법 안내
+
+### Level 2 — 구조 변경 또는 리팩토링
+
+예시:
+
+- 폴더 구조 변경
+- 상태 관리 구조 변경
+- API 계층 분리
+- 도메인 모델 재설계
+- 공통 컴포넌트 구조 변경
+
+규칙:
+
+- 반드시 계획 먼저 작성
+- 변경 범위, 영향도, 대안을 설명
+- 사용자 승인 전 파일 수정 금지
+
+### Level 3 — 대규모 설계 변경
+
+예시:
+
+- 전체 아키텍처 변경
+- 지도/추천/일정 생성 로직 설계
+- 외부 API 연동 구조 설계
+- 인증/저장소/DB 구조 설계
+
+규칙:
+
+- 바로 구현하지 않음
+- 문제 정의 → 대안 → 선택 기준 → 작업 단위 순서로 정리
+- 사용자 승인 후 task 단위로 진행
+
+## 상태 관리 원칙
+
+### TanStack Query 사용 대상
+
+- 서버에서 받아오는 데이터
+- 장소 목록
+- 여행 일정 데이터
+- API 응답 캐싱
+- 로딩/에러/재요청 처리가 필요한 데이터
+
+### Zustand 사용 대상
+
+- 사용자가 선택한 여행 조건
+- 현재 선택된 지역
+- 일정 생성 단계
+- 모달/필터/탭 등 UI 상태
+- 여러 컴포넌트에서 공유되는 클라이언트 상태
+
+### 금지
+
+- 서버 데이터를 Zustand에 무분별하게 복사하지 않음
+- 단일 컴포넌트에서만 쓰는 상태를 전역 store로 만들지 않음
+- API 호출 로직을 UI 컴포넌트에 직접 강하게 결합하지 않음
+
+## 폴더 구조 원칙
+
+기본 구조는 다음 방향을 따른다.
+
+```txt
+src/
+  app/
+  components/
+    common/
+    feature/
+    ui/
+  features/
+    trip/
+    region/
+    itinerary/
+  hooks/
+  lib/
+  stores/
+  types/
+```
+
+규칙:
+
+- `components/ui`: shadcn/ui 기반 컴포넌트
+- `components/common`: 여러 기능에서 재사용하는 공통 컴포넌트
+- `features`: 도메인별 UI, hook, util 정리
+- `stores`: Zustand store
+- `types`: 공통 타입
+- `lib`: 외부 라이브러리 설정, 공통 유틸
+
+## 커밋 규칙
+
+### 형식
+
+```txt
+<type>: <한 줄 요약>
+
+<선택: 본문 — 왜 이렇게 했는가>
+```
+
+### type
+
+- `feat` — 새 기능
+- `fix` — 버그 수정
+- `refactor` — 동작 변경 없이 구조 개선
+- `test` — 테스트 추가/수정
+- `docs` — 문서만 변경
+- `chore` — 빌드·설정·메타
+- `perf` — 성능 개선
+- `style` — 포맷·공백·세미콜론
+
+### 규칙
+
+- 1 task = 1 commit
+- 무관한 변경을 한 커밋에 섞지 않음
+- 리팩토링과 기능 추가를 같은 커밋에 묶지 않음
+
+### 금지
+
+- `main` 직접 커밋
+- `--no-verify`로 훅 우회
+- 테스트 없는 기능 커밋
+- 의미 없는 `update`, `fix`, `WIP` 커밋 메시지
+
+## 기본 작업 흐름
+
+1. 사용자 요청 확인
+2. 작업 Level 분류
+3. Level 1 이상이면 간단한 계획 제시
+4. 사용자 승인 후 구현
+5. 변경 파일과 이유 설명
+6. 실행 또는 검증 방법 안내
+7. 필요한 경우 커밋 메시지 제안
+
+## AI 에이전트 역할
+
+- Claude: 일상적인 코드 작성, UI 구현, 작은 리팩토링, 문서 정리
+- Codex: 복잡한 로직 분석, 대규모 리팩토링, 구조적 문제 진단
+
+자동 라우팅은 하지 않으며, 사용자가 명시한 도구를 우선합니다.
