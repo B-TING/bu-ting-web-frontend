@@ -4,44 +4,10 @@ import { use, useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { TripTabHeader } from '@/features/trip/components/TripTabHeader';
+import type { PlaceItem, TransitItem, DayItinerary } from '@/types/itinerary';
 
 declare global {
   interface Window { kakao: any; }
-}
-
-// ─── Types ──────────────────────────────────────────────────────────────────
-
-interface PlaceItem {
-  type: 'place';
-  id: string;
-  order: number;
-  name: string;
-  category: string;
-  placeType: string;
-  time: string;
-  description: string;
-  stayMinutes: number;
-  address: string;
-  lat: number;
-  lng: number;
-}
-
-interface TransitItem {
-  type: 'transit';
-  mode: '대중교통' | '차량' | '도보';
-  minutes: number;
-  km: number;
-}
-
-type ItineraryItem = PlaceItem | TransitItem;
-
-interface DayItinerary {
-  day: number;
-  date: string;
-  shortDate: string;
-  dayOfWeek: string;
-  estimatedDuration: string;
-  items: ItineraryItem[];
 }
 
 // ─── Mock Data ──────────────────────────────────────────────────────────────

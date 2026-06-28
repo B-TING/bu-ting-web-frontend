@@ -3,19 +3,7 @@
 import { use, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { TripTabHeader } from '@/features/trip/components/TripTabHeader';
-
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-interface PlaceRecord {
-  id: string;
-  name: string;
-  category: string;
-  rating: number;
-  review: string;
-  tags: string[];
-  day: number;
-  date: string;
-}
+import type { PlaceRecord } from '@/types/record';
 
 // ─── Mock data ────────────────────────────────────────────────────────────────
 

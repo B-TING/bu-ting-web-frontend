@@ -3,8 +3,22 @@
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { TripTabHeader } from '@/features/trip/components/TripTabHeader';
+import type { Companion, DayHighlight, NextSchedule } from '@/types/trip';
 
-const MOCK_TRIP = {
+const MOCK_TRIP: {
+  id: string;
+  title: string;
+  startDate: string;
+  endDate: string;
+  totalDays: number;
+  totalNights: number;
+  days: DayHighlight[];
+  nextSchedule: NextSchedule;
+  companions: Companion[];
+  budget: number;
+  recordCount: number;
+  totalRecords: number;
+} = {
   id: 'demo-1',
   title: 'B-Side of Busan',
   startDate: '2026-06-25',

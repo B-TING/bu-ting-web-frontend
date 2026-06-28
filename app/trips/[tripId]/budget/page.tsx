@@ -4,35 +4,24 @@ import { use, useState } from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { TripTabHeader } from '@/features/trip/components/TripTabHeader';
+import type { ExpenseCategory, Expense } from '@/types/budget';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
-
-type Category = '식비' | '쇼핑' | '숙박비' | '교통비' | '관람·체험' | '기타';
-
-interface Expense {
-  id: string;
-  category: Category;
-  amount: number;
-  date: string;
-  payer: string;
-  splitWith: string[];
-  memo: string;
-}
 
 interface ExpenseFormData {
   payer: string;
   splitWith: string[];
   date: string;
-  category: Category;
+  category: ExpenseCategory;
   amount: string;
   memo: string;
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const CATEGORIES: Category[] = ['식비', '쇼핑', '숙박비', '교통비', '관람·체험', '기타'];
+const CATEGORIES: ExpenseCategory[] = ['식비', '쇼핑', '숙박비', '교통비', '관람·체험', '기타'];
 
-const CATEGORY_COLORS: Record<Category, string> = {
+const CATEGORY_COLORS: Record<ExpenseCategory, string> = {
   '식비': 'bg-orange-100 text-orange-700',
   '쇼핑': 'bg-pink-100 text-pink-700',
   '숙박비': 'bg-purple-100 text-purple-700',
@@ -318,13 +307,13 @@ function AddExpenseModal({
   );
 }
 
-// ─── Category Summary ─────────────────────────────────────────────────────────
+// ─── ExpenseCategory Summary ─────────────────────────────────────────────────────────
 
-function CategorySummary({ expenses }: { expenses: Expense[] }) {
-  const totals = CATEGORIES.reduce<Record<Category, number>>((acc, cat) => {
+function ExpenseCategorySummary({ expenses }: { expenses: Expense[] }) {
+  const totals = CATEGORIES.reduce<Record<ExpenseCategory, number>>((acc, cat) => {
     acc[cat] = expenses.filter((e) => e.category === cat).reduce((s, e) => s + e.amount, 0);
     return acc;
-  }, {} as Record<Category, number>);
+  }, {} as Record<ExpenseCategory, number>);
 
   const total = expenses.reduce((s, e) => s + e.amount, 0);
 
@@ -409,7 +398,7 @@ export default function TripBudgetPage({ params }: TripBudgetPageProps) {
             </button>
           </div>
 
-          {/* Category bar */}
+          {/* ExpenseCategory bar */}
           {expenses.length > 0 && total > 0 && (
             <div className="mt-4">
               <div className="flex h-2 rounded-full overflow-hidden gap-0.5">
@@ -417,7 +406,7 @@ export default function TripBudgetPage({ params }: TripBudgetPageProps) {
                   const amt = expenses.filter((e) => e.category === cat).reduce((s, e) => s + e.amount, 0);
                   const pct = (amt / total) * 100;
                   if (pct === 0) return null;
-                  const barColors: Record<Category, string> = {
+                  const barColors: Record<ExpenseCategory, string> = {
                     '식비': 'bg-orange-400',
                     '쇼핑': 'bg-pink-400',
                     '숙박비': 'bg-purple-400',
@@ -439,7 +428,7 @@ export default function TripBudgetPage({ params }: TripBudgetPageProps) {
                 {CATEGORIES.filter((cat) =>
                   expenses.some((e) => e.category === cat)
                 ).map((cat) => {
-                  const dotColors: Record<Category, string> = {
+                  const dotColors: Record<ExpenseCategory, string> = {
                     '식비': 'bg-orange-400',
                     '쇼핑': 'bg-pink-400',
                     '숙박비': 'bg-purple-400',
@@ -459,13 +448,13 @@ export default function TripBudgetPage({ params }: TripBudgetPageProps) {
           )}
         </div>
 
-        {/* Category breakdown */}
+        {/* ExpenseCategory breakdown */}
         {expenses.length > 0 && (
           <div>
             <h2 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wide">
               항목별 지출
             </h2>
-            <CategorySummary expenses={expenses} />
+            <ExpenseCategorySummary expenses={expenses} />
           </div>
         )}
 
