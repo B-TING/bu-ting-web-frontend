@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { X } from "lucide-react";
+import { X } from 'lucide-react';
 
 const NAV_ITEMS = [
-  { label: "짐 보관소", href: "/luggage" },
-  { label: "피드", href: "/feed" },
-  { label: "여행 생성", href: "/trip/new" },
-  { label: "축제 캘린더", href: "/festival" },
+  { label: '짐 보관소', href: '/luggage' },
+  { label: '피드', href: '/feed' },
+  { label: '여행 생성', href: '/trips/new' },
+  { label: '축제 캘린더', href: '/festival' },
 ];
 
 interface NavigationSidebarProps {
@@ -21,18 +21,21 @@ export default function NavigationSidebar({ isOpen, onClose }: NavigationSidebar
     <>
       <div
         className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-300 ${
-          isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
         onClick={onClose}
       />
 
       <div
         className={`fixed top-0 right-0 h-full w-72 bg-white z-50 shadow-xl transition-transform duration-300 ease-in-out ${
-          isOpen ? "translate-x-0" : "translate-x-full"
+          isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         <div className="flex items-center justify-end p-4 border-b">
-          <button onClick={onClose} className="p-1 rounded-lg hover:bg-gray-100">
+          <button
+            onClick={onClose}
+            className="p-1 rounded-lg hover:bg-gray-100"
+          >
             <X className="w-5 h-5 text-gray-600" />
           </button>
         </div>
