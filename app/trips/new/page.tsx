@@ -1,7 +1,9 @@
+import TripWizard from '@/features/trip/components/TripWizard';
+
+export const metadata = {
+  title: '여행 계획 만들기 | 부팅',
+};
+
 export default function TripNewPage() {
-  return (
-    <main>
-      <h1>여행계획 생성</h1>
-    </main>
-  );
+  return <TripWizard />;
 }
