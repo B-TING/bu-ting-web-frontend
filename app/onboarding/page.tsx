@@ -1,7 +1,5 @@
+import { OnboardingFlow } from '@/features/onboarding/components/onboarding-flow';
+
 export default function OnboardingPage() {
-  return (
-    <main>
-      <h1>온보딩</h1>
-    </main>
-  );
+  return <OnboardingFlow />;
 }

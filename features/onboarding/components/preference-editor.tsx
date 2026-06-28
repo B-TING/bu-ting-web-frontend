@@ -1,0 +1,185 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+import { LoaderCircle } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
+import { OnboardingHeader } from '@/features/onboarding/components/onboarding-header';
+import { PreferenceQuestion } from '@/features/onboarding/components/preference-question';
+import { ONBOARDING_QUESTIONS } from '@/features/onboarding/constants/onboarding';
+import {
+  travelSurveyQueryKey,
+  useSaveTravelSurvey,
+  useTravelSurvey,
+} from '@/features/onboarding/hooks/use-travel-survey';
+import {
+  createOnboardingProfile,
+  EMPTY_ONBOARDING_ANSWERS,
+  fromTravelSurveyResponse,
+  toTravelSurveyRequest,
+} from '@/features/onboarding/model/onboarding';
+import { useAuthStore } from '@/stores/auth-store';
+import type {
+  AppLanguage,
+  OnboardingAnswers,
+  VisitPurpose,
+} from '@/types/onboarding';
+
+export function PreferenceEditor() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const survey = useTravelSurvey(Boolean(accessToken));
+  const saveSurvey = useSaveTravelSurvey();
+  const initialized = useRef(false);
+  const [step, setStep] = useState(0);
+  const [answers, setAnswers] = useState<OnboardingAnswers>(
+    EMPTY_ONBOARDING_ANSWERS,
+  );
+  const [language, setLanguage] = useState<AppLanguage>('ko');
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!survey.data || initialized.current) return;
+    initialized.current = true;
+    const profile = fromTravelSurveyResponse(survey.data.data);
+    setAnswers(profile);
+    setLanguage(profile.language);
+  }, [survey.data]);
+
+  if (!accessToken) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-slate-950">로그인이 필요해요</h1>
+          <Link
+            href="/auth/login"
+            className="mt-6 inline-flex h-11 items-center rounded-xl bg-sky-700 px-6 font-semibold text-white"
+          >
+            로그인하러 가기
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
+  if (survey.isLoading) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-slate-50">
+        <LoaderCircle className="size-8 animate-spin text-sky-700" />
+      </main>
+    );
+  }
+
+  const question = ONBOARDING_QUESTIONS[step];
+  const value = answers[question.id];
+  const canContinue = Array.isArray(value) ? value.length > 0 : value !== null;
+
+  const selectAnswer = (selectedValue: string) => {
+    setAnswers((current) => {
+      if (question.id === 'purposes') {
+        const purpose = selectedValue as VisitPurpose;
+        return {
+          ...current,
+          purposes: current.purposes.includes(purpose)
+            ? current.purposes.filter((item) => item !== purpose)
+            : [...current.purposes, purpose],
+          skippedSteps: current.skippedSteps.filter((item) => item !== step),
+          skippedAll: false,
+        };
+      }
+
+      return {
+        ...current,
+        [question.id]: selectedValue,
+        skippedSteps: current.skippedSteps.filter((item) => item !== step),
+        skippedAll: false,
+      };
+    });
+  };
+
+  const skipCurrent = () => {
+    setAnswers((current) => ({
+      ...current,
+      [question.id]: question.id === 'purposes' ? [] : null,
+      skippedSteps: Array.from(new Set([...current.skippedSteps, step])).sort(
+        (a, b) => a - b,
+      ),
+    }));
+
+    if (step < ONBOARDING_QUESTIONS.length - 1) {
+      setStep(step + 1);
+    }
+  };
+
+  const save = async () => {
+    setError(null);
+
+    try {
+      const profile = createOnboardingProfile(
+        answers,
+        new Date().toISOString(),
+        language,
+      );
+      const response = await saveSurvey.mutateAsync(
+        toTravelSurveyRequest(profile),
+      );
+      queryClient.setQueryData(travelSurveyQueryKey, response);
+      router.replace('/my');
+    } catch (saveError) {
+      setError(
+        saveError instanceof Error
+          ? saveError.message
+          : '여행 취향을 저장하지 못했습니다.',
+      );
+    }
+  };
+
+  return (
+    <main className="min-h-screen bg-slate-100 px-0 sm:px-6 sm:py-8">
+      <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col bg-white px-5 py-6 sm:min-h-[calc(100vh-4rem)] sm:rounded-3xl sm:px-10 sm:py-8 sm:shadow-sm">
+        <OnboardingHeader
+          current={step + 1}
+          total={ONBOARDING_QUESTIONS.length}
+          onBack={step > 0 ? () => setStep(step - 1) : undefined}
+          onSkip={skipCurrent}
+          secondaryLabel="취소"
+          onSecondary={() => router.replace('/my')}
+        />
+
+        <section className="flex-1 py-10">
+          <PreferenceQuestion
+            question={question}
+            value={value}
+            onChange={selectAnswer}
+          />
+        </section>
+
+        {error ? (
+          <p role="alert" className="mb-3 text-center text-sm text-red-600">
+            {error}
+          </p>
+        ) : null}
+
+        <button
+          type="button"
+          onClick={
+            step === ONBOARDING_QUESTIONS.length - 1
+              ? () => void save()
+              : () => setStep(step + 1)
+          }
+          disabled={!canContinue || saveSurvey.isPending}
+          className="min-h-12 w-full rounded-2xl bg-sky-700 px-5 text-base font-bold text-white hover:bg-sky-800 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
+        >
+          {saveSurvey.isPending
+            ? '저장 중...'
+            : step === ONBOARDING_QUESTIONS.length - 1
+              ? '저장'
+              : '다음'}
+        </button>
+      </div>
+    </main>
+  );
+}
