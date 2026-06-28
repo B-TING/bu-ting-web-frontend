@@ -1,9 +1,10 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import OptionButton from '../OptionButton';
 import type { CompanionType, TripWizardData } from '@/types/tripWizard';
 
-const OPTIONS: CompanionType[] = ['혼자', '가족', '애인·연인', '친구', '동료'];
+const OPTIONS: CompanionType[] = ['solo', 'family', 'couple', 'friends', 'colleagues'];
 
 interface Props {
   data: TripWizardData;
@@ -11,6 +12,8 @@ interface Props {
 }
 
 export default function Step3CompanionType({ data, onChange }: Props) {
+  const t = useTranslations('trip.wizard.companionType');
+
   const toggle = (option: CompanionType) => {
     const current = data.companionTypes;
     const next = current.includes(option)
@@ -24,7 +27,7 @@ export default function Step3CompanionType({ data, onChange }: Props) {
       {OPTIONS.map((option) => (
         <OptionButton
           key={option}
-          label={option}
+          label={t(option)}
           selected={data.companionTypes.includes(option)}
           onClick={() => toggle(option)}
         />

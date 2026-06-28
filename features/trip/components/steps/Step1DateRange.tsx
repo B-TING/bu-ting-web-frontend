@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import type { TripWizardData } from '@/types/tripWizard';
 
@@ -9,13 +10,15 @@ interface Props {
 }
 
 export default function Step1DateRange({ data, onChange }: Props) {
+  const t = useTranslations('trip.wizard.step1');
+
   const isEndBeforeStart =
     data.startDate && data.endDate && data.endDate < data.startDate;
 
   return (
     <div className="space-y-5">
       <div className="space-y-1.5">
-        <label className="block text-sm font-medium text-gray-700">시작일</label>
+        <label className="block text-sm font-medium text-gray-700">{t('startDate')}</label>
         <input
           type="date"
           value={data.startDate}
@@ -30,7 +33,7 @@ export default function Step1DateRange({ data, onChange }: Props) {
       </div>
 
       <div className="space-y-1.5">
-        <label className="block text-sm font-medium text-gray-700">종료일</label>
+        <label className="block text-sm font-medium text-gray-700">{t('endDate')}</label>
         <input
           type="date"
           value={data.endDate}
@@ -44,7 +47,7 @@ export default function Step1DateRange({ data, onChange }: Props) {
           )}
         />
         {isEndBeforeStart && (
-          <p className="text-xs text-red-500">종료일은 시작일 이후여야 합니다.</p>
+          <p className="text-xs text-red-500">{t('endBeforeStart')}</p>
         )}
       </div>
 
@@ -54,8 +57,9 @@ export default function Step1DateRange({ data, onChange }: Props) {
             {(() => {
               const start = new Date(data.startDate);
               const end = new Date(data.endDate);
-              const days = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-              return `${days}일 여행`;
+              const days =
+                Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+              return t('duration', { days });
             })()}
           </p>
         </div>

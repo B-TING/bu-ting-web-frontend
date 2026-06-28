@@ -1,7 +1,7 @@
 'use client';
 
 import { use, useState } from 'react';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { TripTabHeader } from '@/features/trip/components/TripTabHeader';
 import type { ExpenseCategory, Expense } from '@/types/budget';
@@ -19,15 +19,24 @@ interface ExpenseFormData {
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const CATEGORIES: ExpenseCategory[] = ['식비', '쇼핑', '숙박비', '교통비', '관람·체험', '기타'];
+const CATEGORIES: ExpenseCategory[] = ['food', 'shopping', 'accommodation', 'transport', 'experience', 'other'];
 
 const CATEGORY_COLORS: Record<ExpenseCategory, string> = {
-  '식비': 'bg-orange-100 text-orange-700',
-  '쇼핑': 'bg-pink-100 text-pink-700',
-  '숙박비': 'bg-purple-100 text-purple-700',
-  '교통비': 'bg-blue-100 text-blue-700',
-  '관람·체험': 'bg-green-100 text-green-700',
-  '기타': 'bg-gray-100 text-gray-600',
+  food: 'bg-orange-100 text-orange-700',
+  shopping: 'bg-pink-100 text-pink-700',
+  accommodation: 'bg-purple-100 text-purple-700',
+  transport: 'bg-blue-100 text-blue-700',
+  experience: 'bg-green-100 text-green-700',
+  other: 'bg-gray-100 text-gray-600',
+};
+
+const BAR_COLORS: Record<ExpenseCategory, string> = {
+  food: 'bg-orange-400',
+  shopping: 'bg-pink-400',
+  accommodation: 'bg-purple-400',
+  transport: 'bg-blue-400',
+  experience: 'bg-green-400',
+  other: 'bg-gray-300',
 };
 
 const MOCK_COMPANIONS = ['여행자', '일행 1', '일행 2'];
@@ -36,11 +45,13 @@ const MOCK_TRIP = {
   title: 'B-Side of Busan',
 };
 
+const ALL_SENTINEL = 'all';
+
 const INITIAL_FORM: ExpenseFormData = {
   payer: '여행자',
-  splitWith: ['전원'],
+  splitWith: [ALL_SENTINEL],
   date: new Date().toISOString().split('T')[0],
-  category: '식비',
+  category: 'food',
   amount: '',
   memo: '',
 };
@@ -83,6 +94,8 @@ function ExpenseRow({
   expanded: boolean;
   onToggle: () => void;
 }) {
+  const t = useTranslations('trip.budget');
+
   return (
     <>
       <tr
@@ -91,7 +104,7 @@ function ExpenseRow({
       >
         <td className="py-3 px-4">
           <span className={cn('px-2 py-0.5 rounded-full text-xs font-medium', CATEGORY_COLORS[expense.category])}>
-            {expense.category}
+            {t(`category.${expense.category}`)}
           </span>
         </td>
         <td className="py-3 px-4 text-right font-semibold text-gray-900">
@@ -111,20 +124,22 @@ function ExpenseRow({
           <td colSpan={4} className="px-6 py-3">
             <div className="grid grid-cols-3 gap-4 text-sm">
               <div>
-                <p className="text-gray-400 text-xs mb-0.5">항목</p>
-                <p className="text-gray-800 font-medium">{expense.category}</p>
+                <p className="text-gray-400 text-xs mb-0.5">{t('labelItem')}</p>
+                <p className="text-gray-800 font-medium">{t(`category.${expense.category}`)}</p>
               </div>
               <div>
-                <p className="text-gray-400 text-xs mb-0.5">지불자</p>
+                <p className="text-gray-400 text-xs mb-0.5">{t('labelPayer')}</p>
                 <p className="text-gray-800 font-medium">{expense.payer}</p>
               </div>
               <div>
-                <p className="text-gray-400 text-xs mb-0.5">나누기</p>
-                <p className="text-gray-800 font-medium">{expense.splitWith.join(', ')}</p>
+                <p className="text-gray-400 text-xs mb-0.5">{t('labelSplit')}</p>
+                <p className="text-gray-800 font-medium">
+                  {expense.splitWith.map((v) => v === ALL_SENTINEL ? t('all') : v).join(', ')}
+                </p>
               </div>
               {expense.memo && (
                 <div className="col-span-3">
-                  <p className="text-gray-400 text-xs mb-0.5">메모</p>
+                  <p className="text-gray-400 text-xs mb-0.5">{t('labelMemo')}</p>
                   <p className="text-gray-800">{expense.memo}</p>
                 </div>
               )}
@@ -145,15 +160,16 @@ function AddExpenseModal({
   onClose: () => void;
   onSave: (expense: Omit<Expense, 'id'>) => void;
 }) {
+  const t = useTranslations('trip.budget');
   const [form, setForm] = useState<ExpenseFormData>(INITIAL_FORM);
 
   const toggleSplit = (name: string) => {
-    if (name === '전원') {
-      setForm((f) => ({ ...f, splitWith: f.splitWith.includes('전원') ? [] : ['전원'] }));
+    if (name === ALL_SENTINEL) {
+      setForm((f) => ({ ...f, splitWith: f.splitWith.includes(ALL_SENTINEL) ? [] : [ALL_SENTINEL] }));
       return;
     }
     setForm((f) => {
-      const withoutAll = f.splitWith.filter((v) => v !== '전원');
+      const withoutAll = f.splitWith.filter((v) => v !== ALL_SENTINEL);
       const next = withoutAll.includes(name)
         ? withoutAll.filter((v) => v !== name)
         : [...withoutAll, name];
@@ -169,7 +185,7 @@ function AddExpenseModal({
       amount,
       date: form.date,
       payer: form.payer,
-      splitWith: form.splitWith.length === 0 ? ['전원'] : form.splitWith,
+      splitWith: form.splitWith.length === 0 ? [ALL_SENTINEL] : form.splitWith,
       memo: form.memo,
     });
     onClose();
@@ -185,14 +201,14 @@ function AddExpenseModal({
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
         {/* Header */}
         <div className="px-6 pt-6 pb-4 border-b border-gray-100">
-          <h2 className="text-lg font-bold text-gray-900">지출 추가</h2>
+          <h2 className="text-lg font-bold text-gray-900">{t('addTitle')}</h2>
         </div>
 
         {/* Body */}
         <div className="px-6 py-5 space-y-5 max-h-[70vh] overflow-y-auto">
           {/* 지불자 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">지불자</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('labelPayer')}</label>
             <div className="flex flex-wrap gap-2">
               {MOCK_COMPANIONS.map((name) => (
                 <ChipButton
@@ -207,12 +223,12 @@ function AddExpenseModal({
 
           {/* 나누기 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">나누기</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('labelSplit')}</label>
             <div className="flex flex-wrap gap-2">
-              {['전원', ...MOCK_COMPANIONS].map((name) => (
+              {([ALL_SENTINEL, ...MOCK_COMPANIONS] as string[]).map((name) => (
                 <ChipButton
                   key={name}
-                  label={name}
+                  label={name === ALL_SENTINEL ? t('all') : name}
                   active={form.splitWith.includes(name)}
                   onClick={() => toggleSplit(name)}
                   checkmark
@@ -223,7 +239,7 @@ function AddExpenseModal({
 
           {/* 날짜 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">날짜</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('labelDate')}</label>
             <input
               type="date"
               value={form.date}
@@ -234,12 +250,12 @@ function AddExpenseModal({
 
           {/* 항목 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">항목</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('labelItem')}</label>
             <div className="flex flex-wrap gap-2">
               {CATEGORIES.map((cat) => (
                 <ChipButton
                   key={cat}
-                  label={cat}
+                  label={t(`category.${cat}`)}
                   active={form.category === cat}
                   onClick={() => setForm((f) => ({ ...f, category: cat }))}
                 />
@@ -249,7 +265,7 @@ function AddExpenseModal({
 
           {/* 금액 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">금액</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('colAmount')}</label>
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">₩</span>
               <input
@@ -264,10 +280,10 @@ function AddExpenseModal({
 
           {/* 메모 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">메모</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('labelMemo')}</label>
             <input
               type="text"
-              placeholder="메모를 입력하세요"
+              placeholder={t('memoPlaceholder')}
               value={form.memo}
               onChange={(e) => setForm((f) => ({ ...f, memo: e.target.value }))}
               className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -277,7 +293,7 @@ function AddExpenseModal({
           {/* OCR 안내 */}
           <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-4 py-3 text-sm text-gray-400">
             <span>📷</span>
-            <span>영수증 OCR — 곧 제공 예정</span>
+            <span>{t('ocrHint')}</span>
           </div>
         </div>
 
@@ -293,13 +309,13 @@ function AddExpenseModal({
                 : 'bg-gray-100 text-gray-400 cursor-not-allowed'
             )}
           >
-            저장
+            {t('save')}
           </button>
           <button
             onClick={onClose}
             className="w-full py-2.5 text-sm text-gray-500 hover:text-gray-700 transition-colors"
           >
-            취소
+            {t('cancel')}
           </button>
         </div>
       </div>
@@ -310,6 +326,8 @@ function AddExpenseModal({
 // ─── ExpenseCategory Summary ─────────────────────────────────────────────────────────
 
 function ExpenseCategorySummary({ expenses }: { expenses: Expense[] }) {
+  const t = useTranslations('trip.budget');
+
   const totals = CATEGORIES.reduce<Record<ExpenseCategory, number>>((acc, cat) => {
     acc[cat] = expenses.filter((e) => e.category === cat).reduce((s, e) => s + e.amount, 0);
     return acc;
@@ -325,7 +343,7 @@ function ExpenseCategorySummary({ expenses }: { expenses: Expense[] }) {
         return (
           <div key={cat} className="bg-white rounded-xl border border-gray-100 p-3 shadow-sm">
             <span className={cn('text-xs font-medium px-2 py-0.5 rounded-full', CATEGORY_COLORS[cat])}>
-              {cat}
+              {t(`category.${cat}`)}
             </span>
             <p className="mt-2 text-sm font-bold text-gray-900">₩{amount.toLocaleString()}</p>
             <div className="mt-1.5 h-1 bg-gray-100 rounded-full overflow-hidden">
@@ -350,6 +368,7 @@ interface TripBudgetPageProps {
 
 export default function TripBudgetPage({ params }: TripBudgetPageProps) {
   const { tripId } = use(params);
+  const t = useTranslations('trip.budget');
 
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -382,23 +401,23 @@ export default function TripBudgetPage({ params }: TripBudgetPageProps) {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm text-gray-500 mb-1">총 지출</p>
+              <p className="text-sm text-gray-500 mb-1">{t('totalExpense')}</p>
               <p className={cn('text-3xl font-bold', total > 0 ? 'text-blue-600' : 'text-gray-400')}>
                 ₩{total.toLocaleString()}
               </p>
               {expenses.length > 0 && (
-                <p className="text-xs text-gray-400 mt-1">{expenses.length}건의 지출</p>
+                <p className="text-xs text-gray-400 mt-1">{t('expenseCount', { count: expenses.length })}</p>
               )}
             </div>
             <button
               onClick={() => setShowModal(true)}
               className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors shadow-sm"
             >
-              + 지출 추가
+              {t('addExpense')}
             </button>
           </div>
 
-          {/* ExpenseCategory bar */}
+          {/* Category bar */}
           {expenses.length > 0 && total > 0 && (
             <div className="mt-4">
               <div className="flex h-2 rounded-full overflow-hidden gap-0.5">
@@ -406,20 +425,12 @@ export default function TripBudgetPage({ params }: TripBudgetPageProps) {
                   const amt = expenses.filter((e) => e.category === cat).reduce((s, e) => s + e.amount, 0);
                   const pct = (amt / total) * 100;
                   if (pct === 0) return null;
-                  const barColors: Record<ExpenseCategory, string> = {
-                    '식비': 'bg-orange-400',
-                    '쇼핑': 'bg-pink-400',
-                    '숙박비': 'bg-purple-400',
-                    '교통비': 'bg-blue-400',
-                    '관람·체험': 'bg-green-400',
-                    '기타': 'bg-gray-300',
-                  };
                   return (
                     <div
                       key={cat}
-                      className={cn('h-full transition-all', barColors[cat])}
+                      className={cn('h-full transition-all', BAR_COLORS[cat])}
                       style={{ width: `${pct}%` }}
-                      title={`${cat}: ₩${amt.toLocaleString()}`}
+                      title={`${t(`category.${cat}`)}: ₩${amt.toLocaleString()}`}
                     />
                   );
                 })}
@@ -427,32 +438,22 @@ export default function TripBudgetPage({ params }: TripBudgetPageProps) {
               <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2">
                 {CATEGORIES.filter((cat) =>
                   expenses.some((e) => e.category === cat)
-                ).map((cat) => {
-                  const dotColors: Record<ExpenseCategory, string> = {
-                    '식비': 'bg-orange-400',
-                    '쇼핑': 'bg-pink-400',
-                    '숙박비': 'bg-purple-400',
-                    '교통비': 'bg-blue-400',
-                    '관람·체험': 'bg-green-400',
-                    '기타': 'bg-gray-300',
-                  };
-                  return (
-                    <span key={cat} className="flex items-center gap-1 text-xs text-gray-500">
-                      <span className={cn('w-2 h-2 rounded-full', dotColors[cat])} />
-                      {cat}
-                    </span>
-                  );
-                })}
+                ).map((cat) => (
+                  <span key={cat} className="flex items-center gap-1 text-xs text-gray-500">
+                    <span className={cn('w-2 h-2 rounded-full', BAR_COLORS[cat])} />
+                    {t(`category.${cat}`)}
+                  </span>
+                ))}
               </div>
             </div>
           )}
         </div>
 
-        {/* ExpenseCategory breakdown */}
+        {/* Category breakdown */}
         {expenses.length > 0 && (
           <div>
             <h2 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wide">
-              항목별 지출
+              {t('byCategory')}
             </h2>
             <ExpenseCategorySummary expenses={expenses} />
           </div>
@@ -461,19 +462,19 @@ export default function TripBudgetPage({ params }: TripBudgetPageProps) {
         {/* Expense list */}
         <div>
           <h2 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wide">
-            지출 내역
+            {t('expenseList')}
           </h2>
 
           {expenses.length === 0 ? (
             <div className="bg-white rounded-2xl border border-dashed border-gray-200 p-12 text-center">
               <p className="text-4xl mb-3">💸</p>
-              <p className="text-gray-500 font-medium">아직 기록된 지출이 없어요</p>
-              <p className="text-gray-400 text-sm mt-1">여행 중 발생한 지출을 기록해보세요</p>
+              <p className="text-gray-500 font-medium">{t('empty')}</p>
+              <p className="text-gray-400 text-sm mt-1">{t('emptyDesc')}</p>
               <button
                 onClick={() => setShowModal(true)}
                 className="mt-5 bg-blue-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors"
               >
-                지출 추가
+                {t('addExpenseShort')}
               </button>
             </div>
           ) : (
@@ -481,9 +482,9 @@ export default function TripBudgetPage({ params }: TripBudgetPageProps) {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-100">
-                    <th className="py-3 px-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide">분류</th>
-                    <th className="py-3 px-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wide">금액</th>
-                    <th className="py-3 px-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wide">날짜</th>
+                    <th className="py-3 px-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide">{t('colCategory')}</th>
+                    <th className="py-3 px-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wide">{t('colAmount')}</th>
+                    <th className="py-3 px-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wide">{t('colDate')}</th>
                     <th className="py-3 px-4 w-10" />
                   </tr>
                 </thead>

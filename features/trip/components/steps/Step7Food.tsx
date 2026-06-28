@@ -1,15 +1,16 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import OptionButton from '../OptionButton';
 import type { FoodPreference, TripWizardData } from '@/types/tripWizard';
 
 const OPTIONS: FoodPreference[] = [
-  '밀면',
-  '돼지국밥',
-  '해물탕·회',
-  '어묵·부산 간식',
-  '팥빙수·디저트',
-  '치맥·야식',
+  'milmyeon',
+  'dwaeji_gukbap',
+  'haemul_hoe',
+  'eomuk',
+  'patbingsu',
+  'chimaek',
 ];
 
 interface Props {
@@ -18,6 +19,8 @@ interface Props {
 }
 
 export default function Step7Food({ data, onChange }: Props) {
+  const t = useTranslations('trip.wizard.food');
+
   const toggle = (option: FoodPreference) => {
     const current = data.foods;
     const next = current.includes(option)
@@ -31,7 +34,7 @@ export default function Step7Food({ data, onChange }: Props) {
       {OPTIONS.map((option) => (
         <OptionButton
           key={option}
-          label={option}
+          label={t(option)}
           selected={data.foods.includes(option)}
           onClick={() => toggle(option)}
         />

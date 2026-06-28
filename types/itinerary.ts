@@ -1,4 +1,4 @@
-export type TransitMode = '대중교통' | '차량' | '도보';
+export type TransitMode = 'public' | 'car' | 'walk';
 
 export interface PlaceItem {
   type: 'place';

@@ -1,20 +1,10 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import OptionButton from '../OptionButton';
 import type { GenerationMethod, TripWizardData } from '@/types/tripWizard';
 
-const OPTIONS: { value: GenerationMethod; label: string; description: string }[] = [
-  {
-    value: 'ai',
-    label: 'AI가 일정 생성',
-    description: '입력한 정보로 바로 플랜을 짬',
-  },
-  {
-    value: 'manual',
-    label: '후보에서 직접 선택',
-    description: 'AI 후보를 보고 마음에 드는 플랜 선택',
-  },
-];
+const OPTIONS: GenerationMethod[] = ['ai', 'manual'];
 
 interface Props {
   data: TripWizardData;
@@ -22,13 +12,15 @@ interface Props {
 }
 
 export default function Step9GenerationMethod({ data, onChange }: Props) {
+  const t = useTranslations('trip.wizard.generation');
+
   return (
     <div className="space-y-3">
-      {OPTIONS.map(({ value, label, description }) => (
+      {OPTIONS.map((value) => (
         <OptionButton
           key={value}
-          label={label}
-          description={description}
+          label={t(`${value}_label`)}
+          description={t(`${value}_desc`)}
           selected={data.generationMethod === value}
           onClick={() => onChange({ generationMethod: value })}
         />

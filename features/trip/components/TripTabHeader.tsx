@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 
 interface TripTabHeaderProps {
@@ -18,13 +19,14 @@ export function TripTabHeader({
   action,
 }: TripTabHeaderProps) {
   const pathname = usePathname();
+  const t = useTranslations('trip.tabs');
 
   const tabs = [
-    { label: '개요', href: '/trips' },
-    { label: '일정', href: `/trips/${tripId}/itinerary` },
-    { label: '가계부', href: `/trips/${tripId}/budget` },
-    { label: '기록', href: `/trips/${tripId}/records` },
-  ];
+    { key: 'overview', href: '/trips' },
+    { key: 'itinerary', href: `/trips/${tripId}/itinerary` },
+    { key: 'budget', href: `/trips/${tripId}/budget` },
+    { key: 'records', href: `/trips/${tripId}/records` },
+  ] as const;
 
   return (
     <header className="sticky top-0 z-20 shrink-0 border-b border-gray-100 bg-white/90 backdrop-blur-sm">
@@ -45,18 +47,18 @@ export function TripTabHeader({
 
       <div className="mx-auto max-w-5xl px-6">
         <nav className="flex gap-6">
-          {tabs.map(({ label, href }) => {
-            const active = pathname === href;
+          {tabs.map(({ key, href }) => {
+            const active = pathname === href || pathname.endsWith(href);
             return (
               <Link
-                key={label}
+                key={key}
                 href={href}
                 className={cn(
                   'relative pb-3 text-sm font-medium transition-colors',
                   active ? 'text-blue-600' : 'text-gray-400 hover:text-gray-700'
                 )}
               >
-                {label}
+                {t(key)}
                 {active && (
                   <span className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-blue-600" />
                 )}

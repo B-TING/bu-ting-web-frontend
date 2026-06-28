@@ -1,21 +1,22 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import OptionButton from '../OptionButton';
 import type { Attraction, TripWizardData } from '@/types/tripWizard';
 
 const OPTIONS: Attraction[] = [
-  '감천문화마을',
-  '해운대 해수욕장',
-  '광안리',
-  '태종대',
-  '자갈치시장',
-  '해동용궁사',
-  '송정 해수욕장',
-  '황령산 봉수대',
-  '용두산 공원',
-  '범어사',
-  '영도 절영로',
-  '부산현대미술관',
+  'gamcheon',
+  'haeundae',
+  'gwangalli',
+  'taejongdae',
+  'jagalchi',
+  'haedong',
+  'songjeong',
+  'hwangnyeong',
+  'yongdusan',
+  'beomeosa',
+  'yeongdo',
+  'moca',
 ];
 
 interface Props {
@@ -24,6 +25,8 @@ interface Props {
 }
 
 export default function Step6Attractions({ data, onChange }: Props) {
+  const t = useTranslations('trip.wizard.attraction');
+
   const toggle = (option: Attraction) => {
     const current = data.attractions;
     const next = current.includes(option)
@@ -37,7 +40,7 @@ export default function Step6Attractions({ data, onChange }: Props) {
       {OPTIONS.map((option) => (
         <OptionButton
           key={option}
-          label={option}
+          label={t(option)}
           selected={data.attractions.includes(option)}
           onClick={() => toggle(option)}
         />

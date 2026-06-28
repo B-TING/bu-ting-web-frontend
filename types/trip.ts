@@ -1,4 +1,4 @@
-export type CompanionRole = '방장' | '편집' | '보기';
+export type CompanionRole = 'owner' | 'editor' | 'viewer';
 
 export interface Companion {
   id: string;

@@ -2,6 +2,7 @@
 
 import { use, useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { TripTabHeader } from '@/features/trip/components/TripTabHeader';
 import type { PlaceItem, TransitItem, DayItinerary } from '@/types/itinerary';
@@ -19,9 +20,9 @@ const MOCK_TRIP: { title: string; days: DayItinerary[] } = {
       day: 1, date: '2026-06-25', shortDate: '6/25', dayOfWeek: '목', estimatedDuration: '4시간 39분',
       items: [
         { type: 'place', id: 'p1', order: 1, name: '해운대 해수욕장', category: '해변', placeType: '관광명소', time: '09:00 - 18:00', description: '대표 해수욕장으로 산책·야경·해산물 맛집이 가깝습니다.', stayMinutes: 120, address: '부산광역시 해운대구 해운대해변로', lat: 35.1587, lng: 129.1604 },
-        { type: 'transit', mode: '대중교통', minutes: 19, km: 3.8 },
+        { type: 'transit', mode: 'public', minutes: 19, km: 3.8 },
         { type: 'place', id: 'p2', order: 2, name: '광안리', category: '해변·야경', placeType: '관광명소', time: '09:00 - 18:00', description: '광안대교 야경과 함께 즐기기 좋은 해변 산책 코스입니다.', stayMinutes: 90, address: '부산광역시 수영구 광안해변로', lat: 35.1533, lng: 129.1186 },
-        { type: 'transit', mode: '차량', minutes: 35, km: 11.7 },
+        { type: 'transit', mode: 'car', minutes: 35, km: 11.7 },
         { type: 'place', id: 'p3', order: 3, name: '태종대', category: '관광지', placeType: '자연', time: '09:00 - 18:00', description: '태종대 전망대에서 바다를 조망할 수 있는 부산 대표 자연 명소입니다.', stayMinutes: 120, address: '부산광역시 영도구 전망로', lat: 35.0500, lng: 129.0852 },
       ],
     },
@@ -29,9 +30,9 @@ const MOCK_TRIP: { title: string; days: DayItinerary[] } = {
       day: 2, date: '2026-06-26', shortDate: '6/26', dayOfWeek: '금', estimatedDuration: '3시간 20분',
       items: [
         { type: 'place', id: 'p4', order: 1, name: '자갈치시장', category: '시장', placeType: '음식', time: '08:00 - 22:00', description: '부산의 대표 수산시장. 신선한 해산물을 저렴하게 즐길 수 있어요.', stayMinutes: 90, address: '부산광역시 중구 자갈치해안로', lat: 35.0977, lng: 129.0302 },
-        { type: 'transit', mode: '도보', minutes: 10, km: 0.7 },
+        { type: 'transit', mode: 'walk', minutes: 10, km: 0.7 },
         { type: 'place', id: 'p5', order: 2, name: '국제시장', category: '시장·쇼핑', placeType: '쇼핑', time: '10:00 - 20:00', description: '한국전쟁 당시 형성된 부산의 역사적인 전통시장입니다.', stayMinutes: 60, address: '부산광역시 중구 신창동', lat: 35.0996, lng: 129.0269 },
-        { type: 'transit', mode: '차량', minutes: 20, km: 4.2 },
+        { type: 'transit', mode: 'car', minutes: 20, km: 4.2 },
         { type: 'place', id: 'p6', order: 3, name: '감천문화마을', category: '문화', placeType: '관광명소', time: '09:00 - 18:00', description: '알록달록한 벽화와 골목길이 있는 부산의 마추픽추.', stayMinutes: 90, address: '부산광역시 사하구 감내2로', lat: 35.0974, lng: 129.0102 },
       ],
     },
@@ -39,7 +40,7 @@ const MOCK_TRIP: { title: string; days: DayItinerary[] } = {
       day: 3, date: '2026-06-27', shortDate: '6/27', dayOfWeek: '토', estimatedDuration: '2시간 15분',
       items: [
         { type: 'place', id: 'p7', order: 1, name: '용두산 공원', category: '공원', placeType: '자연', time: '00:00 - 24:00', description: '부산타워가 있는 공원. 시내 전경을 한눈에 볼 수 있어요.', stayMinutes: 60, address: '부산광역시 중구 용두산길', lat: 35.1000, lng: 129.0328 },
-        { type: 'transit', mode: '차량', minutes: 20, km: 5.2 },
+        { type: 'transit', mode: 'car', minutes: 20, km: 5.2 },
         { type: 'place', id: 'p8', order: 2, name: '범어사', category: '사찰', placeType: '문화', time: '06:00 - 18:00', description: '신라시대에 창건된 천년 고찰. 금정산 자락에 위치합니다.', stayMinutes: 75, address: '부산광역시 금정구 청룡동', lat: 35.2803, lng: 129.0821 },
       ],
     },
@@ -65,12 +66,12 @@ function StarRating({ value, onChange, size = 'md' }: { value: number; onChange?
 }
 
 function TransitIcon({ mode }: { mode: TransitItem['mode'] }) {
-  if (mode === '대중교통') return (
+  if (mode === 'public') return (
     <svg className="size-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h8M8 11h8M5 3h14a2 2 0 012 2v11a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2zM7 20l-2 2m12-2l2 2" />
     </svg>
   );
-  if (mode === '차량') return (
+  if (mode === 'car') return (
     <svg className="size-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zm10 0a2 2 0 11-4 0 2 2 0 014 0zM3 11l1-4h16l1 4M3 11h18" />
     </svg>
@@ -228,6 +229,8 @@ export default function TripItineraryPage({ params }: Props) {
   const toggleVisit = (id: string) =>
     setVisitedPlaces((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next; });
 
+  const t = useTranslations('trip.itinerary');
+
   const openReview = (place: PlaceItem) => {
     setReviewModal(place); setReviewRating(0); setReviewText('');
   };
@@ -265,7 +268,7 @@ export default function TripItineraryPage({ params }: Props) {
             {/* Date + duration */}
             <div className="flex shrink-0 items-center justify-between border-b border-gray-50 px-4 py-2.5">
               <p className="text-sm font-semibold text-gray-800">{currentDay.date} · Day {currentDay.day}</p>
-              <p className="text-xs text-gray-400">예상 소요 {currentDay.estimatedDuration}</p>
+              <p className="text-xs text-gray-400">{t('estimatedDuration', { duration: currentDay.estimatedDuration })}</p>
             </div>
 
             {/* Itinerary list */}
@@ -283,8 +286,8 @@ export default function TripItineraryPage({ params }: Props) {
                           <div className="h-2.5 w-px bg-gray-200" />
                         </div>
                         <div className="flex flex-1 items-center justify-between">
-                          <span className="text-xs text-gray-400">{item.mode} · {item.minutes}분 · {item.km}km</span>
-                          <button type="button" className="text-xs text-blue-500 hover:text-blue-700">길찾기</button>
+                          <span className="text-xs text-gray-400">{t(`transit.${item.mode}`)} · {t('transitInfo', { minutes: item.minutes, km: item.km })}</span>
+                          <button type="button" className="text-xs text-blue-500 hover:text-blue-700">{t('navigate')}</button>
                         </div>
                       </div>
                     );
@@ -315,7 +318,7 @@ export default function TripItineraryPage({ params }: Props) {
                         </div>
                         <button type="button" onClick={(e) => e.stopPropagation()}
                           className="shrink-0 rounded-lg border border-gray-200 px-2.5 py-1 text-xs text-gray-500 hover:border-gray-300">
-                          수정
+                          {t('edit')}
                         </button>
                       </div>
 
@@ -333,7 +336,7 @@ export default function TripItineraryPage({ params }: Props) {
                             )}
                           </div>
                           <span className={cn('text-xs', isVisited ? 'font-medium text-blue-600' : 'text-gray-400')}>
-                            {isVisited ? '✓ 방문 완료' : '방문 체크'}
+                            {isVisited ? t('visitDone') : t('visitCheck')}
                           </span>
                         </button>
 
@@ -341,11 +344,11 @@ export default function TripItineraryPage({ params }: Props) {
                           <div className="mt-2.5 space-y-2.5">
                             <button type="button" onClick={() => openReview(item)}
                               className="w-full rounded-lg bg-blue-600 py-2 text-xs font-semibold text-white shadow-sm shadow-blue-100 transition-all hover:bg-blue-700">
-                              기록 남기기
+                              {t('addRecord')}
                             </button>
                             <div className="flex items-center gap-2">
                               <StarRating value={rating} onChange={(v) => setQuickRatings((prev) => ({ ...prev, [item.id]: v }))} size="sm" />
-                              <span className="text-xs text-gray-400">별점만 남기기</span>
+                              <span className="text-xs text-gray-400">{t('ratingOnly')}</span>
                             </div>
                           </div>
                         )}
@@ -367,7 +370,7 @@ export default function TripItineraryPage({ params }: Props) {
               <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
                 <div className="text-center">
                   <div className="mx-auto mb-2 size-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
-                  <p className="text-sm text-gray-400">지도 불러오는 중...</p>
+                  <p className="text-sm text-gray-400">{t('mapLoading')}</p>
                 </div>
               </div>
             )}
@@ -386,8 +389,8 @@ export default function TripItineraryPage({ params }: Props) {
                     {/* Naver map thumbnail placeholder — 추후 지도 미리보기 */}
                     <div className="mb-4 flex h-28 items-center justify-center rounded-2xl bg-gradient-to-br from-gray-100 to-gray-50 shadow-inner">
                       <div className="text-center">
-                        <p className="text-xs font-semibold text-gray-400">지도 미리보기</p>
-                        <p className="mt-0.5 text-xs text-gray-300">상세 지도 API 연동 예정</p>
+                        <p className="text-xs font-semibold text-gray-400">{t('mapPreview')}</p>
+                        <p className="mt-0.5 text-xs text-gray-300">{t('mapApiComingSoon')}</p>
                       </div>
                     </div>
 
@@ -409,14 +412,14 @@ export default function TripItineraryPage({ params }: Props) {
                         className={cn('flex-1 rounded-full border py-2 text-xs font-medium transition-all',
                           visitedPlaces.has(selectedPlace.id) ? 'border-blue-500 bg-blue-50 text-blue-600' : 'border-gray-200 text-gray-600 hover:border-gray-300'
                         )}>
-                        {visitedPlaces.has(selectedPlace.id) ? '✓ 방문 완료' : '방문 완료'}
+                        {visitedPlaces.has(selectedPlace.id) ? t('visitDone') : t('visitDoneShort')}
                       </button>
                       <button type="button" className="flex-1 rounded-full border border-gray-200 py-2 text-xs font-medium text-gray-600 hover:border-gray-300">
-                        길찾기
+                        {t('navigate')}
                       </button>
                       <button type="button" onClick={() => openReview(selectedPlace)}
                         className="flex-1 rounded-full bg-blue-600 py-2 text-xs font-semibold text-white shadow-sm shadow-blue-200 hover:bg-blue-700">
-                        후기 남기기
+                        {t('leaveReview')}
                       </button>
                     </div>
 
@@ -424,18 +427,18 @@ export default function TripItineraryPage({ params }: Props) {
 
                     <p className="text-sm leading-relaxed text-gray-600">{selectedPlace.description}</p>
                     <div className="mt-2 space-y-0.5">
-                      <p className="text-xs text-gray-400">보통 {selectedPlace.stayMinutes}분 머무름</p>
+                      <p className="text-xs text-gray-400">{t('stayMinutes', { minutes: selectedPlace.stayMinutes })}</p>
                       <p className="text-xs text-gray-400">{selectedPlace.time}</p>
                       <p className="text-xs text-gray-400">{selectedPlace.address}</p>
                     </div>
 
                     <Link href={`/places/${selectedPlace.id}`} className="mt-3 inline-block text-xs text-blue-500 hover:text-blue-700">
-                      장소 상세 보기 →
+                      {t('placeDetail')}
                     </Link>
 
                     <button type="button" onClick={() => setSelectedPlace(null)}
                       className="mt-4 w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 py-3 text-sm font-semibold text-white shadow-md shadow-blue-200 hover:from-blue-700 hover:to-indigo-700">
-                      닫기
+                      {t('close')}
                     </button>
                   </div>
                 </>
@@ -464,12 +467,12 @@ export default function TripItineraryPage({ params }: Props) {
             </div>
 
             <div className="mb-5 flex flex-col items-center gap-2.5">
-              <p className="text-sm text-gray-500">이 장소는 어떠셨나요?</p>
+              <p className="text-sm text-gray-500">{t('reviewQuestion')}</p>
               <StarRating value={reviewRating} onChange={setReviewRating} size="lg" />
             </div>
 
             <textarea value={reviewText} onChange={(e) => setReviewText(e.target.value)}
-              placeholder="방문 후기를 자유롭게 남겨주세요..."
+              placeholder={t('reviewPlaceholder')}
               rows={4}
               className="w-full resize-none rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-800 outline-none transition-all placeholder:text-gray-300 focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             />
@@ -477,7 +480,7 @@ export default function TripItineraryPage({ params }: Props) {
             <div className="mt-4 flex gap-2.5">
               <button type="button" onClick={() => setReviewModal(null)}
                 className="flex-1 rounded-xl border border-gray-200 py-3 text-sm font-medium text-gray-500 hover:bg-gray-50">
-                취소
+                {t('cancel')}
               </button>
               <button type="button"
                 disabled={reviewRating === 0 && reviewText.trim() === ''}
@@ -486,7 +489,7 @@ export default function TripItineraryPage({ params }: Props) {
                   setReviewModal(null);
                 }}
                 className="flex-1 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 py-3 text-sm font-semibold text-white shadow-md shadow-blue-200 hover:from-blue-700 hover:to-indigo-700 disabled:opacity-40 disabled:shadow-none">
-                기록 저장
+                {t('saveRecord')}
               </button>
             </div>
           </div>

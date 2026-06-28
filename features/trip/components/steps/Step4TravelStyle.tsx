@@ -1,16 +1,17 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import OptionButton from '../OptionButton';
 import type { TravelStyle, TripWizardData } from '@/types/tripWizard';
 
 const OPTIONS: TravelStyle[] = [
-  '문화·역사',
-  '자연·힐링',
-  '미식·맛집',
-  '쇼핑',
-  '액티비티',
-  '사진·인스타',
-  '야경·나이트',
+  'culture_history',
+  'nature_healing',
+  'food_dining',
+  'shopping',
+  'activities',
+  'photo_insta',
+  'night_view',
 ];
 
 interface Props {
@@ -19,6 +20,8 @@ interface Props {
 }
 
 export default function Step4TravelStyle({ data, onChange }: Props) {
+  const t = useTranslations('trip.wizard.travelStyle');
+
   const toggle = (option: TravelStyle) => {
     const current = data.travelStyles;
     const next = current.includes(option)
@@ -32,7 +35,7 @@ export default function Step4TravelStyle({ data, onChange }: Props) {
       {OPTIONS.map((option) => (
         <OptionButton
           key={option}
-          label={option}
+          label={t(option)}
           selected={data.travelStyles.includes(option)}
           onClick={() => toggle(option)}
         />
