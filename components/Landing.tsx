@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { ChevronDown, Luggage, BookImage, Map, CalendarDays } from "lucide-react";
 
 const FEATURES = [
@@ -61,9 +62,9 @@ export default function Landing() {
             바다, 음식, 축제까지<br />
             부팅과 함께 부산의 모든 순간을 계획하세요
           </p>
-          <button className="mt-2 px-7 py-3 bg-cyan-400 hover:bg-cyan-300 text-slate-900 font-semibold rounded-full text-sm transition-colors shadow-lg shadow-cyan-400/30">
+          <Link href="/trips/new" className="mt-2 px-7 py-3 bg-cyan-400 hover:bg-cyan-300 text-slate-900 font-semibold rounded-full text-sm transition-colors shadow-lg shadow-cyan-400/30">
             여행 시작하기
-          </button>
+          </Link>
         </div>
 
         {/* 스크롤 힌트 */}
