@@ -101,6 +101,7 @@ export function fromTravelSurveyResponse(
       skippedAll: response.skippedAll,
     },
     response.completedAt ?? new Date().toISOString(),
+    response.preferredLanguage,
   );
 
   return {

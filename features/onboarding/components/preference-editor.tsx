@@ -20,6 +20,7 @@ import {
   fromTravelSurveyResponse,
   toTravelSurveyRequest,
 } from '@/features/onboarding/model/onboarding';
+import { getOnboardingErrorMessage } from '@/features/onboarding/lib/onboarding-error-message';
 import { useAuthStore } from '@/stores/auth-store';
 import type {
   AppLanguage,
@@ -44,7 +45,7 @@ export function PreferenceEditor() {
   useEffect(() => {
     if (!survey.data || initialized.current) return;
     initialized.current = true;
-    const profile = fromTravelSurveyResponse(survey.data.data);
+    const profile = fromTravelSurveyResponse(survey.data);
     setAnswers(profile);
     setLanguage(profile.language);
   }, [survey.data]);
@@ -69,6 +70,28 @@ export function PreferenceEditor() {
     return (
       <main className="flex min-h-screen items-center justify-center bg-slate-50">
         <LoaderCircle className="size-8 animate-spin text-sky-700" />
+      </main>
+    );
+  }
+
+  if (survey.isError) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6">
+        <div className="max-w-sm text-center">
+          <h1 className="text-2xl font-bold text-slate-950">
+            여행 취향을 불러오지 못했어요
+          </h1>
+          <p className="mt-3 text-sm leading-6 text-slate-500">
+            {getOnboardingErrorMessage(survey.error)}
+          </p>
+          <button
+            type="button"
+            onClick={() => router.replace('/my')}
+            className="mt-6 h-11 rounded-xl bg-sky-700 px-6 font-semibold text-white"
+          >
+            마이페이지로 돌아가기
+          </button>
+        </div>
       </main>
     );
   }
@@ -130,9 +153,10 @@ export function PreferenceEditor() {
       router.replace('/my');
     } catch (saveError) {
       setError(
-        saveError instanceof Error
-          ? saveError.message
-          : '여행 취향을 저장하지 못했습니다.',
+        getOnboardingErrorMessage(
+          saveError,
+          '여행 취향을 저장하지 못했습니다.',
+        ),
       );
     }
   };

@@ -19,6 +19,7 @@ import {
   toTravelSurveyRequest,
 } from '@/features/onboarding/model/onboarding';
 import { setPendingOnboardingCookie } from '@/features/onboarding/lib/pending-onboarding-cookie';
+import { getOnboardingErrorMessage } from '@/features/onboarding/lib/onboarding-error-message';
 import { useAuthStore } from '@/stores/auth-store';
 import { useOnboardingStore } from '@/stores/onboarding-store';
 import type {
@@ -44,13 +45,16 @@ function getSelectedFeatureCards(
     case 0:
       return [answers.travelStyle === 'spontaneous' ? 1 : 0];
     case 1:
-      return [answers.schedulePace === 'relaxed' ? 1 : 0];
+      return [answers.schedulePace === 'packed' ? 1 : 0];
     case 2:
       return [answers.companions === 'solo' ? 1 : 0];
     case 3:
       return [answers.luggage === 'light' ? 1 : 0];
     case 4:
-      return answers.purposes.length > 1 ? [0, 1] : [0];
+      return [
+        ...(answers.purposes.includes('food') ? [0] : []),
+        ...(answers.purposes.includes('culture') ? [1] : []),
+      ];
     case 5:
       return [answers.busanFamiliarity === 'familiar' ? 1 : 0];
     default:
@@ -102,7 +106,7 @@ export function OnboardingFlow() {
         const response = await saveSurvey.mutateAsync(
           toTravelSurveyRequest(localProfile),
         );
-        const serverProfile = fromTravelSurveyResponse(response.data);
+        const serverProfile = fromTravelSurveyResponse(response);
         setPendingProfile(null);
         queryClient.setQueryData(travelSurveyQueryKey, response);
         void serverProfile;
@@ -115,9 +119,10 @@ export function OnboardingFlow() {
       setIsComplete(true);
     } catch (saveError) {
       setError(
-        saveError instanceof Error
-          ? saveError.message
-          : '여행 취향을 저장하지 못했습니다.',
+        getOnboardingErrorMessage(
+          saveError,
+          '여행 취향을 저장하지 못했습니다.',
+        ),
       );
     }
   };
@@ -147,6 +152,34 @@ export function OnboardingFlow() {
     }
 
     setAnswer(question.id, value);
+  };
+
+  const handleFeatureSelect = (cardIndex: number) => {
+    unskipQuestion(featureIndex);
+
+    switch (featureIndex) {
+      case 0:
+        setAnswer('travelStyle', cardIndex === 0 ? 'planned' : 'spontaneous');
+        break;
+      case 1:
+        setAnswer('schedulePace', cardIndex === 0 ? 'relaxed' : 'packed');
+        break;
+      case 2:
+        setAnswer('companions', cardIndex === 0 ? 'group' : 'solo');
+        break;
+      case 3:
+        setAnswer('luggage', cardIndex === 0 ? 'heavy' : 'light');
+        break;
+      case 4:
+        togglePurpose(cardIndex === 0 ? 'food' : 'culture');
+        break;
+      case 5:
+        setAnswer(
+          'busanFamiliarity',
+          cardIndex === 0 ? 'novice' : 'familiar',
+        );
+        break;
+    }
   };
 
   const handleNext = () => {
@@ -251,6 +284,7 @@ export function OnboardingFlow() {
             <FeatureHighlight
               featureIndex={featureIndex}
               selectedCards={getSelectedFeatureCards(answers, featureIndex)}
+              onSelect={handleFeatureSelect}
             />
           )}
         </section>
