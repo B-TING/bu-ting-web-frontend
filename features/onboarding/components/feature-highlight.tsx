@@ -29,9 +29,11 @@ const ICONS = {
 export function FeatureHighlight({
   featureIndex,
   selectedCards,
+  onSelect,
 }: {
   featureIndex: number;
   selectedCards: number[];
+  onSelect: (cardIndex: number) => void;
 }) {
   const feature = FEATURE_STEPS[featureIndex];
 
@@ -50,12 +52,15 @@ export function FeatureHighlight({
           const selected = selectedCards.includes(index);
 
           return (
-            <article
+            <button
               key={title}
-              className={`rounded-2xl border-2 p-6 transition ${
+              type="button"
+              aria-pressed={selected}
+              onClick={() => onSelect(index)}
+              className={`w-full rounded-2xl border-2 p-6 text-left transition ${
                 selected
                   ? 'border-sky-600 bg-sky-50 shadow-sm'
-                  : 'border-slate-200 bg-white'
+                  : 'border-slate-200 bg-white hover:border-sky-200 hover:bg-sky-50/50'
               }`}
             >
               <Icon
@@ -66,7 +71,7 @@ export function FeatureHighlight({
               <p className="mt-2 text-sm leading-6 text-slate-500">
                 {description}
               </p>
-            </article>
+            </button>
           );
         })}
       </div>

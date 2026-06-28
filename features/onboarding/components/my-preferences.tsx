@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 
 import { useTravelSurvey } from '@/features/onboarding/hooks/use-travel-survey';
 import { fromTravelSurveyResponse } from '@/features/onboarding/model/onboarding';
+import { getOnboardingErrorMessage } from '@/features/onboarding/lib/onboarding-error-message';
 import { useAuthStore } from '@/stores/auth-store';
 
 const LABELS = {
@@ -52,7 +53,7 @@ export function MyPreferences() {
   }
 
   const profile = survey.data
-    ? fromTravelSurveyResponse(survey.data.data)
+    ? fromTravelSurveyResponse(survey.data)
     : null;
   const preferenceRows: Array<{
     title: string;
@@ -124,6 +125,13 @@ export function MyPreferences() {
 
           {survey.isLoading ? (
             <LoaderCircle className="mx-auto my-12 size-7 animate-spin text-sky-700" />
+          ) : survey.isError ? (
+            <p className="my-10 text-center text-sm leading-6 text-red-600">
+              {getOnboardingErrorMessage(
+                survey.error,
+                '여행 취향을 불러오지 못했습니다.',
+              )}
+            </p>
           ) : profile ? (
             <dl className="mt-6 grid gap-x-8 gap-y-5 text-sm sm:grid-cols-2">
               {preferenceRows.map(({ title, value }) => (

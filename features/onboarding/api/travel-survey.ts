@@ -1,22 +1,25 @@
 import { apiRequest } from '@/lib/api-client';
-import type { ApiResponse } from '@/types/auth';
+import { ApiError } from '@/lib/api-client';
 import type {
   TravelSurveyRequest,
   TravelSurveyResponse,
 } from '@/types/onboarding';
 
-export function getTravelSurvey() {
-  return apiRequest<ApiResponse<TravelSurveyResponse>>(
-    '/api/v1/travel-surveys',
-  );
+export async function getTravelSurvey() {
+  try {
+    return await apiRequest<TravelSurveyResponse>('/api/v1/travel-surveys');
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 400) {
+      return null;
+    }
+
+    throw error;
+  }
 }
 
 export function saveTravelSurvey(request: TravelSurveyRequest) {
-  return apiRequest<ApiResponse<TravelSurveyResponse>>(
-    '/api/v1/travel-surveys',
-    {
-      method: 'PUT',
-      body: JSON.stringify(request),
-    },
-  );
+  return apiRequest<TravelSurveyResponse>('/api/v1/travel-surveys', {
+    method: 'PUT',
+    body: JSON.stringify(request),
+  });
 }

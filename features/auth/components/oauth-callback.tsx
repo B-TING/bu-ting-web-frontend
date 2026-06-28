@@ -21,7 +21,6 @@ import {
   clearPendingOnboardingCookie,
   getPendingOnboardingCookie,
 } from '@/features/onboarding/lib/pending-onboarding-cookie';
-import { ApiError } from '@/lib/api-client';
 import { useOnboardingStore } from '@/stores/onboarding-store';
 import type { OAuthProvider } from '@/types/auth';
 
@@ -79,14 +78,11 @@ export function OAuthCallback({ provider }: { provider: OAuthProvider }) {
           useOnboardingStore.getState().pendingProfile;
 
         if (pendingProfile) {
-          try {
-            const existingSurvey = await getTravelSurvey();
-            queryClient.setQueryData(travelSurveyQueryKey, existingSurvey);
-          } catch (surveyError) {
-            if (!(surveyError instanceof ApiError) || surveyError.status !== 404) {
-              throw surveyError;
-            }
+          const existingSurvey = await getTravelSurvey();
 
+          if (existingSurvey) {
+            queryClient.setQueryData(travelSurveyQueryKey, existingSurvey);
+          } else {
             const newSurvey = await saveTravelSurvey(
               toTravelSurveyRequest(pendingProfile),
             );
@@ -101,14 +97,15 @@ export function OAuthCallback({ provider }: { provider: OAuthProvider }) {
 
         try {
           const surveyResponse = await getTravelSurvey();
-          queryClient.setQueryData(travelSurveyQueryKey, surveyResponse);
-          router.replace('/');
-        } catch (surveyError) {
-          if (surveyError instanceof ApiError && surveyError.status === 404) {
+
+          if (!surveyResponse) {
             router.replace('/onboarding');
             return;
           }
 
+          queryClient.setQueryData(travelSurveyQueryKey, surveyResponse);
+          router.replace('/');
+        } catch (surveyError) {
           throw surveyError;
         }
       } catch (loginError) {
