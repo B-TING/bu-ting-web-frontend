@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 
 import { useOAuthLogin } from '@/features/auth/hooks/use-oauth-login';
 import {
+  buildOAuthProviderToken,
   getOAuthRedirectUri,
   OAUTH_STORAGE_PREFIX,
 } from '@/features/auth/lib/oauth';
@@ -64,7 +65,11 @@ export function OAuthCallback({ provider }: { provider: OAuthProvider }) {
       try {
         const response = await login.mutateAsync({
           provider,
-          providerToken: code,
+          providerToken: buildOAuthProviderToken(
+            provider,
+            code,
+            returnedState,
+          ),
           redirectUri: getOAuthRedirectUri(provider),
           codeVerifier,
         });

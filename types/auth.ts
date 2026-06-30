@@ -1,11 +1,22 @@
 export type OAuthProvider = 'google' | 'naver' | 'kakao';
 
-export interface OAuthLoginRequest {
+export interface OAuthAuthorizationCodeLoginRequest {
   provider: OAuthProvider;
   providerToken: string;
-  redirectUri?: string;
-  codeVerifier?: string;
+  redirectUri: string;
+  codeVerifier: string;
 }
+
+export interface OAuthIdTokenLoginRequest {
+  provider: Exclude<OAuthProvider, 'naver'>;
+  providerToken: string;
+  redirectUri?: never;
+  codeVerifier?: never;
+}
+
+export type OAuthLoginRequest =
+  | OAuthAuthorizationCodeLoginRequest
+  | OAuthIdTokenLoginRequest;
 
 export interface OAuthLoginData {
   userId: string;
@@ -15,7 +26,7 @@ export interface OAuthLoginData {
   loggedIn: boolean;
   emailRequired: boolean;
   accessToken: string;
-  tokenType: string;
+  tokenType: 'Bearer';
   expiresIn: number;
 }
 

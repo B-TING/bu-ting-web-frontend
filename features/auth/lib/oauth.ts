@@ -50,6 +50,21 @@ export function getOAuthRedirectUri(provider: OAuthProvider) {
   return `${window.location.origin}/auth/callback/${provider}`;
 }
 
+export function buildOAuthProviderToken(
+  provider: OAuthProvider,
+  authorizationCode: string,
+  state: string,
+) {
+  if (provider !== 'naver') {
+    return authorizationCode;
+  }
+
+  return new URLSearchParams({
+    code: authorizationCode,
+    state,
+  }).toString();
+}
+
 export async function startOAuthLogin(provider: OAuthProvider) {
   const config = PROVIDER_CONFIG[provider];
 
