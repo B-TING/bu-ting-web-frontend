@@ -4,8 +4,8 @@ import { ArrowLeft, ChevronLeft, ChevronRight, PartyPopper } from 'lucide-react'
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
-import { FestivalCard } from '@/app/festivals/components/festival-card';
-import { FESTIVALS } from '@/app/festivals/data';
+import { FestivalCard } from '@/app/[locale]/festivals/components/festival-card';
+import { FESTIVALS } from '@/app/[locale]/festivals/data';
 
 function isFestivalInMonth(
   startDate: string,

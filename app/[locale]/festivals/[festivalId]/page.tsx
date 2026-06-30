@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 
-import { FestivalDetail } from '@/app/festivals/[festivalId]/components/festival-detail';
-import { FESTIVALS } from '@/app/festivals/data';
+import { FestivalDetail } from '@/app/[locale]/festivals/[festivalId]/components/festival-detail';
+import { FESTIVALS } from '@/app/[locale]/festivals/data';
 
 interface FestivalDetailPageProps {
   params: Promise<{ festivalId: string }>;

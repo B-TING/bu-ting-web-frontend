@@ -3,8 +3,8 @@
 import { Bookmark, ExternalLink, Star, X } from 'lucide-react';
 import { useEffect } from 'react';
 
-import { GoogleReviewCard } from '@/app/stays/components/google-review-card';
-import type { Stay } from '@/app/stays/types';
+import { GoogleReviewCard } from '@/app/[locale]/stays/components/google-review-card';
+import type { Stay } from '@/app/[locale]/stays/types';
 
 interface StayDetailSheetProps {
   stay: Stay;

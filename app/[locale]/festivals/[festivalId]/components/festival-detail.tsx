@@ -4,9 +4,9 @@ import { ArrowLeft, CalendarDays, Clock3, MapPin, MessageCircle } from 'lucide-r
 import Link from 'next/link';
 import { useState } from 'react';
 
-import { FestivalCommentSheet } from '@/app/festivals/[festivalId]/components/festival-comment-sheet';
-import { FestivalLocationMap } from '@/app/festivals/[festivalId]/components/festival-location-map';
-import type { Festival } from '@/app/festivals/types';
+import { FestivalCommentSheet } from '@/app/[locale]/festivals/[festivalId]/components/festival-comment-sheet';
+import { FestivalLocationMap } from '@/app/[locale]/festivals/[festivalId]/components/festival-location-map';
+import type { Festival } from '@/app/[locale]/festivals/types';
 
 const CATEGORY_LABEL = {
   festival: 'FESTIVAL',

@@ -1,4 +1,4 @@
-import type { Stay } from '@/app/stays/types';
+import type { Stay } from '@/app/[locale]/stays/types';
 
 const ALL_DAY = [
   '월요일: 24시간',

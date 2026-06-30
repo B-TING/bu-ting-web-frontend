@@ -2,11 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6bc8d5dc-c404-4a8e-a5ba-972ce0226029" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/features/auth/components/oauth-callback.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/[locale]/my/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/[locale]/my/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/[locale]/my/preferences/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/[locale]/my/preferences/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/stays/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/stays/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/[locale]/festivals/[festivalId]/components/festival-detail.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/[locale]/festivals/[festivalId]/components/festival-detail.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/[locale]/festivals/[festivalId]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/[locale]/festivals/[festivalId]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/[locale]/festivals/components/festival-calendar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/[locale]/festivals/components/festival-calendar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/[locale]/festivals/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/[locale]/festivals/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/[locale]/stays/components/stay-detail-sheet.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/[locale]/stays/components/stay-detail-sheet.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/[locale]/stays/data.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/[locale]/stays/data.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,27 +25,27 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "git-widget-placeholder": "feat/festivals",
-    "js.debugger.nextJs.config.created.client": "true",
-    "js.debugger.nextJs.config.created.server": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/KB/BuTing/bu-ting-web-fronted",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "npm.Next.js: server-side.executor": "Run",
-    "settings.editor.selected.configurable": "preferences.keymap",
-    "ts.external.directory.path": "C:\\KB\\BuTing\\bu-ting-web-fronted\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feat/festivals&quot;,
+    &quot;js.debugger.nextJs.config.created.client&quot;: &quot;true&quot;,
+    &quot;js.debugger.nextJs.config.created.server&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/KB/BuTing/bu-ting-web-fronted&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;npm.Next.js: server-side.executor&quot;: &quot;Run&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\KB\\BuTing\\bu-ting-web-fronted\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="npm.Next.js: server-side">
     <configuration name="Next.js: debug client-side" type="JavascriptDebugType" uri="http://localhost:3000/">
       <method v="2" />
