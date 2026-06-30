@@ -1,6 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
+import Link from "next/link";
 
 const NAV_ITEMS = [
   { label: "짐 보관소", href: "/luggage" },
@@ -45,12 +46,20 @@ export default function NavigationSidebar({ isOpen, onClose }: NavigationSidebar
             </div>
           ) : (
             <div className="flex gap-2">
-              <button className="flex-1 py-2 text-center border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+              <Link
+                href="/auth/login"
+                onClick={onClose}
+                className="flex-1 py-2 text-center border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
                 로그인
-              </button>
-              <button className="flex-1 py-2 text-center bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600">
+              </Link>
+              <Link
+                href="/language"
+                onClick={onClose}
+                className="flex-1 py-2 text-center bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600"
+              >
                 회원가입
-              </button>
+              </Link>
             </div>
           )}
         </div>
