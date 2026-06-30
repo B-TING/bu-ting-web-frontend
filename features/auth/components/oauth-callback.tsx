@@ -44,8 +44,8 @@ export function OAuthCallback({ provider }: { provider: OAuthProvider }) {
       const providerError = params.get('error_description') ?? params.get('error');
       const stateKey = `${OAUTH_STORAGE_PREFIX}:${provider}:state`;
       const verifierKey = `${OAUTH_STORAGE_PREFIX}:${provider}:verifier`;
-      const expectedState = sessionStorage.getItem(stateKey);
-      const codeVerifier = sessionStorage.getItem(verifierKey);
+      const expectedState = localStorage.getItem(stateKey);
+      const codeVerifier = localStorage.getItem(verifierKey);
 
       if (providerError) {
         setError(providerError);

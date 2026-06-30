@@ -73,24 +73,27 @@ export async function startOAuthLogin(provider: OAuthProvider) {
   }
 
   const state = createRandomValue(32);
-  const codeVerifier = createRandomValue();
-  const codeChallenge = await createCodeChallenge(codeVerifier);
   const redirectUri = getOAuthRedirectUri(provider);
 
-  sessionStorage.setItem(`${OAUTH_STORAGE_PREFIX}:${provider}:state`, state);
-  sessionStorage.setItem(
-    `${OAUTH_STORAGE_PREFIX}:${provider}:verifier`,
-    codeVerifier,
-  );
+  // 리다이렉트 시 유실 위험이 적은 localStorage로 변경
+  localStorage.setItem(`${OAUTH_STORAGE_PREFIX}:${provider}:state`, state);
 
   const params = new URLSearchParams({
     response_type: 'code',
     client_id: config.clientId,
     redirect_uri: redirectUri,
     state,
-    code_challenge: codeChallenge,
-    code_challenge_method: 'S256',
   });
+
+  // 구글인 경우에만 PKCE(S256) 스펙을 추가 적용 (카카오, 네이버는 제외)
+  if (provider === 'google') {
+    const codeVerifier = createRandomValue();
+    const codeChallenge = await createCodeChallenge(codeVerifier);
+    localStorage.setItem(`${OAUTH_STORAGE_PREFIX}:${provider}:verifier`, codeVerifier);
+
+    params.set('code_challenge', codeChallenge);
+    params.set('code_challenge_method', 'S256');
+  }
 
   if (config.scope) {
     params.set('scope', config.scope);
