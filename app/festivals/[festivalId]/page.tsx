@@ -1,14 +1,17 @@
+import { notFound } from 'next/navigation';
+
+import { FestivalDetail } from '@/app/festivals/[festivalId]/components/festival-detail';
+import { FESTIVALS } from '@/app/festivals/data';
+
 interface FestivalDetailPageProps {
   params: Promise<{ festivalId: string }>;
 }
 
 export default async function FestivalDetailPage({ params }: FestivalDetailPageProps) {
   const { festivalId } = await params;
+  const festival = FESTIVALS.find((item) => item.id === festivalId);
 
-  return (
-    <main>
-      <h1>축제 상세</h1>
-      <p>{festivalId}</p>
-    </main>
-  );
+  if (!festival) notFound();
+
+  return <FestivalDetail festival={festival} />;
 }
