@@ -1,5 +1,5 @@
-import { MyPageContent } from '@/app/my/components/my-page-content';
+import { MyPreferences } from '@/features/onboarding/components/my-preferences';
 
 export default function MyPage() {
-  return <MyPageContent />;
+  return <MyPreferences />;
 }

@@ -1,4 +1,4 @@
-import { PreferenceEditor } from '@/app/my/preferences/components/preference-editor';
+import { PreferenceEditor } from '@/features/onboarding/components/preference-editor';
 
 export default function MyPreferencesPage() {
   return <PreferenceEditor />;

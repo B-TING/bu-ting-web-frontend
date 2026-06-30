@@ -13,5 +13,6 @@
   "[typescriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "files.eol": "\n"
+  "files.eol": "\n",
+  "cSpell.words": ["kakao", "kakaos", "autoload", "latlng", "polyline"]
 }
