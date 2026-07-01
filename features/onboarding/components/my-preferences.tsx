@@ -3,10 +3,11 @@
 import { LoaderCircle, LogOut, MapPin, UserRound } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useMemo, useState } from 'react';
 
 import { useTravelSurvey } from '@/features/onboarding/hooks/use-travel-survey';
-import { fromTravelSurveyResponse } from '@/features/onboarding/model/onboarding';
 import { getOnboardingErrorMessage } from '@/features/onboarding/lib/onboarding-error-message';
+import { fromTravelSurveyResponse } from '@/features/onboarding/model/onboarding';
 import { useAuthStore } from '@/stores/auth-store';
 
 const LABELS = {
@@ -28,10 +29,47 @@ const LABELS = {
   familiar: '아는 편이다',
 } as const;
 
+const PROVIDER_LABELS = {
+  google: 'Google',
+  naver: 'Naver',
+  kakao: 'Kakao',
+} as const;
+
+function getLabelValue(value: keyof typeof LABELS | null) {
+  return value ? LABELS[value] : '응답하지 않음';
+}
+
+function maskUserId(userId?: string) {
+  if (!userId) return '-';
+  if (userId.length <= 8) return userId;
+  return `${userId.slice(0, 8)}...`;
+}
+
 export function MyPreferences() {
   const router = useRouter();
-  const { user, accessToken, clearSession } = useAuthStore();
+  const { user, accessToken, autoLoginEnabled, clearSession } = useAuthStore();
   const survey = useTravelSurvey(Boolean(accessToken));
+  const [hideUserId, setHideUserId] = useState(false);
+
+  const profile = useMemo(
+    () => (survey.data ? fromTravelSurveyResponse(survey.data) : null),
+    [survey.data],
+  );
+
+  const preferenceRows = profile
+    ? [
+        { title: '여행 스타일', value: getLabelValue(profile.travelStyle) },
+        { title: '일정 페이스', value: getLabelValue(profile.schedulePace) },
+        { title: '동행', value: getLabelValue(profile.companions) },
+        { title: '짐', value: getLabelValue(profile.luggage) },
+        { title: '부산 숙련도', value: getLabelValue(profile.busanFamiliarity) },
+      ]
+    : [];
+
+  const logout = () => {
+    clearSession();
+    router.replace('/auth/login');
+  };
 
   if (!accessToken) {
     return (
@@ -52,35 +90,15 @@ export function MyPreferences() {
     );
   }
 
-  const profile = survey.data
-    ? fromTravelSurveyResponse(survey.data)
-    : null;
-  const preferenceRows: Array<{
-    title: string;
-    value: keyof typeof LABELS | null;
-  }> = profile
-    ? [
-        { title: '여행 스타일', value: profile.travelStyle },
-        { title: '일정 페이스', value: profile.schedulePace },
-        { title: '동행', value: profile.companions },
-        { title: '짐', value: profile.luggage },
-        { title: '부산 숙련도', value: profile.busanFamiliarity },
-      ]
-    : [];
-
-  const logout = () => {
-    clearSession();
-    router.replace('/auth/login');
-  };
-
   return (
     <main className="min-h-screen bg-slate-50 pb-16">
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex h-16 max-w-3xl items-center justify-between px-5">
           <Link href="/" className="flex items-center gap-2 font-bold text-sky-950">
-            <MapPin className="size-5 text-sky-700" /> B-TING
+            <MapPin className="size-5 text-sky-700" aria-hidden="true" />
+            B-TING
           </Link>
-          <UserRound className="size-5 text-slate-500" />
+          <UserRound className="size-5 text-slate-500" aria-hidden="true" />
         </div>
       </header>
 
@@ -93,7 +111,7 @@ export function MyPreferences() {
             <div>
               <dt className="text-slate-400">닉네임</dt>
               <dd className="mt-1 font-semibold text-slate-800">
-                {user?.nickname || 'B-ting 여행자'}
+                {user?.nickname || 'B-ting 사용자'}
               </dd>
             </div>
             <div>
@@ -104,17 +122,39 @@ export function MyPreferences() {
             </div>
             <div>
               <dt className="text-slate-400">로그인 방식</dt>
-              <dd className="mt-1 font-semibold capitalize text-slate-800">
-                {user?.provider}
+              <dd className="mt-1 font-semibold text-slate-800">
+                {user?.provider ? PROVIDER_LABELS[user.provider] : '-'}
               </dd>
             </div>
             <div>
               <dt className="text-slate-400">사용자 ID</dt>
               <dd className="mt-1 break-all font-mono text-xs text-slate-600">
-                {user?.userId}
+                {hideUserId ? maskUserId(user?.userId) : user?.userId || '-'}
               </dd>
             </div>
           </dl>
+        </section>
+
+        <section className="mt-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-bold text-slate-900">로그인 세션</h2>
+          <dl className="mt-5 space-y-4 text-sm">
+            <div>
+              <dt className="text-slate-400">자동 로그인</dt>
+              <dd className="mt-1 font-semibold text-slate-800">
+                {autoLoginEnabled ? '켜짐' : '꺼짐'}
+              </dd>
+            </div>
+          </dl>
+
+          <label className="mt-4 flex items-center gap-3 text-sm text-slate-600">
+            <input
+              type="checkbox"
+              checked={hideUserId}
+              onChange={(event) => setHideUserId(event.target.checked)}
+              className="size-4 rounded border-slate-300"
+            />
+            사용자 ID 숨기기
+          </label>
         </section>
 
         <section className="mt-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -133,32 +173,19 @@ export function MyPreferences() {
               )}
             </p>
           ) : profile ? (
-            <dl className="mt-6 grid gap-x-8 gap-y-5 text-sm sm:grid-cols-2">
+            <dl className="mt-6 grid gap-y-4 text-sm">
               {preferenceRows.map(({ title, value }) => (
                 <div key={title}>
                   <dt className="text-slate-400">{title}</dt>
-                  <dd className="mt-1 font-semibold text-slate-800">
-                    {value ? LABELS[value] : '응답하지 않음'}
-                  </dd>
+                  <dd className="mt-1 font-semibold text-slate-800">{value}</dd>
                 </div>
               ))}
-              <div className="sm:col-span-2">
+              <div>
                 <dt className="text-slate-400">관심사</dt>
-                <dd className="mt-2 flex flex-wrap gap-2">
-                  {profile.purposes.length > 0 ? (
-                    profile.purposes.map((purpose) => (
-                      <span
-                        key={purpose}
-                        className="rounded-full bg-sky-50 px-3 py-1.5 font-semibold text-sky-800"
-                      >
-                        {LABELS[purpose]}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="font-semibold text-slate-800">
-                      응답하지 않음
-                    </span>
-                  )}
+                <dd className="mt-1 font-semibold text-slate-800">
+                  {profile.purposes.length > 0
+                    ? profile.purposes.map((purpose) => LABELS[purpose]).join(', ')
+                    : '응답하지 않음'}
                 </dd>
               </div>
             </dl>
@@ -179,9 +206,10 @@ export function MyPreferences() {
         <button
           type="button"
           onClick={logout}
-          className="mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white font-bold text-slate-700 hover:bg-slate-100"
+          className="mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-sky-700 font-bold text-white hover:bg-sky-800"
         >
-          <LogOut className="size-4" /> 로그아웃
+          <LogOut className="size-4" aria-hidden="true" />
+          로그아웃
         </button>
       </div>
     </main>

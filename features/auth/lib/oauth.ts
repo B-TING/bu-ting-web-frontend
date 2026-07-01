@@ -81,6 +81,30 @@ export function clearOAuthEntryMode() {
   localStorage.removeItem(OAUTH_ENTRY_MODE_KEY);
 }
 
+function applyProviderPrompt(
+  params: URLSearchParams,
+  provider: OAuthProvider,
+  mode: OAuthEntryMode,
+) {
+  if (mode !== 'login') {
+    return;
+  }
+
+  if (provider === 'google') {
+    params.set('prompt', 'select_account');
+    return;
+  }
+
+  if (provider === 'kakao') {
+    params.set('prompt', 'login');
+    return;
+  }
+
+  if (provider === 'naver') {
+    params.set('auth_type', 'reprompt');
+  }
+}
+
 export async function startOAuthLogin(
   provider: OAuthProvider,
   mode: OAuthEntryMode = 'login',
@@ -118,6 +142,8 @@ export async function startOAuthLogin(
   if (config.scope) {
     params.set('scope', config.scope);
   }
+
+  applyProviderPrompt(params, provider, mode);
 
   window.location.assign(`${config.authorizationUrl}?${params.toString()}`);
 }

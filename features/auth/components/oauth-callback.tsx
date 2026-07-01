@@ -89,11 +89,18 @@ export function OAuthCallback({ provider }: { provider: OAuthProvider }) {
               },
         );
 
-        setSession(response.data);
         const entryMode = getOAuthEntryMode();
         localStorage.removeItem(stateKey);
         localStorage.removeItem(verifierKey);
         clearOAuthEntryMode();
+
+        if (entryMode === 'signup') {
+          useAuthStore.getState().clearSession();
+          router.replace('/onboarding');
+          return;
+        }
+
+        setSession(response.data);
 
         const pendingProfile =
           getPendingOnboardingCookie() ??
@@ -114,11 +121,6 @@ export function OAuthCallback({ provider }: { provider: OAuthProvider }) {
           clearPendingOnboardingCookie();
           useOnboardingStore.getState().setPendingProfile(null);
           router.replace('/');
-          return;
-        }
-
-        if (entryMode === 'signup') {
-          router.replace('/onboarding');
           return;
         }
 
