@@ -32,7 +32,11 @@ const PROVIDERS: Array<{
   },
 ];
 
-export function OAuthLoginPanel() {
+export function OAuthLoginPanel({
+  mode = 'login',
+}: {
+  mode?: 'login' | 'signup';
+}) {
   const [pendingProvider, setPendingProvider] = useState<OAuthProvider | null>(
     null,
   );
@@ -43,7 +47,7 @@ export function OAuthLoginPanel() {
     setPendingProvider(provider);
 
     try {
-      await startOAuthLogin(provider);
+      await startOAuthLogin(provider, mode);
     } catch (loginError) {
       setError(
         loginError instanceof Error

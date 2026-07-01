@@ -8,6 +8,8 @@ import { useRouter } from 'next/navigation';
 import { useOAuthLogin } from '@/features/auth/hooks/use-oauth-login';
 import {
   buildOAuthProviderToken,
+  clearOAuthEntryMode,
+  getOAuthEntryMode,
   getOAuthRedirectUri,
   OAUTH_STORAGE_PREFIX,
 } from '@/features/auth/lib/oauth';
@@ -88,8 +90,10 @@ export function OAuthCallback({ provider }: { provider: OAuthProvider }) {
         );
 
         setSession(response.data);
+        const entryMode = getOAuthEntryMode();
         localStorage.removeItem(stateKey);
         localStorage.removeItem(verifierKey);
+        clearOAuthEntryMode();
 
         const pendingProfile =
           getPendingOnboardingCookie() ??
@@ -110,6 +114,11 @@ export function OAuthCallback({ provider }: { provider: OAuthProvider }) {
           clearPendingOnboardingCookie();
           useOnboardingStore.getState().setPendingProfile(null);
           router.replace('/');
+          return;
+        }
+
+        if (entryMode === 'signup') {
+          router.replace('/onboarding');
           return;
         }
 

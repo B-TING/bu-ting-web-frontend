@@ -76,7 +76,7 @@ export default function NavigationSidebar({
                 로그인
               </Link>
               <Link
-                href="/auth/login"
+                href="/auth/sign-up"
                 onClick={onClose}
                 className="flex-1 rounded-lg bg-blue-500 py-2 text-center text-sm font-medium text-white hover:bg-blue-600"
               >

@@ -1,5 +1,7 @@
 import type { OAuthProvider } from '@/types/auth';
 
+export type OAuthEntryMode = 'login' | 'signup';
+
 const PROVIDER_CONFIG: Record<
   OAuthProvider,
   { authorizationUrl: string; clientId?: string; scope?: string }
@@ -20,6 +22,7 @@ const PROVIDER_CONFIG: Record<
 };
 
 export const OAUTH_STORAGE_PREFIX = 'buting-oauth';
+export const OAUTH_ENTRY_MODE_KEY = `${OAUTH_STORAGE_PREFIX}:entry-mode`;
 
 function toBase64Url(bytes: Uint8Array) {
   const binary = Array.from(bytes, (byte) => String.fromCharCode(byte)).join('');
@@ -65,7 +68,23 @@ export function buildOAuthProviderToken(
   }).toString();
 }
 
-export async function startOAuthLogin(provider: OAuthProvider) {
+export function setOAuthEntryMode(mode: OAuthEntryMode) {
+  localStorage.setItem(OAUTH_ENTRY_MODE_KEY, mode);
+}
+
+export function getOAuthEntryMode(): OAuthEntryMode {
+  const mode = localStorage.getItem(OAUTH_ENTRY_MODE_KEY);
+  return mode === 'signup' ? 'signup' : 'login';
+}
+
+export function clearOAuthEntryMode() {
+  localStorage.removeItem(OAUTH_ENTRY_MODE_KEY);
+}
+
+export async function startOAuthLogin(
+  provider: OAuthProvider,
+  mode: OAuthEntryMode = 'login',
+) {
   const config = PROVIDER_CONFIG[provider];
 
   if (!config.clientId) {
@@ -74,6 +93,7 @@ export async function startOAuthLogin(provider: OAuthProvider) {
 
   const state = createRandomValue(32);
   const redirectUri = getOAuthRedirectUri(provider);
+  setOAuthEntryMode(mode);
 
   // 리다이렉트 시 유실 위험이 적은 localStorage로 변경
   localStorage.setItem(`${OAUTH_STORAGE_PREFIX}:${provider}:state`, state);
