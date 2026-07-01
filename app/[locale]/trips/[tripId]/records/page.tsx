@@ -4,6 +4,7 @@ import { use, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { TripTabHeader } from '@/features/trip/components/TripTabHeader';
+import { RebootFab } from '../../components/RebootFab';
 import type { PlaceRecord } from '@/types/record';
 
 // ─── Mock data ────────────────────────────────────────────────────────────────
@@ -324,6 +325,8 @@ export default function TripRecordsPage({ params }: TripRecordsPageProps) {
           onSave={saveReview}
         />
       )}
+
+      <RebootFab tripId={tripId} />
     </div>
   );
 }

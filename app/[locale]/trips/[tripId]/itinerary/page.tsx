@@ -2,11 +2,14 @@
 
 import { use, useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { TripTabHeader } from '@/features/trip/components/TripTabHeader';
 import { TransitIcon } from '../../components/TransitIcon';
-import type { PlaceItem, DayItinerary } from '@/types/itinerary';
+import { RebootFab } from '../../components/RebootFab';
+import { RebootModal } from '../../components/RebootModal';
+import type { PlaceItem, DayItinerary, ItineraryItem } from '@/types/itinerary';
 
 declare global {
   interface Window { kakao: any; }
@@ -74,7 +77,10 @@ interface Props {
 
 export default function TripItineraryPage({ params }: Props) {
   const { tripId } = use(params);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
+  const [days, setDays] = useState<DayItinerary[]>(MOCK_TRIP.days);
   const [activeDay, setActiveDay] = useState(1);
   const [selectedPlace, setSelectedPlace] = useState<PlaceItem | null>(null);
   const [visitedPlaces, setVisitedPlaces] = useState<Set<string>>(new Set());
@@ -83,14 +89,27 @@ export default function TripItineraryPage({ params }: Props) {
   const [reviewText, setReviewText] = useState('');
   const [reviewRating, setReviewRating] = useState(0);
   const [mapReady, setMapReady] = useState(false);
+  const [rebootOpen, setRebootOpen] = useState(() => searchParams.get('reboot') === '1');
 
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const overlaysRef = useRef<any[]>([]);
   const polylineRef = useRef<any>(null);
 
-  const currentDay = MOCK_TRIP.days.find((d) => d.day === activeDay)!;
+  const currentDay = days.find((d) => d.day === activeDay)!;
   const places = currentDay.items.filter((i): i is PlaceItem => i.type === 'place');
+
+  // ── FAB에서 ?reboot=1로 넘어온 경우, 초기 렌더에서 모달을 연 뒤 쿼리스트링만 정리 ──
+  useEffect(() => {
+    if (searchParams.get('reboot') === '1') {
+      router.replace(`/trips/${tripId}/itinerary`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  const applyRebootItems = (nextItems: ItineraryItem[]) => {
+    setDays((prev) => prev.map((d) => (d.day === activeDay ? { ...d, items: nextItems } : d)));
+  };
 
   // ── Kakao Maps SDK 로드 (useEffect 방식 — next/script onLoad 타이밍 문제 회피) ──
   useEffect(() => {
@@ -236,7 +255,7 @@ export default function TripItineraryPage({ params }: Props) {
           <aside className="flex w-[380px] shrink-0 flex-col border-r border-gray-100 bg-white">
             {/* Day tabs */}
             <div className="flex shrink-0 gap-2 border-b border-gray-100 px-4 py-3">
-              {MOCK_TRIP.days.map((d) => (
+              {days.map((d) => (
                 <button key={d.day} type="button"
                   onClick={() => { setActiveDay(d.day); setSelectedPlace(null); }}
                   className={cn('rounded-full px-3 py-1.5 text-sm font-medium transition-all',
@@ -478,6 +497,15 @@ export default function TripItineraryPage({ params }: Props) {
           </div>
         </div>
       )}
+
+      {/* ── 리부트 ── */}
+      <RebootFab tripId={tripId} onOpen={() => setRebootOpen(true)} />
+      <RebootModal
+        open={rebootOpen}
+        onClose={() => setRebootOpen(false)}
+        day={currentDay}
+        onApply={applyRebootItems}
+      />
     </>
   );
 }

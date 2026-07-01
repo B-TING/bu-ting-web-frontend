@@ -4,6 +4,7 @@ import { use, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { TripTabHeader } from '@/features/trip/components/TripTabHeader';
+import { RebootFab } from '../../components/RebootFab';
 import type { ExpenseCategory, Expense } from '@/types/budget';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -511,6 +512,8 @@ export default function TripBudgetPage({ params }: TripBudgetPageProps) {
           onSave={addExpense}
         />
       )}
+
+      <RebootFab tripId={tripId} />
     </div>
   );
 }
