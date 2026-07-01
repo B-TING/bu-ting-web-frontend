@@ -8,6 +8,8 @@ import { useRouter } from 'next/navigation';
 import { useOAuthLogin } from '@/features/auth/hooks/use-oauth-login';
 import {
   buildOAuthProviderToken,
+  clearOAuthEntryMode,
+  getOAuthEntryMode,
   getOAuthRedirectUri,
   OAUTH_STORAGE_PREFIX,
 } from '@/features/auth/lib/oauth';
@@ -44,8 +46,9 @@ export function OAuthCallback({ provider }: { provider: OAuthProvider }) {
       const providerError = params.get('error_description') ?? params.get('error');
       const stateKey = `${OAUTH_STORAGE_PREFIX}:${provider}:state`;
       const verifierKey = `${OAUTH_STORAGE_PREFIX}:${provider}:verifier`;
-      const expectedState = sessionStorage.getItem(stateKey);
-      const codeVerifier = sessionStorage.getItem(verifierKey);
+      const expectedState = localStorage.getItem(stateKey);
+      const codeVerifier = localStorage.getItem(verifierKey);
+      const requiresPkce = provider === 'google';
 
       if (providerError) {
         setError(providerError);
@@ -57,26 +60,47 @@ export function OAuthCallback({ provider }: { provider: OAuthProvider }) {
         return;
       }
 
-      if (!codeVerifier) {
+      if (requiresPkce && !codeVerifier) {
         setError('로그인 세션이 만료되었습니다. 다시 시도해 주세요.');
         return;
       }
 
       try {
-        const response = await login.mutateAsync({
-          provider,
-          providerToken: buildOAuthProviderToken(
-            provider,
-            code,
-            returnedState,
-          ),
-          redirectUri: getOAuthRedirectUri(provider),
-          codeVerifier,
-        });
+        const response = await login.mutateAsync(
+          provider === 'google'
+            ? {
+                provider,
+                providerToken: buildOAuthProviderToken(
+                  provider,
+                  code,
+                  returnedState,
+                ),
+                redirectUri: getOAuthRedirectUri(provider),
+                codeVerifier: codeVerifier!,
+              }
+            : {
+                provider,
+                providerToken: buildOAuthProviderToken(
+                  provider,
+                  code,
+                  returnedState,
+                ),
+                redirectUri: getOAuthRedirectUri(provider),
+              },
+        );
+
+        const entryMode = getOAuthEntryMode();
+        localStorage.removeItem(stateKey);
+        localStorage.removeItem(verifierKey);
+        clearOAuthEntryMode();
+
+        if (entryMode === 'signup') {
+          useAuthStore.getState().clearSession();
+          router.replace('/onboarding');
+          return;
+        }
 
         setSession(response.data);
-        sessionStorage.removeItem(stateKey);
-        sessionStorage.removeItem(verifierKey);
 
         const pendingProfile =
           getPendingOnboardingCookie() ??

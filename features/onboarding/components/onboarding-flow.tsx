@@ -154,34 +154,6 @@ export function OnboardingFlow() {
     setAnswer(question.id, value);
   };
 
-  const handleFeatureSelect = (cardIndex: number) => {
-    unskipQuestion(featureIndex);
-
-    switch (featureIndex) {
-      case 0:
-        setAnswer('travelStyle', cardIndex === 0 ? 'planned' : 'spontaneous');
-        break;
-      case 1:
-        setAnswer('schedulePace', cardIndex === 0 ? 'relaxed' : 'packed');
-        break;
-      case 2:
-        setAnswer('companions', cardIndex === 0 ? 'group' : 'solo');
-        break;
-      case 3:
-        setAnswer('luggage', cardIndex === 0 ? 'heavy' : 'light');
-        break;
-      case 4:
-        togglePurpose(cardIndex === 0 ? 'food' : 'culture');
-        break;
-      case 5:
-        setAnswer(
-          'busanFamiliarity',
-          cardIndex === 0 ? 'novice' : 'familiar',
-        );
-        break;
-    }
-  };
-
   const handleNext = () => {
     if (currentStep === TOTAL_STEPS - 1) {
       void completeOnboarding(answers);
@@ -284,7 +256,6 @@ export function OnboardingFlow() {
             <FeatureHighlight
               featureIndex={featureIndex}
               selectedCards={getSelectedFeatureCards(answers, featureIndex)}
-              onSelect={handleFeatureSelect}
             />
           )}
         </section>

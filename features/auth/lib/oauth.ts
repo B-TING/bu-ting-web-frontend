@@ -1,5 +1,7 @@
 import type { OAuthProvider } from '@/types/auth';
 
+export type OAuthEntryMode = 'login' | 'signup';
+
 const PROVIDER_CONFIG: Record<
   OAuthProvider,
   { authorizationUrl: string; clientId?: string; scope?: string }
@@ -20,6 +22,7 @@ const PROVIDER_CONFIG: Record<
 };
 
 export const OAUTH_STORAGE_PREFIX = 'buting-oauth';
+export const OAUTH_ENTRY_MODE_KEY = `${OAUTH_STORAGE_PREFIX}:entry-mode`;
 
 function toBase64Url(bytes: Uint8Array) {
   const binary = Array.from(bytes, (byte) => String.fromCharCode(byte)).join('');
@@ -65,7 +68,47 @@ export function buildOAuthProviderToken(
   }).toString();
 }
 
-export async function startOAuthLogin(provider: OAuthProvider) {
+export function setOAuthEntryMode(mode: OAuthEntryMode) {
+  localStorage.setItem(OAUTH_ENTRY_MODE_KEY, mode);
+}
+
+export function getOAuthEntryMode(): OAuthEntryMode {
+  const mode = localStorage.getItem(OAUTH_ENTRY_MODE_KEY);
+  return mode === 'signup' ? 'signup' : 'login';
+}
+
+export function clearOAuthEntryMode() {
+  localStorage.removeItem(OAUTH_ENTRY_MODE_KEY);
+}
+
+function applyProviderPrompt(
+  params: URLSearchParams,
+  provider: OAuthProvider,
+  mode: OAuthEntryMode,
+) {
+  if (mode !== 'login') {
+    return;
+  }
+
+  if (provider === 'google') {
+    params.set('prompt', 'select_account');
+    return;
+  }
+
+  if (provider === 'kakao') {
+    params.set('prompt', 'login');
+    return;
+  }
+
+  if (provider === 'naver') {
+    params.set('auth_type', 'reprompt');
+  }
+}
+
+export async function startOAuthLogin(
+  provider: OAuthProvider,
+  mode: OAuthEntryMode = 'login',
+) {
   const config = PROVIDER_CONFIG[provider];
 
   if (!config.clientId) {
@@ -73,28 +116,34 @@ export async function startOAuthLogin(provider: OAuthProvider) {
   }
 
   const state = createRandomValue(32);
-  const codeVerifier = createRandomValue();
-  const codeChallenge = await createCodeChallenge(codeVerifier);
   const redirectUri = getOAuthRedirectUri(provider);
+  setOAuthEntryMode(mode);
 
-  sessionStorage.setItem(`${OAUTH_STORAGE_PREFIX}:${provider}:state`, state);
-  sessionStorage.setItem(
-    `${OAUTH_STORAGE_PREFIX}:${provider}:verifier`,
-    codeVerifier,
-  );
+  // 리다이렉트 시 유실 위험이 적은 localStorage로 변경
+  localStorage.setItem(`${OAUTH_STORAGE_PREFIX}:${provider}:state`, state);
 
   const params = new URLSearchParams({
     response_type: 'code',
     client_id: config.clientId,
     redirect_uri: redirectUri,
     state,
-    code_challenge: codeChallenge,
-    code_challenge_method: 'S256',
   });
+
+  // 구글인 경우에만 PKCE(S256) 스펙을 추가 적용 (카카오, 네이버는 제외)
+  if (provider === 'google') {
+    const codeVerifier = createRandomValue();
+    const codeChallenge = await createCodeChallenge(codeVerifier);
+    localStorage.setItem(`${OAUTH_STORAGE_PREFIX}:${provider}:verifier`, codeVerifier);
+
+    params.set('code_challenge', codeChallenge);
+    params.set('code_challenge_method', 'S256');
+  }
 
   if (config.scope) {
     params.set('scope', config.scope);
   }
+
+  applyProviderPrompt(params, provider, mode);
 
   window.location.assign(`${config.authorizationUrl}?${params.toString()}`);
 }
