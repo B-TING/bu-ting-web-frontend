@@ -11,7 +11,7 @@ export default function LoginPage() {
           <span className="flex size-10 items-center justify-center rounded-xl bg-white/10">
             <MapPin className="size-5 text-sky-300" aria-hidden="true" />
           </span>
-          B-ting
+          B-TING
         </Link>
 
         <div className="max-w-lg">
@@ -19,16 +19,14 @@ export default function LoginPage() {
             BUSAN TRAVEL PLANNER
           </p>
           <h1 className="text-5xl font-bold leading-tight tracking-tight">
-            부산에서의 하루를
-            <br />더 특별하게.
+            다시 만나서 반가워요!
           </h1>
           <p className="mt-6 text-lg leading-8 text-sky-100/80">
-            취향에 맞는 장소를 발견하고, 나만의 부산 여행 일정을
-            만들어보세요.
+            간편 로그인으로 부산 여행 계획을 이어가 보세요.
           </p>
         </div>
 
-        <p className="text-sm text-sky-100/60">© 2026 B-ting</p>
+        <p className="text-sm text-sky-100/60">© 2026 B-TING</p>
       </section>
 
       <section className="flex flex-1 items-center justify-center px-5 py-12 sm:px-8">
@@ -40,23 +38,22 @@ export default function LoginPage() {
             <span className="flex size-9 items-center justify-center rounded-xl bg-sky-100">
               <MapPin className="size-5 text-sky-700" aria-hidden="true" />
             </span>
-            B-ting
+            B-TING
           </Link>
 
           <div className="mb-8 text-center lg:text-left">
             <h2 className="text-3xl font-bold tracking-tight text-slate-950">
-              다시 만나서 반가워요!
+              로그인
             </h2>
             <p className="mt-3 text-slate-500">
-              간편 로그인으로 부산 여행 계획을 이어가세요.
+              일정 동기화와 Route Feed를 위해 로그인하세요.
             </p>
           </div>
 
           <OAuthLoginPanel />
 
           <p className="mt-8 text-center text-xs leading-5 text-slate-400">
-            로그인하면 B-ting의 서비스 이용약관과 개인정보 처리방침에
-            동의하게 됩니다.
+            로그인하면 B-TING 서비스 이용약관과 개인정보 처리방침에 동의하게 됩니다.
           </p>
         </div>
       </section>
