@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState } from 'react';
 import { LoaderCircle } from 'lucide-react';
 
@@ -11,28 +12,42 @@ import {
 } from '@/stores/auth-store';
 import type { OAuthProvider } from '@/types/auth';
 
+function ProviderLogo({ provider }: { provider: OAuthProvider }) {
+  const src =
+    provider === 'google'
+      ? '/social-google.svg'
+      : provider === 'naver'
+        ? '/social-naver.svg'
+        : '/social-kakao.svg';
+
+  const alt =
+    provider === 'google'
+      ? 'Google'
+      : provider === 'naver'
+        ? 'Naver'
+        : 'Kakao';
+
+  return <Image src={src} alt={alt} width={20} height={20} className="size-5" />;
+}
+
 const PROVIDERS: Array<{
   provider: OAuthProvider;
   label: string;
-  symbol: string;
   className: string;
 }> = [
   {
     provider: 'google',
     label: 'Google 계정으로 로그인',
-    symbol: 'G',
     className: 'border-slate-200 bg-white text-slate-800 hover:bg-slate-50',
   },
   {
     provider: 'naver',
     label: '네이버로 로그인',
-    symbol: 'N',
     className: 'border-[#03c75a] bg-[#03c75a] text-white hover:bg-[#02b351]',
   },
   {
     provider: 'kakao',
     label: '카카오 로그인',
-    symbol: 'K',
     className: 'border-[#fee500] bg-[#fee500] text-[#191919] hover:bg-[#f5dc00]',
   },
 ];
@@ -74,7 +89,7 @@ export function OAuthLoginPanel({
 
   return (
     <div className="space-y-3">
-      {PROVIDERS.map(({ provider, label, symbol, className }) => {
+      {PROVIDERS.map(({ provider, label, className }) => {
         const isPending = pendingProvider === provider;
 
         return (
@@ -85,8 +100,8 @@ export function OAuthLoginPanel({
             disabled={pendingProvider !== null}
             className={`relative flex h-12 w-full items-center justify-center rounded-xl border px-4 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
           >
-            <span className="absolute left-4 flex size-6 items-center justify-center rounded-full bg-white/90 text-xs font-bold text-slate-800">
-              {symbol}
+            <span className="absolute left-4 flex size-6 items-center justify-center">
+              <ProviderLogo provider={provider} />
             </span>
             {isPending ? (
               <LoaderCircle className="size-5 animate-spin" aria-label="이동 중" />
