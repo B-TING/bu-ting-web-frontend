@@ -38,7 +38,12 @@ const PROVIDERS: Array<{
   },
 ];
 
-export function OAuthLoginPanel() {
+export function OAuthLoginPanel({
+  mode,
+}: {
+  mode?: 'login' | 'signup';
+}) {
+  void mode;
   const autoLoginEnabled = useAuthStore((state) => state.autoLoginEnabled);
   const setAutoLoginEnabled = useAuthStore((state) => state.setAutoLoginEnabled);
   const [nextAutoLoginEnabled, setNextAutoLoginEnabled] =
