@@ -231,6 +231,26 @@
       "save": "保存",
       "cancel": "取消"
     },
+    "reboot": {
+      "fabLabel": "行程重启",
+      "modalTitle": "行程重启",
+      "selectSlotPrompt": "想更换哪个地点？",
+      "replaceAction": "更换此地点",
+      "insertAction": "在此之后添加",
+      "referenceLabel": "基于{name}的推荐候选",
+      "estimatedNote": "这是预计时间，非实际路线",
+      "candidateEmpty": "暂无推荐候选",
+      "minutesShort": "分钟",
+      "confirmReplaceTitle": "确认更换：{from} → {to}",
+      "confirmInsertTitle": "确认添加：{from} 之后 → {to}",
+      "cancel": "取消",
+      "apply": "确认应用",
+      "transit": {
+        "walk": "步行",
+        "public": "公共交通",
+        "car": "自驾"
+      }
+    },
     "pages": {
       "newTripMeta": "制定旅行计划 | 부팅",
       "newAiTitle": "AI行程生成",
