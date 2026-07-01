@@ -46,6 +46,7 @@ export function OAuthCallback({ provider }: { provider: OAuthProvider }) {
       const verifierKey = `${OAUTH_STORAGE_PREFIX}:${provider}:verifier`;
       const expectedState = localStorage.getItem(stateKey);
       const codeVerifier = localStorage.getItem(verifierKey);
+      const requiresPkce = provider === 'google';
 
       if (providerError) {
         setError(providerError);
@@ -57,26 +58,38 @@ export function OAuthCallback({ provider }: { provider: OAuthProvider }) {
         return;
       }
 
-      if (!codeVerifier) {
+      if (requiresPkce && !codeVerifier) {
         setError('로그인 세션이 만료되었습니다. 다시 시도해 주세요.');
         return;
       }
 
       try {
-        const response = await login.mutateAsync({
-          provider,
-          providerToken: buildOAuthProviderToken(
-            provider,
-            code,
-            returnedState,
-          ),
-          redirectUri: getOAuthRedirectUri(provider),
-          codeVerifier,
-        });
+        const response = await login.mutateAsync(
+          provider === 'google'
+            ? {
+                provider,
+                providerToken: buildOAuthProviderToken(
+                  provider,
+                  code,
+                  returnedState,
+                ),
+                redirectUri: getOAuthRedirectUri(provider),
+                codeVerifier: codeVerifier!,
+              }
+            : {
+                provider,
+                providerToken: buildOAuthProviderToken(
+                  provider,
+                  code,
+                  returnedState,
+                ),
+                redirectUri: getOAuthRedirectUri(provider),
+              },
+        );
 
         setSession(response.data);
-        sessionStorage.removeItem(stateKey);
-        sessionStorage.removeItem(verifierKey);
+        localStorage.removeItem(stateKey);
+        localStorage.removeItem(verifierKey);
 
         const pendingProfile =
           getPendingOnboardingCookie() ??
