@@ -1,5 +1,5 @@
 import { getTranslations } from 'next-intl/server';
-import TripWizard from '@/features/trip/components/TripWizard';
+import TripWizard from './components/TripWizard';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
