@@ -9,7 +9,7 @@ import { fromTravelSurveyResponse } from '@/features/onboarding/model/onboarding
 import { getOnboardingErrorMessage } from '@/features/onboarding/lib/onboarding-error-message';
 import { useAuthStore } from '@/stores/auth-store';
 
-const LABELS = {
+const VALUE_LABELS = {
   planned: '계획적인 편',
   spontaneous: '즉흥적인 편',
   relaxed: '여유롭게',
@@ -28,9 +28,23 @@ const LABELS = {
   familiar: '아는 편이다',
 } as const;
 
+function maskUserId(userId: string | undefined) {
+  if (!userId) return '정보 없음';
+  if (userId.length <= 8) return '••••••••';
+
+  return `${userId.slice(0, 8)}••••••••`;
+}
+
 export function MyPreferences() {
   const router = useRouter();
-  const { user, accessToken, clearSession } = useAuthStore();
+  const {
+    user,
+    accessToken,
+    autoLoginEnabled,
+    hideUserId,
+    setHideUserId,
+    clearSession,
+  } = useAuthStore();
   const survey = useTravelSurvey(Boolean(accessToken));
 
   if (!accessToken) {
@@ -52,13 +66,9 @@ export function MyPreferences() {
     );
   }
 
-  const profile = survey.data
-    ? fromTravelSurveyResponse(survey.data)
-    : null;
-  const preferenceRows: Array<{
-    title: string;
-    value: keyof typeof LABELS | null;
-  }> = profile
+  const profile = survey.data ? fromTravelSurveyResponse(survey.data) : null;
+
+  const preferenceRows = profile
     ? [
         { title: '여행 스타일', value: profile.travelStyle },
         { title: '일정 페이스', value: profile.schedulePace },
@@ -93,7 +103,7 @@ export function MyPreferences() {
             <div>
               <dt className="text-slate-400">닉네임</dt>
               <dd className="mt-1 font-semibold text-slate-800">
-                {user?.nickname || 'B-ting 여행자'}
+                {user?.nickname || 'B-TING 사용자'}
               </dd>
             </div>
             <div>
@@ -105,16 +115,38 @@ export function MyPreferences() {
             <div>
               <dt className="text-slate-400">로그인 방식</dt>
               <dd className="mt-1 font-semibold capitalize text-slate-800">
-                {user?.provider}
+                {user?.provider || '알 수 없음'}
               </dd>
             </div>
             <div>
               <dt className="text-slate-400">사용자 ID</dt>
               <dd className="mt-1 break-all font-mono text-xs text-slate-600">
-                {user?.userId}
+                {hideUserId ? maskUserId(user?.userId) : user?.userId || '정보 없음'}
               </dd>
             </div>
           </dl>
+        </section>
+
+        <section className="mt-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-bold text-slate-900">로그인 세션</h2>
+          <div className="mt-5 space-y-4 text-sm">
+            <div>
+              <p className="text-slate-400">자동 로그인</p>
+              <p className="mt-1 font-semibold text-slate-800">
+                {autoLoginEnabled ? '켜짐' : '꺼짐'}
+              </p>
+            </div>
+
+            <label className="flex items-center gap-3 text-slate-600">
+              <input
+                type="checkbox"
+                checked={hideUserId}
+                onChange={(event) => setHideUserId(event.target.checked)}
+                className="size-4 rounded border-slate-300 text-sky-700 focus:ring-sky-600"
+              />
+              사용자 ID 숨기기
+            </label>
+          </div>
         </section>
 
         <section className="mt-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -133,47 +165,57 @@ export function MyPreferences() {
               )}
             </p>
           ) : profile ? (
-            <dl className="mt-6 grid gap-x-8 gap-y-5 text-sm sm:grid-cols-2">
-              {preferenceRows.map(({ title, value }) => (
-                <div key={title}>
-                  <dt className="text-slate-400">{title}</dt>
-                  <dd className="mt-1 font-semibold text-slate-800">
-                    {value ? LABELS[value] : '응답하지 않음'}
+            <div className="mt-6 space-y-6">
+              <dl className="grid gap-x-8 gap-y-5 text-sm sm:grid-cols-2">
+                {preferenceRows.map(({ title, value }) => (
+                  <div key={title}>
+                    <dt className="text-slate-400">{title}</dt>
+                    <dd className="mt-1 font-semibold text-slate-800">
+                      {value ? VALUE_LABELS[value] : '응답하지 않음'}
+                    </dd>
+                  </div>
+                ))}
+                <div className="sm:col-span-2">
+                  <dt className="text-slate-400">관심사</dt>
+                  <dd className="mt-2 flex flex-wrap gap-2">
+                    {profile.purposes.length > 0 ? (
+                      profile.purposes.map((purpose) => (
+                        <span
+                          key={purpose}
+                          className="rounded-full bg-sky-50 px-3 py-1.5 font-semibold text-sky-800"
+                        >
+                          {VALUE_LABELS[purpose]}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="font-semibold text-slate-800">
+                        응답하지 않음
+                      </span>
+                    )}
                   </dd>
                 </div>
-              ))}
-              <div className="sm:col-span-2">
-                <dt className="text-slate-400">관심사</dt>
-                <dd className="mt-2 flex flex-wrap gap-2">
-                  {profile.purposes.length > 0 ? (
-                    profile.purposes.map((purpose) => (
-                      <span
-                        key={purpose}
-                        className="rounded-full bg-sky-50 px-3 py-1.5 font-semibold text-sky-800"
-                      >
-                        {LABELS[purpose]}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="font-semibold text-slate-800">
-                      응답하지 않음
-                    </span>
-                  )}
-                </dd>
-              </div>
-            </dl>
-          ) : (
-            <p className="my-10 text-center text-sm text-slate-500">
-              저장된 여행 취향이 없습니다.
-            </p>
-          )}
+              </dl>
 
-          <Link
-            href="/my/preferences"
-            className="mt-7 flex h-12 w-full items-center justify-center rounded-xl bg-sky-700 font-bold text-white hover:bg-sky-800"
-          >
-            취향 다시 설정
-          </Link>
+              <Link
+                href="/my/preferences"
+                className="flex h-12 w-full items-center justify-center rounded-xl bg-sky-700 font-bold text-white hover:bg-sky-800"
+              >
+                취향 다시 설정
+              </Link>
+            </div>
+          ) : (
+            <div className="my-10 text-center">
+              <p className="text-sm text-slate-500">
+                저장된 여행 취향 정보가 없어요.
+              </p>
+              <Link
+                href="/onboarding"
+                className="mt-5 inline-flex h-11 items-center rounded-xl bg-sky-700 px-5 font-semibold text-white"
+              >
+                온보딩 하러 가기
+              </Link>
+            </div>
+          )}
         </section>
 
         <button
