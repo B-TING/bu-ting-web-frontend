@@ -23,6 +23,7 @@ export default function NavigationSidebar({
   onClose,
 }: NavigationSidebarProps) {
   const router = useRouter();
+  const user = useAuthStore((state) => state.user);
   const accessToken = useAuthStore((state) => state.accessToken);
   const clearSession = useAuthStore((state) => state.clearSession);
   const isLoggedIn = Boolean(accessToken);
@@ -30,42 +31,60 @@ export default function NavigationSidebar({
   const handleLogout = () => {
     clearSession();
     onClose();
-    router.replace('/auth/login');
+    router.push('/auth/login');
   };
 
   return (
     <>
       <div
         className={`fixed inset-0 z-40 bg-black/40 transition-opacity duration-300 ${
-          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          isOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
         }`}
         onClick={onClose}
       />
 
       <div
-        className={`fixed top-0 right-0 z-50 h-full w-72 bg-white shadow-xl transition-transform duration-300 ease-in-out ${
+        className={`fixed right-0 top-0 z-50 h-full w-72 bg-white shadow-xl transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         <div className="flex items-center justify-end border-b p-4">
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-lg p-1 hover:bg-gray-100"
-          >
+          <button onClick={onClose} className="rounded-lg p-1 hover:bg-gray-100">
             <X className="h-5 w-5 text-gray-600" />
           </button>
         </div>
 
         <div className="border-b p-4">
           {isLoggedIn ? (
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="w-full rounded-lg bg-blue-500 py-2 text-center text-sm font-medium text-white hover:bg-blue-600"
-            >
-              로그아웃
-            </button>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-100 text-sm font-bold text-sky-700">
+                  {user?.nickname?.slice(0, 1).toUpperCase() || 'B'}
+                </div>
+                <div>
+                  <p className="font-medium text-gray-800">
+                    {user?.nickname || 'B-TING 사용자'}
+                  </p>
+                  <p className="text-sm text-gray-500">{user?.email || '로그인됨'}</p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Link
+                  href="/my"
+                  onClick={onClose}
+                  className="flex-1 rounded-lg border border-gray-300 py-2 text-center text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  마이페이지
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex-1 rounded-lg bg-slate-900 py-2 text-sm font-medium text-white hover:bg-slate-800"
+                >
+                  로그아웃
+                </button>
+              </div>
+            </div>
           ) : (
             <div className="flex gap-2">
               <Link
