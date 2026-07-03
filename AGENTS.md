@@ -63,6 +63,12 @@ co-location 방식**을 사용합니다. GoF 디자인 패턴(팩토리, 옵저�
 않으면 `/auth/login`, `/auth/sign-up`처럼 같은 도메인 안에서만 공유하는
 컴포넌트까지 루트로 잘못 올리게 됩니다.
 
+### 파일 이름 규칙
+
+- 컴포넌트 파일은 컴포넌트명과 일치하도록 PascalCase를 사용합니다. 예: `OAuthLoginPanel.tsx`, `OnboardingHeader.tsx`
+- 컴포넌트가 아닌 파일(훅, 유틸, store, 타입, 상수, API 함수 등)은 kebab-case를 사용합니다. 예: `api-client.ts`, `use-trip-query.ts`
+- 기존에 kebab-case로 작성된 컴포넌트 파일은 레거시로 보고, 수정 시점에 PascalCase로 점진적으로 정리합니다.
+
 ### ⚠️ features 폴더 (레거시, 사용 금지)
 
 - 루트의 `features/` 폴더는 프로젝트 초기에 실수로 생성된 레거시입니다.
