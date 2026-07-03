@@ -1,57 +1,57 @@
 import { CalendarDays, MapPin } from 'lucide-react';
 import Link from 'next/link';
 
-import type { Festival } from '@/app/festivals/types';
-
-const CATEGORY_LABEL = {
-  festival: 'FESTIVAL',
-  exhibition: 'EXHIBITION',
-} as const;
-
-const STATUS_LABEL = {
-  ongoing: null,
-  'coming-soon': 'COMING SOON',
-  ended: '종료된 행사입니다',
-} as const;
+import type { FestivalSummary } from '@/types/festival';
 
 function formatDateRange(startDate: string, endDate: string) {
-  const start = new Date(`${startDate}T00:00:00`);
-  const end = new Date(`${endDate}T00:00:00`);
-  return `${start.getMonth() + 1}.${start.getDate()} - ${end.getMonth() + 1}.${end.getDate()}`;
+  const start = `${startDate.slice(0, 4)}-${startDate.slice(4, 6)}-${startDate.slice(6, 8)}`;
+  const end = `${endDate.slice(0, 4)}-${endDate.slice(4, 6)}-${endDate.slice(6, 8)}`;
+  const startValue = new Date(`${start}T00:00:00`);
+  const endValue = new Date(`${end}T00:00:00`);
+
+  return `${startValue.getMonth() + 1}.${startValue.getDate()} - ${endValue.getMonth() + 1}.${endValue.getDate()}`;
 }
 
-export function FestivalCard({ festival }: { festival: Festival }) {
-  const statusLabel = STATUS_LABEL[festival.status];
+export function FestivalCard({ festival }: { festival: FestivalSummary }) {
+  const posterImage = festival.imageUrl || festival.thumbnailUrl;
 
   return (
     <Link
-      href={`/festivals/${festival.id}`}
-      className="group relative block min-h-64 overflow-hidden rounded-3xl bg-slate-800 shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
-      style={{
-        backgroundImage: `linear-gradient(to top, rgba(15,23,42,.94), rgba(15,23,42,.08) 72%), url(${festival.imageUrl})`,
-        backgroundPosition: 'center',
-        backgroundSize: 'cover',
-      }}
+      href={`/festivals/${festival.contentId}`}
+      className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
     >
-      <div className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-6">
-        <div className="flex flex-wrap gap-2">
-          <span className={`rounded-md px-2.5 py-1 text-[11px] font-black ${festival.category === 'festival' ? 'bg-sky-600' : 'bg-orange-500'}`}>
-            {CATEGORY_LABEL[festival.category]}
-          </span>
-          {statusLabel ? (
-            <span className={`rounded-md px-2.5 py-1 text-[11px] font-black ${festival.status === 'coming-soon' ? 'bg-violet-600' : 'bg-slate-500'}`}>
-              {statusLabel}
-            </span>
-          ) : null}
-        </div>
-        <h2 className="mt-3 text-xl font-black sm:text-2xl">{festival.title}</h2>
-        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs font-semibold text-slate-200">
-          <span className="flex items-center gap-1"><MapPin className="size-3.5" />{festival.venue}</span>
-          <span className="flex items-center gap-1"><CalendarDays className="size-3.5" />{formatDateRange(festival.startDate, festival.endDate)}</span>
-        </div>
-        <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-200">
-          {festival.description}
+      <div className="aspect-[4/3] overflow-hidden bg-slate-100">
+        {posterImage ? (
+          <img
+            src={posterImage}
+            alt={festival.title}
+            className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center text-sm font-semibold text-slate-400">
+            포스터 이미지 없음
+          </div>
+        )}
+      </div>
+
+      <div className="p-5">
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-700">
+          Festival
         </p>
+        <h2 className="mt-2 line-clamp-2 text-xl font-black text-slate-950">
+          {festival.title}
+        </h2>
+
+        <dl className="mt-4 space-y-2 text-sm text-slate-600">
+          <div className="flex items-start gap-2">
+            <MapPin className="mt-0.5 size-4 shrink-0 text-slate-400" />
+            <dd className="line-clamp-2">{festival.address}</dd>
+          </div>
+          <div className="flex items-center gap-2">
+            <CalendarDays className="size-4 shrink-0 text-slate-400" />
+            <dd>{formatDateRange(festival.eventStartDate, festival.eventEndDate)}</dd>
+          </div>
+        </dl>
       </div>
     </Link>
   );

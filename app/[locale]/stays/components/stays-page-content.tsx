@@ -4,11 +4,11 @@ import { ArrowLeft, Building2 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 
-import { StayCardList } from '@/app/stays/components/stay-card-list';
-import { StayDetailSheet } from '@/app/stays/components/stay-detail-sheet';
-import { StayMap } from '@/app/stays/components/stay-map';
-import { STAYS } from '@/app/stays/data';
-import type { Stay } from '@/app/stays/types';
+import { StayCardList } from '@/app/[locale]/stays/components/stay-card-list';
+import { StayDetailSheet } from '@/app/[locale]/stays/components/stay-detail-sheet';
+import { StayMap } from '@/app/[locale]/stays/components/stay-map';
+import { STAYS } from '@/app/[locale]/stays/data';
+import type { Stay } from '@/app/[locale]/stays/types';
 
 const BOOKMARK_STORAGE_KEY = 'buting-stay-bookmarks';
 

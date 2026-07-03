@@ -1,6 +1,6 @@
 import { Bookmark, Star } from 'lucide-react';
 
-import type { Stay } from '@/app/stays/types';
+import type { Stay } from '@/app/[locale]/stays/types';
 
 interface StayCardListProps {
   stays: Stay[];

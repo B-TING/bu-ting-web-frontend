@@ -3,7 +3,7 @@
 import { Check, ClipboardList, X } from 'lucide-react';
 import Link from 'next/link';
 
-import type { TravelStory } from '@/app/stories/types';
+import type { TravelStory } from '@/app/[locale]/stories/types';
 
 interface ImportTripSheetProps {
   story: TravelStory;

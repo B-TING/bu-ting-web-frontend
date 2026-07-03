@@ -1,7 +1,7 @@
 import { Heart, MapPin, MessageCircle, Star } from 'lucide-react';
 import Link from 'next/link';
 
-import type { TravelStory } from '@/app/stories/types';
+import type { TravelStory } from '@/app/[locale]/stories/types';
 
 interface StoryCardProps {
   story: TravelStory;

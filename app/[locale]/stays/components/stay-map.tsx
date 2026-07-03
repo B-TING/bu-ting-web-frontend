@@ -1,6 +1,6 @@
 import { MapPin } from 'lucide-react';
 
-import type { Stay } from '@/app/stays/types';
+import type { Stay } from '@/app/[locale]/stays/types';
 
 interface StayMapProps {
   stays: Stay[];

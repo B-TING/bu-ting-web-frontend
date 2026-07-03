@@ -1,79 +1,93 @@
-'use client';
-
-import { ArrowLeft, ChevronLeft, ChevronRight, PartyPopper } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
 
 import { FestivalCard } from '@/app/[locale]/festivals/components/festival-card';
-import { FESTIVALS } from '@/app/[locale]/festivals/data';
+import type { FestivalSummary } from '@/types/festival';
 
-function isFestivalInMonth(
-  startDate: string,
-  endDate: string,
-  year: number,
-  month: number,
-) {
-  const start = new Date(`${startDate}T00:00:00`);
-  const end = new Date(`${endDate}T23:59:59`);
-  const monthStart = new Date(year, month, 1);
-  const monthEnd = new Date(year, month + 1, 0, 23, 59, 59);
-  return start <= monthEnd && end >= monthStart;
+interface FestivalCalendarProps {
+  festivals: FestivalSummary[];
+  monthLabel: string;
+  previousMonth: string;
+  nextMonth: string;
 }
 
-export function FestivalCalendar() {
-  const [visibleMonth, setVisibleMonth] = useState(() => new Date(2026, 5, 1));
-  const year = visibleMonth.getFullYear();
-  const month = visibleMonth.getMonth();
-  const festivals = useMemo(
-    () => FESTIVALS.filter((festival) => isFestivalInMonth(festival.startDate, festival.endDate, year, month)),
-    [month, year],
-  );
-
-  const moveMonth = (amount: number) => {
-    setVisibleMonth(new Date(year, month + amount, 1));
-  };
-
+export function FestivalCalendar({
+  festivals,
+  monthLabel,
+  previousMonth,
+  nextMonth,
+}: FestivalCalendarProps) {
   return (
     <main className="min-h-screen bg-slate-50">
-      <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-3xl items-center gap-3 px-4 sm:px-6">
-          <Link href="/" aria-label="홈으로 돌아가기" className="flex size-10 items-center justify-center rounded-full text-sky-700 hover:bg-sky-50">
-            <ArrowLeft className="size-6" />
+      <header className="border-b border-slate-200 bg-white">
+        <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-5 sm:px-6">
+          <Link
+            href="/"
+            aria-label={'\uBA54\uC778\uC73C\uB85C \uB3CC\uC544\uAC00\uAE30'}
+            className="flex size-10 items-center justify-center rounded-full text-sky-700 transition hover:bg-sky-50"
+          >
+            <ArrowLeft className="size-5" />
           </Link>
-          <PartyPopper className="size-5 text-sky-700" />
-          <h1 className="text-xl font-black text-slate-950">축제 캘린더</h1>
+          <div>
+            <p className="text-sm font-semibold text-sky-700">Festival Directory</p>
+            <h1 className="text-2xl font-black text-slate-950 sm:text-3xl">
+              {'\uBD80\uC0B0 \uCD95\uC81C \uC815\uBCF4'}
+            </h1>
+          </div>
         </div>
       </header>
 
-      <section className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-5 py-5">
-          <button type="button" aria-label="이전 달" onClick={() => moveMonth(-1)} className="flex size-10 items-center justify-center rounded-full text-sky-700 hover:bg-sky-50">
-            <ChevronLeft className="size-5" />
-          </button>
-          <div className="text-center">
-            <h2 className="text-lg font-black text-slate-950">{year}년 {month + 1}월 축제</h2>
-            <p className="mt-1 text-xs text-slate-500">{festivals.length}개 축제</p>
+      <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+        <div className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <div>
+            <p className="text-sm font-semibold text-slate-500">
+              {'\uC6D4\uBCC4 \uCD95\uC81C \uB458\uB7EC\uBCF4\uAE30'}
+            </p>
+            <h2 className="mt-1 text-2xl font-black text-slate-950">{monthLabel}</h2>
+            <p className="mt-2 text-sm text-slate-500">
+              {'\uCD1D '}
+              <span className="font-bold text-slate-900">{festivals.length}</span>
+              {'\uAC1C\uC758 \uCD95\uC81C\uAC00 \uC870\uD68C\uB418\uC5C8\uC2B5\uB2C8\uB2E4.'}
+            </p>
           </div>
-          <button type="button" aria-label="다음 달" onClick={() => moveMonth(1)} className="flex size-10 items-center justify-center rounded-full text-sky-700 hover:bg-sky-50">
-            <ChevronRight className="size-5" />
-          </button>
-        </div>
-      </section>
 
-      <div className="mx-auto max-w-3xl px-4 py-5 sm:px-6 sm:py-8">
+          <div className="flex items-center gap-3">
+            <Link
+              href={`/festivals?month=${previousMonth}`}
+              className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-sky-200 hover:bg-sky-50 hover:text-sky-700"
+            >
+              <ChevronLeft className="size-4" />
+              {'\uC774\uC804 \uB2EC'}
+            </Link>
+            <Link
+              href={`/festivals?month=${nextMonth}`}
+              className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-sky-200 hover:bg-sky-50 hover:text-sky-700"
+            >
+              {'\uB2E4\uC74C \uB2EC'}
+              <ChevronRight className="size-4" />
+            </Link>
+          </div>
+        </div>
+
         {festivals.length > 0 ? (
-          <div className="grid gap-4 sm:grid-cols-2">
-            {festivals.map((festival) => <FestivalCard key={festival.id} festival={festival} />)}
+          <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {festivals.map((festival) => (
+              <FestivalCard key={festival.contentId} festival={festival} />
+            ))}
           </div>
         ) : (
-          <div className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-20 text-center">
-            <PartyPopper className="mx-auto size-10 text-slate-300" />
-            <p className="mt-4 font-bold text-slate-700">등록된 축제가 없어요.</p>
-            <p className="mt-2 text-sm text-slate-400">다른 달의 축제를 확인해 보세요.</p>
+          <div className="mt-6 rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-20 text-center">
+            <p className="text-lg font-black text-slate-800">
+              {'\uC774\uBC88 \uB2EC\uC5D0 \uC870\uD68C\uB41C \uCD95\uC81C\uAC00 \uC5C6\uC5B4\uC694.'}
+            </p>
+            <p className="mt-3 text-sm leading-6 text-slate-500">
+              {
+                '\uC774\uC804 \uB2EC\uC774\uB098 \uB2E4\uC74C \uB2EC\uB85C \uC774\uB3D9\uD574\uC11C \uB2E4\uB978 \uD589\uC0AC \uC815\uBCF4\uB97C \uD655\uC778\uD574 \uBCF4\uC138\uC694.'
+              }
+            </p>
           </div>
         )}
-        <p className="mt-8 text-center text-xs text-slate-400">축제 API 연동 전 목업 데이터입니다.</p>
-      </div>
+      </section>
     </main>
   );
 }

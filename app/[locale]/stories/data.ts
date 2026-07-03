@@ -1,4 +1,4 @@
-import type { TravelStory } from '@/app/stories/types';
+import type { TravelStory } from '@/app/[locale]/stories/types';
 
 export const STORIES: TravelStory[] = [
   {

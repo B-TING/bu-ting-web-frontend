@@ -2,7 +2,7 @@
 
 import { ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
 
-import type { StoryMedia } from '@/app/stories/types';
+import type { StoryMedia } from '@/app/[locale]/stories/types';
 
 interface StoryMediaCarouselProps {
   media: StoryMedia[];

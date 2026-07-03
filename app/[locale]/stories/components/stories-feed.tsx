@@ -1,8 +1,8 @@
 import { ArrowLeft, BookOpenText, PenLine } from 'lucide-react';
 import Link from 'next/link';
 
-import { StoryCard } from '@/app/stories/components/story-card';
-import { STORIES } from '@/app/stories/data';
+import { StoryCard } from '@/app/[locale]/stories/components/story-card';
+import { STORIES } from '@/app/[locale]/stories/data';
 
 export function StoriesFeed() {
   return (

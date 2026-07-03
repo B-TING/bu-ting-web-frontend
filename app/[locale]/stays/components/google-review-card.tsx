@@ -1,6 +1,6 @@
 import { Star } from 'lucide-react';
 
-import type { StayReview } from '@/app/stays/types';
+import type { StayReview } from '@/app/[locale]/stays/types';
 
 export function GoogleReviewCard({ review }: { review: StayReview }) {
   return (

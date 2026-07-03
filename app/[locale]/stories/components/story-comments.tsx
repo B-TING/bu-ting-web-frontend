@@ -3,7 +3,7 @@
 import { Send } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 
-import type { StoryComment } from '@/app/stories/types';
+import type { StoryComment } from '@/app/[locale]/stories/types';
 
 interface StoryCommentsProps {
   initialComments: StoryComment[];
