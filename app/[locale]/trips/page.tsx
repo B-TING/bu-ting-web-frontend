@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
-import { TripTabHeader } from '@/components/TripTabHeader';
+import { TripTabHeader } from './components/TripTabHeader';
 import type { Companion, DayHighlight, NextSchedule } from '@/types/trip';
 
 const MOCK_TRIP: {
