@@ -4,7 +4,7 @@ import { use, useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
-import { TripTabHeader } from '@/features/trip/components/TripTabHeader';
+import { TripTabHeader } from '../../components/TripTabHeader';
 import type { PlaceItem, TransitItem, DayItinerary } from '@/types/itinerary';
 
 declare global {

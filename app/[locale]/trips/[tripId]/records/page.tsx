@@ -3,7 +3,7 @@
 import { use, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
-import { TripTabHeader } from '@/features/trip/components/TripTabHeader';
+import { TripTabHeader } from '../../components/TripTabHeader';
 import type { PlaceRecord } from '@/types/record';
 
 // ─── Mock data ────────────────────────────────────────────────────────────────

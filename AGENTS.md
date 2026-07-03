@@ -172,6 +172,7 @@ types/                # 공통 타입
   때만 루트로 올린다. (실제로 `oauth-login-panel`을 이 확인 없이 루트
   `components/auth/`로 잘못 올렸다가 다시 `app/[locale]/auth/components/`로
   되돌린 적이 있다.)
+
 - `api`: 백엔드를 호출하는 클라이언트 fetch 함수만. Next.js의 `app/api`(Route Handler)와는 무관하므로 혼동하지 않도록 루트에 별도로 둔다.
 - `constants`: React 훅/상태가 아닌 순수 상수·설정 데이터
 - `hooks`: 여러 컴포넌트/페이지에서 재사용하는 커스텀 훅
@@ -182,6 +183,7 @@ types/                # 공통 타입
 - `features`: 레거시. 신규 코드 추가 금지. 현재 `features/trip`만 남아있고 별도 작업으로 이관 예정.
 
 공통 판단 기준:
+
 - **컴포넌트**: 한 페이지 전용이면 그 페이지 `components/`, 같은 최상위 라우트의
   하위 페이지끼리 공유하면 그 라우트 자신의 `components/`, 서로 다른 최상위
   라우트가 공유하거나 라우트 무관 전역이면 루트 `components/`.
