@@ -4,6 +4,7 @@ import { use, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { TripTabHeader } from '../../components/TripTabHeader';
+import { RebootFab } from '../../components/RebootFab';
 import type { ExpenseCategory, Expense } from '@/types/budget';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -19,7 +20,14 @@ interface ExpenseFormData {
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const CATEGORIES: ExpenseCategory[] = ['food', 'shopping', 'accommodation', 'transport', 'experience', 'other'];
+const CATEGORIES: ExpenseCategory[] = [
+  'food',
+  'shopping',
+  'accommodation',
+  'transport',
+  'experience',
+  'other',
+];
 
 const CATEGORY_COLORS: Record<ExpenseCategory, string> = {
   food: 'bg-orange-100 text-orange-700',
@@ -103,7 +111,12 @@ function ExpenseRow({
         onClick={onToggle}
       >
         <td className="py-3 px-4">
-          <span className={cn('px-2 py-0.5 rounded-full text-xs font-medium', CATEGORY_COLORS[expense.category])}>
+          <span
+            className={cn(
+              'px-2 py-0.5 rounded-full text-xs font-medium',
+              CATEGORY_COLORS[expense.category]
+            )}
+          >
             {t(`category.${expense.category}`)}
           </span>
         </td>
@@ -121,7 +134,10 @@ function ExpenseRow({
       </tr>
       {expanded && (
         <tr className="bg-blue-50/40">
-          <td colSpan={4} className="px-6 py-3">
+          <td
+            colSpan={4}
+            className="px-6 py-3"
+          >
             <div className="grid grid-cols-3 gap-4 text-sm">
               <div>
                 <p className="text-gray-400 text-xs mb-0.5">{t('labelItem')}</p>
@@ -134,7 +150,7 @@ function ExpenseRow({
               <div>
                 <p className="text-gray-400 text-xs mb-0.5">{t('labelSplit')}</p>
                 <p className="text-gray-800 font-medium">
-                  {expense.splitWith.map((v) => v === ALL_SENTINEL ? t('all') : v).join(', ')}
+                  {expense.splitWith.map((v) => (v === ALL_SENTINEL ? t('all') : v)).join(', ')}
                 </p>
               </div>
               {expense.memo && (
@@ -165,7 +181,10 @@ function AddExpenseModal({
 
   const toggleSplit = (name: string) => {
     if (name === ALL_SENTINEL) {
-      setForm((f) => ({ ...f, splitWith: f.splitWith.includes(ALL_SENTINEL) ? [] : [ALL_SENTINEL] }));
+      setForm((f) => ({
+        ...f,
+        splitWith: f.splitWith.includes(ALL_SENTINEL) ? [] : [ALL_SENTINEL],
+      }));
       return;
     }
     setForm((f) => {
@@ -208,7 +227,9 @@ function AddExpenseModal({
         <div className="px-6 py-5 space-y-5 max-h-[70vh] overflow-y-auto">
           {/* 지불자 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">{t('labelPayer')}</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {t('labelPayer')}
+            </label>
             <div className="flex flex-wrap gap-2">
               {MOCK_COMPANIONS.map((name) => (
                 <ChipButton
@@ -223,7 +244,9 @@ function AddExpenseModal({
 
           {/* 나누기 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">{t('labelSplit')}</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {t('labelSplit')}
+            </label>
             <div className="flex flex-wrap gap-2">
               {([ALL_SENTINEL, ...MOCK_COMPANIONS] as string[]).map((name) => (
                 <ChipButton
@@ -267,7 +290,9 @@ function AddExpenseModal({
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">{t('colAmount')}</label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">₩</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">
+                ₩
+              </span>
               <input
                 type="number"
                 placeholder="0"
@@ -328,10 +353,13 @@ function AddExpenseModal({
 function ExpenseCategorySummary({ expenses }: { expenses: Expense[] }) {
   const t = useTranslations('trip.budget');
 
-  const totals = CATEGORIES.reduce<Record<ExpenseCategory, number>>((acc, cat) => {
-    acc[cat] = expenses.filter((e) => e.category === cat).reduce((s, e) => s + e.amount, 0);
-    return acc;
-  }, {} as Record<ExpenseCategory, number>);
+  const totals = CATEGORIES.reduce<Record<ExpenseCategory, number>>(
+    (acc, cat) => {
+      acc[cat] = expenses.filter((e) => e.category === cat).reduce((s, e) => s + e.amount, 0);
+      return acc;
+    },
+    {} as Record<ExpenseCategory, number>
+  );
 
   const total = expenses.reduce((s, e) => s + e.amount, 0);
 
@@ -341,8 +369,13 @@ function ExpenseCategorySummary({ expenses }: { expenses: Expense[] }) {
         const amount = totals[cat];
         const pct = total > 0 ? Math.round((amount / total) * 100) : 0;
         return (
-          <div key={cat} className="bg-white rounded-xl border border-gray-100 p-3 shadow-sm">
-            <span className={cn('text-xs font-medium px-2 py-0.5 rounded-full', CATEGORY_COLORS[cat])}>
+          <div
+            key={cat}
+            className="bg-white rounded-xl border border-gray-100 p-3 shadow-sm"
+          >
+            <span
+              className={cn('text-xs font-medium px-2 py-0.5 rounded-full', CATEGORY_COLORS[cat])}
+            >
               {t(`category.${cat}`)}
             </span>
             <p className="mt-2 text-sm font-bold text-gray-900">₩{amount.toLocaleString()}</p>
@@ -377,10 +410,7 @@ export default function TripBudgetPage({ params }: TripBudgetPageProps) {
   const total = expenses.reduce((s, e) => s + e.amount, 0);
 
   const addExpense = (expense: Omit<Expense, 'id'>) => {
-    setExpenses((prev) => [
-      ...prev,
-      { ...expense, id: `e-${Date.now()}` },
-    ]);
+    setExpenses((prev) => [...prev, { ...expense, id: `e-${Date.now()}` }]);
   };
 
   const toggleExpand = (id: string) => {
@@ -402,11 +432,15 @@ export default function TripBudgetPage({ params }: TripBudgetPageProps) {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm text-gray-500 mb-1">{t('totalExpense')}</p>
-              <p className={cn('text-3xl font-bold', total > 0 ? 'text-blue-600' : 'text-gray-400')}>
+              <p
+                className={cn('text-3xl font-bold', total > 0 ? 'text-blue-600' : 'text-gray-400')}
+              >
                 ₩{total.toLocaleString()}
               </p>
               {expenses.length > 0 && (
-                <p className="text-xs text-gray-400 mt-1">{t('expenseCount', { count: expenses.length })}</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  {t('expenseCount', { count: expenses.length })}
+                </p>
               )}
             </div>
             <button
@@ -422,7 +456,9 @@ export default function TripBudgetPage({ params }: TripBudgetPageProps) {
             <div className="mt-4">
               <div className="flex h-2 rounded-full overflow-hidden gap-0.5">
                 {CATEGORIES.map((cat) => {
-                  const amt = expenses.filter((e) => e.category === cat).reduce((s, e) => s + e.amount, 0);
+                  const amt = expenses
+                    .filter((e) => e.category === cat)
+                    .reduce((s, e) => s + e.amount, 0);
                   const pct = (amt / total) * 100;
                   if (pct === 0) return null;
                   return (
@@ -436,10 +472,11 @@ export default function TripBudgetPage({ params }: TripBudgetPageProps) {
                 })}
               </div>
               <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2">
-                {CATEGORIES.filter((cat) =>
-                  expenses.some((e) => e.category === cat)
-                ).map((cat) => (
-                  <span key={cat} className="flex items-center gap-1 text-xs text-gray-500">
+                {CATEGORIES.filter((cat) => expenses.some((e) => e.category === cat)).map((cat) => (
+                  <span
+                    key={cat}
+                    className="flex items-center gap-1 text-xs text-gray-500"
+                  >
                     <span className={cn('w-2 h-2 rounded-full', BAR_COLORS[cat])} />
                     {t(`category.${cat}`)}
                   </span>
@@ -482,9 +519,15 @@ export default function TripBudgetPage({ params }: TripBudgetPageProps) {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-100">
-                    <th className="py-3 px-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide">{t('colCategory')}</th>
-                    <th className="py-3 px-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wide">{t('colAmount')}</th>
-                    <th className="py-3 px-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wide">{t('colDate')}</th>
+                    <th className="py-3 px-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                      {t('colCategory')}
+                    </th>
+                    <th className="py-3 px-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                      {t('colAmount')}
+                    </th>
+                    <th className="py-3 px-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                      {t('colDate')}
+                    </th>
                     <th className="py-3 px-4 w-10" />
                   </tr>
                 </thead>
@@ -511,6 +554,8 @@ export default function TripBudgetPage({ params }: TripBudgetPageProps) {
           onSave={addExpense}
         />
       )}
+
+      <RebootFab tripId={tripId} />
     </div>
   );
 }
