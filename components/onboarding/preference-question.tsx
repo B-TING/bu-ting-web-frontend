@@ -2,7 +2,7 @@
 
 import { Check } from 'lucide-react';
 
-import type { OnboardingQuestion } from '@/features/onboarding/constants/onboarding';
+import type { OnboardingQuestion } from '@/constants/onboarding';
 
 interface PreferenceQuestionProps {
   question: OnboardingQuestion;

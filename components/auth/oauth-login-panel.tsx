@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { LoaderCircle } from 'lucide-react';
 
-import { startOAuthLogin } from '@/features/auth/lib/oauth';
+import { startOAuthLogin } from '@/lib/oauth';
 import { useAuthStore } from '@/stores/auth-store';
 import type { OAuthProvider } from '@/types/auth';
 

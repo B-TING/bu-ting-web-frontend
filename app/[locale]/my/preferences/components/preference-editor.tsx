@@ -6,21 +6,21 @@ import { useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import { OnboardingHeader } from '@/features/onboarding/components/onboarding-header';
-import { PreferenceQuestion } from '@/features/onboarding/components/preference-question';
-import { ONBOARDING_QUESTIONS } from '@/features/onboarding/constants/onboarding';
+import { OnboardingHeader } from '@/components/onboarding/onboarding-header';
+import { PreferenceQuestion } from '@/components/onboarding/preference-question';
+import { ONBOARDING_QUESTIONS } from '@/constants/onboarding';
 import {
   travelSurveyQueryKey,
   useSaveTravelSurvey,
   useTravelSurvey,
-} from '@/features/onboarding/hooks/use-travel-survey';
+} from '@/hooks/use-travel-survey';
 import {
   createOnboardingProfile,
   EMPTY_ONBOARDING_ANSWERS,
   fromTravelSurveyResponse,
   toTravelSurveyRequest,
-} from '@/features/onboarding/model/onboarding';
-import { getOnboardingErrorMessage } from '@/features/onboarding/lib/onboarding-error-message';
+} from '@/lib/onboarding';
+import { getOnboardingErrorMessage } from '@/lib/onboarding-error-message';
 import { useAuthStore } from '@/stores/auth-store';
 import type {
   AppLanguage,
