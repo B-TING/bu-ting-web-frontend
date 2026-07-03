@@ -6,7 +6,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { TripTabHeader } from '../../components/TripTabHeader';
-import type { PlaceItem, TransitItem, DayItinerary } from '@/types/itinerary';
+import type { PlaceItem, TransitItem, DayItinerary, ItineraryItem } from '@/types/itinerary';
+import { RebootFab } from '../../components/RebootFab';
+import { RebootModal } from '../../components/RebootModal';
+import { TransitIcon } from '../../components/TransitIcon';
 
 declare global {
   interface Window {
