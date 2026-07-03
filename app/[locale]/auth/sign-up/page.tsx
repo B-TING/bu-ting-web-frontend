@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { MapPin } from 'lucide-react';
 
-import { OAuthLoginPanel } from '@/features/auth/components/oauth-login-panel';
+import { OAuthLoginPanel } from '@/components/auth/oauth-login-panel';
 
 export default function SignUpPage() {
   return (
