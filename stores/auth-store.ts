@@ -16,6 +16,8 @@ interface StoredSession {
 interface AuthState extends StoredSession {
   autoLoginEnabled: boolean;
   hideUserId: boolean;
+  hasHydrated: boolean;
+  hydrate: () => void;
   setSession: (session: OAuthLoginData) => void;
   clearSession: () => void;
   setAutoLoginEnabled: (enabled: boolean) => void;
@@ -112,12 +114,21 @@ function getSavedHideUserIdPreference() {
   return readBooleanPreference(HIDE_USER_ID_PREFERENCE_KEY, false);
 }
 
-const initialSession = readStoredSession();
-
 export const useAuthStore = create<AuthState>((set, get) => ({
-  ...initialSession,
-  autoLoginEnabled: getSavedAutoLoginPreference(),
-  hideUserId: getSavedHideUserIdPreference(),
+  ...EMPTY_SESSION,
+  autoLoginEnabled: false,
+  hideUserId: false,
+  hasHydrated: false,
+  hydrate: () => {
+    if (get().hasHydrated) return;
+
+    set({
+      ...readStoredSession(),
+      autoLoginEnabled: getSavedAutoLoginPreference(),
+      hideUserId: getSavedHideUserIdPreference(),
+      hasHydrated: true,
+    });
+  },
   setSession: ({ accessToken, tokenType, expiresIn, ...user }) => {
     const autoLoginEnabled = getSavedAutoLoginPreference();
     const nextSession: StoredSession = {
