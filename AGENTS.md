@@ -50,12 +50,27 @@ AI 에이전트(Claude Code, Codex 등)는 작업 전 이 문서를 먼저 확�
 co-location 방식**을 사용합니다. GoF 디자인 패턴(팩토리, 옵저버 등) 자체를 금지하는
 것이 아니라, `features/` 같은 도메인 계층 분리 아키텍처를 쓰지 않는다는 의미입니다.
 
-- **페이지 전용 컴포넌트** → 해당 페이지 폴더 안 `components/`에 모읍니다.
-  - 예: `app/[locale]/trips/components/`, `app/[locale]/stays/components/`
-  - 그 페이지에서만 쓰는 컴포넌트는 밖으로 빼지 않습니다.
-- **공통 컴포넌트**(여러 페이지에서 재사용) → 루트 `components/`에 만듭니다.
-  - shadcn/ui 기반 컴포넌트도 여기 규칙을 따릅니다.
-- 페이지 전용으로 시작했더라도 두 곳 이상에서 쓰이게 되면 `components/`로 승격합니다.
+컴포넌트를 어디에 둘지는 아래 순서로 판단합니다 (자세한 예시는 아래
+"폴더 구조 원칙" 섹션 참고).
+
+1. 한 페이지에서만 쓰는가? → 그 페이지 폴더 안 `components/`
+2. 2곳 이상에서 쓰이지만, 그 페이지들이 전부 같은 최상위 라우트(도메인) 밑에
+   있는가? → 그 라우트 자신의 `components/` (예: `app/[locale]/trips/components/`)
+3. 서로 다른 최상위 라우트가 공유하거나 특정 라우트에 종속되지 않는 전역
+   컴포넌트인가? → 루트 `components/` (shadcn/ui 포함)
+
+⚠️ "2곳 이상에서 쓰인다 = 무조건 루트로 승격"이 아닙니다. 2번과 3번을 구분하지
+않으면 `/auth/login`, `/auth/sign-up`처럼 같은 도메인 안에서만 공유하는
+컴포넌트까지 루트로 잘못 올리게 됩니다.
+
+### ⚠️ features 폴더 (레거시, 사용 금지)
+
+- 루트의 `features/` 폴더는 프로젝트 초기에 실수로 생성된 레거시입니다.
+- **앞으로 작성되는 코드는 `features/`에 넣지 않습니다.**
+- 새 도메인 폴더(`features/xxx`)를 만들거나, 도메인별로 UI/hook/util을 분리하는
+  구조를 새로 도입하지 않습니다.
+- 기존 `features/` 코드를 옮기는 것은 Level 2 이상 작업으로 취급하고,
+  사용자 승인 후에만 진행합니다.
 
 ## 상태 관리 원칙
 
@@ -90,31 +105,33 @@ app/
   [locale]/
     ai-helpdesk/
     auth/
+      components/            # /auth 하위 페이지끼리 공유 (login, sign-up)
       callback/[provider]/
-        components/   # 이 페이지 전용 컴포넌트
+        components/          # 이 페이지 전용 컴포넌트
+      login/
+      sign-up/
     festivals/
     language/
-      components/     # 이 페이지 전용 컴포넌트
+      components/            # 이 페이지 전용 컴포넌트
     luggage/
     my/
-      components/     # 이 페이지 전용 컴포넌트
+      components/            # 이 페이지 전용 컴포넌트
       preferences/
-        components/   # 이 페이지 전용 컴포넌트
+        components/          # 이 페이지 전용 컴포넌트
     onboarding/
-      components/     # 이 페이지 전용 컴포넌트
+      components/            # 이 페이지 전용 컴포넌트
     sos/
     stays/
     stories/
     trips/
-      components/     # 이 페이지 전용 컴포넌트
+      components/            # /trips 하위 페이지끼리 공유 (trips, [tripId]/*, new/*)
     layout.tsx
-    page.tsx
+    page.tsx                 # 홈 페이지
   layout.tsx
   globals.css
 api/                  # 백엔드 REST API를 호출하는 fetch 함수
-components/           # 여러 페이지에서 재사용하는 공통 컴포넌트
-  auth/               # 2개 이상 페이지가 공유하는 auth 도메인 컴포넌트
-  onboarding/         # 2개 이상 페이지가 공유하는 onboarding 도메인 컴포넌트
+components/           # 서로 다른 라우트(도메인)끼리 공유하거나, 라우트에 종속되지 않는 전역 컴포넌트
+  onboarding/         # /onboarding과 /my/preferences처럼 서로 다른 라우트가 공유
 constants/            # React/상태와 무관한 고정 데이터 (질문 목록, 카드 데이터 등)
 hooks/                # 여러 곳에서 재사용하는 커스텀 훅 (TanStack Query 훅 등)
 i18n/                 # request.ts, routing.ts 등 다국어 설정
@@ -127,10 +144,36 @@ types/                # 공통 타입
 
 규칙:
 
-- 각 페이지 전용 컴포넌트: `app/[locale]/<page>/components/`
-  - 페이지 전용으로 시작했더라도 2곳 이상에서 쓰이게 되면 `components/`로 승격
+- **한 페이지에서만 쓰는 컴포넌트** → 그 페이지 폴더 안 `components/`
+  - 예: `feature-highlight.tsx`는 `/onboarding` 페이지에서만 쓰이므로
+    `app/[locale]/onboarding/components/`
+- **같은 최상위 라우트(도메인)의 하위 페이지끼리 공유하는 컴포넌트** → 그 도메인
+  자신의 `components/` (루트 `components/`로 올리지 않는다)
+  - 판단 기준: 사용하는 페이지들을 전부 감싸는 **가장 가까운 공통 상위 라우트
+    폴더**가 있는가? 있다면 거기 `components/`에 둔다.
+  - 예: `TripTabHeader`는 `/trips`, `/trips/[tripId]/budget`,
+    `/trips/[tripId]/records`, `/trips/[tripId]/itinerary`에서 쓰이는데,
+    전부 `/trips` 밑이므로 → `app/[locale]/trips/components/`
+  - 예: `oauth-login-panel`은 `/auth/login`, `/auth/sign-up`에서 쓰이는데
+    둘 다 `/auth` 밑이므로 → `app/[locale]/auth/components/`
+- **서로 다른 최상위 라우트가 공유하거나, 특정 라우트에 종속되지 않는
+  전역 컴포넌트** → 루트 `components/`
+  - 예: `onboarding-header`, `preference-question`은 `/onboarding`과
+    `/my/preferences`가 같이 쓰는데, 이 둘은 서로 다른 최상위 라우트라
+    공통 상위 폴더가 없다 → `components/onboarding/`
+  - 예: `Header`, `Footer`, `Landing`, `NavigationSidebar`는 특정 라우트의
+    하위 페이지 관계가 아니라 앱 전역 쉘(shell) 성격이라 지금 실제로는
+    홈 페이지 하나에서만 import되고 있어도 루트 `components/`에 둔다.
+  - shadcn/ui 기반 컴포넌트(`components/ui/`)도 항상 여기 규칙을 따른다.
+
+  ⚠️ **자주 하는 실수**: "2곳 이상에서 쓰인다 = 무조건 루트 `components/`로 승격"이
+  아니다. 반드시 "그 2곳 이상이 같은 최상위 라우트 밑에 있는가"부터 확인한다.
+  같은 라우트 밑이면 그 라우트 자신의 `components/`에 두고, 완전히 다른 라우트일
+  때만 루트로 올린다. (실제로 `oauth-login-panel`을 이 확인 없이 루트
+  `components/auth/`로 잘못 올렸다가 다시 `app/[locale]/auth/components/`로
+  되돌린 적이 있다.)
+
 - `api`: 백엔드를 호출하는 클라이언트 fetch 함수만. Next.js의 `app/api`(Route Handler)와는 무관하므로 혼동하지 않도록 루트에 별도로 둔다.
-- `components`: 여러 페이지에서 재사용하는 공통 컴포넌트 (shadcn/ui 포함). 도메인이 명확하면 `components/<domain>/`처럼 하위 폴더로 묶는다 (예: `components/auth`, `components/onboarding`).
 - `constants`: React 훅/상태가 아닌 순수 상수·설정 데이터
 - `hooks`: 여러 컴포넌트/페이지에서 재사용하는 커스텀 훅
 - `stores`: Zustand store
@@ -139,7 +182,14 @@ types/                # 공통 타입
 - `i18n` / `messages`: 다국어 설정과 번역 리소스 (공용 → 단독 수정 금지)
 - `features`: 레거시. 신규 코드 추가 금지. 현재 `features/trip`만 남아있고 별도 작업으로 이관 예정.
 
-공통 판단 기준: 한 페이지에서만 쓰이면 그 페이지 폴더 안에, 2개 이상의 페이지/컴포넌트가 공유하면 위 루트 폴더(종류별)로 옮긴다.
+공통 판단 기준:
+
+- **컴포넌트**: 한 페이지 전용이면 그 페이지 `components/`, 같은 최상위 라우트의
+  하위 페이지끼리 공유하면 그 라우트 자신의 `components/`, 서로 다른 최상위
+  라우트가 공유하거나 라우트 무관 전역이면 루트 `components/`.
+- **그 외(hooks/lib/constants/api/types/stores)**: 라우트와 직접 매핑되는
+  개념이 아니므로 페이지 전용 좁은 타입(타입 규칙 참고)을 제외하면 항상 루트
+  종류별 폴더에 둔다. 몇 곳에서 쓰이는지는 상관없다.
 
 ## 작업 분류
 
