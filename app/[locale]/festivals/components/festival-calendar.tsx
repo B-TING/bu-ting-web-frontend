@@ -6,6 +6,7 @@ import type { FestivalSummary } from '@/types/festival';
 
 interface FestivalCalendarProps {
   festivals: FestivalSummary[];
+  currentMonth: string;
   monthLabel: string;
   previousMonth: string;
   nextMonth: string;
@@ -13,6 +14,7 @@ interface FestivalCalendarProps {
 
 export function FestivalCalendar({
   festivals,
+  currentMonth,
   monthLabel,
   previousMonth,
   nextMonth,
@@ -72,7 +74,11 @@ export function FestivalCalendar({
         {festivals.length > 0 ? (
           <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {festivals.map((festival) => (
-              <FestivalCard key={festival.contentId} festival={festival} />
+              <FestivalCard
+                key={festival.contentId}
+                festival={festival}
+                month={currentMonth}
+              />
             ))}
           </div>
         ) : (

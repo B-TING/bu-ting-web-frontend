@@ -57,3 +57,8 @@ export interface FestivalResolvedView extends FestivalDetailView {
   resolvedLatitude: number | null;
   resolvedLongitude: number | null;
 }
+
+export interface FestivalDetailPageContext {
+  month?: string;
+  posterImage?: string;
+}

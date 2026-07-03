@@ -1,13 +1,177 @@
-import { MapPin } from 'lucide-react';
+'use client';
+
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import type { FestivalResolvedView } from '@/types/festival';
+
+declare global {
+  interface Window {
+    kakao: any;
+  }
+}
+
+const DEFAULT_CENTER = {
+  latitude: 35.1796,
+  longitude: 129.0756,
+};
+
+function loadKakaoMapScript() {
+  const apiKey = process.env.NEXT_PUBLIC_KAKAO_JS_API_KEY;
+
+  if (!apiKey) {
+    return Promise.reject(new Error('Kakao JS API key is missing.'));
+  }
+
+  if (window.kakao?.maps) {
+    return Promise.resolve(window.kakao);
+  }
+
+  return new Promise<typeof window.kakao>((resolve, reject) => {
+    const existingScript = document.querySelector<HTMLScriptElement>(
+      'script[data-kakao-map-script="true"]',
+    );
+
+    if (existingScript) {
+      existingScript.addEventListener('load', () => resolve(window.kakao));
+      existingScript.addEventListener('error', () =>
+        reject(new Error('Failed to load Kakao Map script.')),
+      );
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&autoload=false&libraries=services`;
+    script.async = true;
+    script.dataset.kakaoMapScript = 'true';
+
+    script.onload = () => resolve(window.kakao);
+    script.onerror = () => reject(new Error('Failed to load Kakao Map script.'));
+
+    document.head.appendChild(script);
+  });
+}
+
+function createMap(container: HTMLDivElement, latitude: number, longitude: number) {
+  if (!window.kakao?.maps) {
+    return;
+  }
+
+  window.kakao.maps.load(() => {
+    const position = new window.kakao.maps.LatLng(latitude, longitude);
+    const map = new window.kakao.maps.Map(container, {
+      center: position,
+      level: 4,
+    });
+
+    new window.kakao.maps.Marker({
+      map,
+      position,
+    });
+  });
+}
 
 export function FestivalLocationMap({
   festival,
 }: {
   festival: FestivalResolvedView;
 }) {
-  const { summary, resolvedLatitude, resolvedLongitude } = festival;
+  const mapRef = useRef<HTMLDivElement | null>(null);
+  const [isMapReady, setIsMapReady] = useState(false);
+  const [mapError, setMapError] = useState<string | null>(null);
+
+  const mapAddress = festival.resolvedAddress;
+
+  const coordinates = useMemo(
+    () => ({
+      latitude: festival.resolvedLatitude,
+      longitude: festival.resolvedLongitude,
+    }),
+    [festival.resolvedLatitude, festival.resolvedLongitude],
+  );
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function renderMap() {
+      if (!mapRef.current) {
+        return;
+      }
+
+      try {
+        await loadKakaoMapScript();
+
+        const latitude = coordinates.latitude;
+        const longitude = coordinates.longitude;
+
+        if (latitude != null && longitude != null) {
+          createMap(mapRef.current, latitude, longitude);
+
+          if (isMounted) {
+            setIsMapReady(true);
+            setMapError(null);
+          }
+          return;
+        }
+
+        if (mapAddress && window.kakao?.maps?.services) {
+          window.kakao.maps.load(() => {
+            const geocoder = new window.kakao.maps.services.Geocoder();
+
+            geocoder.addressSearch(
+              mapAddress,
+              (result: Array<{ x: string; y: string }>, status: string) => {
+                if (!isMounted || !mapRef.current) {
+                  return;
+                }
+
+                if (
+                  status === window.kakao.maps.services.Status.OK &&
+                  result.length > 0
+                ) {
+                  createMap(
+                    mapRef.current,
+                    Number(result[0].y),
+                    Number(result[0].x),
+                  );
+                  setIsMapReady(true);
+                  setMapError(null);
+                  return;
+                }
+
+                createMap(
+                  mapRef.current,
+                  DEFAULT_CENTER.latitude,
+                  DEFAULT_CENTER.longitude,
+                );
+                setIsMapReady(true);
+                setMapError('주소로 위치를 찾지 못해 기본 위치로 표시 중이에요.');
+              },
+            );
+          });
+
+          return;
+        }
+
+        createMap(mapRef.current, DEFAULT_CENTER.latitude, DEFAULT_CENTER.longitude);
+
+        if (isMounted) {
+          setIsMapReady(true);
+          setMapError('좌표와 주소 정보가 없어 기본 위치로 표시 중이에요.');
+        }
+      } catch {
+        if (isMounted) {
+          setMapError('카카오맵을 불러오지 못했어요.');
+          setIsMapReady(false);
+        }
+      }
+    }
+
+    void renderMap();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [coordinates.latitude, coordinates.longitude, mapAddress]);
 
   return (
     <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
@@ -18,28 +182,21 @@ export function FestivalLocationMap({
         </h2>
       </div>
 
-      <div
-        aria-label={`${summary?.title ?? '\uCD95\uC81C'} \uC704\uCE58 \uC548\uB0B4`}
-        className="relative h-[720px] bg-[#eaf2e3]"
-      >
-        <div className="absolute inset-0 opacity-70 [background-image:linear-gradient(90deg,rgba(148,163,184,.2)_1px,transparent_1px),linear-gradient(rgba(148,163,184,.2)_1px,transparent_1px),linear-gradient(30deg,transparent_47%,#fff_48%,#fff_51%,transparent_52%)] [background-size:48px_48px,48px_48px,180px_150px]" />
-        <div className="absolute left-[12%] top-[18%] h-[3px] w-[78%] rotate-[14deg] bg-emerald-400/80" />
-        <div className="absolute left-[18%] top-[60%] h-[3px] w-[70%] -rotate-[9deg] bg-amber-300/80" />
+      <div className="relative h-[720px] bg-slate-100">
+        <div ref={mapRef} className="h-full w-full" />
 
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-full text-center">
-          <span className="mx-auto flex size-16 items-center justify-center rounded-full bg-sky-700 text-xl font-black text-white shadow-lg ring-4 ring-white">
-            1
-          </span>
-          <span className="mt-3 inline-flex items-center gap-1 whitespace-nowrap rounded-lg bg-white px-3 py-1.5 text-sm font-bold text-slate-800 shadow">
-            <MapPin className="size-4 text-sky-700" />
-            {summary?.title ?? '\uCD95\uC81C \uC704\uCE58'}
-          </span>
-        </div>
+        {!isMapReady ? (
+          <div className="absolute inset-0 flex items-center justify-center bg-slate-100 text-sm font-semibold text-slate-500">
+            카카오맵 불러오는 중...
+          </div>
+        ) : null}
 
         <div className="absolute bottom-4 left-4 rounded-xl bg-white/95 px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm">
-          {resolvedLatitude != null && resolvedLongitude != null
-            ? `\uC704\uB3C4 ${resolvedLatitude}, \uACBD\uB3C4 ${resolvedLongitude}`
-            : '\uC88C\uD45C \uC815\uBCF4\uAC00 \uC5C6\uC5B4 \uAE30\uBCF8 \uC9C0\uB3C4 \uBDF0\uB85C \uD45C\uC2DC \uC911'}
+          {mapError
+            ? mapError
+            : coordinates.latitude != null && coordinates.longitude != null
+              ? `위도 ${coordinates.latitude}, 경도 ${coordinates.longitude}`
+              : mapAddress ?? '행사 위치 정보 없음'}
         </div>
       </div>
     </section>

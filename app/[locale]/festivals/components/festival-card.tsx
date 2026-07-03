@@ -12,12 +12,25 @@ function formatDateRange(startDate: string, endDate: string) {
   return `${startValue.getMonth() + 1}.${startValue.getDate()} - ${endValue.getMonth() + 1}.${endValue.getDate()}`;
 }
 
-export function FestivalCard({ festival }: { festival: FestivalSummary }) {
+export function FestivalCard({
+  festival,
+  month,
+}: {
+  festival: FestivalSummary;
+  month: string;
+}) {
   const posterImage = festival.imageUrl || festival.thumbnailUrl;
+  const detailSearchParams = new URLSearchParams();
+
+  detailSearchParams.set('month', month);
+
+  if (posterImage) {
+    detailSearchParams.set('poster', posterImage);
+  }
 
   return (
     <Link
-      href={`/festivals/${festival.contentId}`}
+      href={`/festivals/${festival.contentId}?${detailSearchParams.toString()}`}
       className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
     >
       <div className="aspect-[4/3] overflow-hidden bg-slate-100">

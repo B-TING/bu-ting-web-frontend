@@ -2,7 +2,11 @@ import { ArrowLeft, Star } from 'lucide-react';
 import Link from 'next/link';
 
 import { FestivalLocationMap } from '@/app/[locale]/festivals/[festivalId]/components/festival-location-map';
-import type { FestivalDetailView, FestivalResolvedView } from '@/types/festival';
+import type {
+  FestivalDetailPageContext,
+  FestivalDetailView,
+  FestivalResolvedView,
+} from '@/types/festival';
 
 function getFestivalPosterFallback(contentId?: string | null) {
   const fallbackPosters: Record<string, string> = {
@@ -39,7 +43,10 @@ function toNullableNumber(value?: string | number | null) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-function resolveFestivalView(festival: FestivalDetailView): FestivalResolvedView {
+function resolveFestivalView(
+  festival: FestivalDetailView,
+  pageContext?: FestivalDetailPageContext,
+): FestivalResolvedView {
   const { summary, detail } = festival;
   const details = detail.details ?? {};
 
@@ -50,6 +57,7 @@ function resolveFestivalView(festival: FestivalDetailView): FestivalResolvedView
       summary?.thumbnailUrl ||
       details.firstimage ||
       details.firstimage2 ||
+      pageContext?.posterImage ||
       getFestivalPosterFallback(summary?.contentId ?? detail.contentId) ||
       null,
     resolvedAddress:
@@ -98,12 +106,32 @@ function prettifyDetailLabel(key: string) {
     homepage: '\uD648\uD398\uC774\uC9C0',
     subevent: '\uBD80\uB300 \uD589\uC0AC',
     program: '\uD504\uB85C\uADF8\uB7A8',
+    agelimit: '\uC5F0\uB839 \uC81C\uD55C',
+    usetime: '\uC774\uC6A9 \uC2DC\uAC04',
+    discountinfofestival: '\uD560\uC778 \uC815\uBCF4',
+    eventhomepage: '\uD589\uC0AC \uD648\uD398\uC774\uC9C0',
   };
 
   return labels[key.toLowerCase()] ?? key;
 }
 
 function renderDetailValue(key: string, value: string) {
+  if (['program', 'subevent'].includes(key.toLowerCase())) {
+    const lines = value
+      .split(/\s+-\s+/)
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => (line.startsWith('-') ? line : `- ${line}`));
+
+    return (
+      <div className="space-y-1 whitespace-pre-line">
+        {lines.map((line) => (
+          <p key={line}>{line}</p>
+        ))}
+      </div>
+    );
+  }
+
   if (/^https?:\/\//.test(value)) {
     return (
       <a
@@ -146,18 +174,27 @@ function getNormalizedDetailEntries(festival: FestivalResolvedView) {
   return [['festivalPeriod', getFestivalPeriod(festival)], ...filteredEntries];
 }
 
-export function FestivalDetail({ festival }: { festival: FestivalDetailView }) {
-  const resolvedFestival = resolveFestivalView(festival);
+export function FestivalDetail({
+  festival,
+  pageContext,
+}: {
+  festival: FestivalDetailView;
+  pageContext?: FestivalDetailPageContext;
+}) {
+  const resolvedFestival = resolveFestivalView(festival, pageContext);
   const { summary, detail } = resolvedFestival;
   const posterImage = resolvedFestival.resolvedPosterImage;
   const detailEntries = getNormalizedDetailEntries(resolvedFestival);
+  const backHref = pageContext?.month
+    ? `/festivals?month=${pageContext.month}`
+    : '/festivals';
 
   return (
     <main className="min-h-screen bg-slate-50">
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-5 sm:px-6 lg:px-8">
           <Link
-            href="/festivals"
+            href={backHref}
             aria-label={'\uCD95\uC81C \uBAA9\uB85D\uC73C\uB85C \uB3CC\uC544\uAC00\uAE30'}
             className="flex size-10 items-center justify-center rounded-full text-sky-700 transition hover:bg-sky-50"
           >

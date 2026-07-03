@@ -18,6 +18,7 @@ export default async function FestivalsPage({ searchParams }: FestivalsPageProps
   return (
     <FestivalCalendar
       festivals={festivals}
+      currentMonth={currentMonth}
       monthLabel={getMonthLabel(currentMonth)}
       previousMonth={getAdjacentMonth(currentMonth, -1)}
       nextMonth={getAdjacentMonth(currentMonth, 1)}
