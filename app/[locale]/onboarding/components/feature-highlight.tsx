@@ -11,7 +11,7 @@ import {
   Utensils,
 } from 'lucide-react';
 
-import { FEATURE_STEPS } from '@/features/onboarding/constants/onboarding';
+import { FEATURE_STEPS } from '@/constants/onboarding';
 
 const ICONS = {
   calendar: CalendarDays,

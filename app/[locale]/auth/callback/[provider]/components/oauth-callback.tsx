@@ -5,23 +5,23 @@ import { CircleAlert, LoaderCircle } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
-import { useOAuthLogin } from '@/features/auth/hooks/use-oauth-login';
+import { useOAuthLogin } from '@/hooks/use-oauth-login';
 import {
   buildOAuthProviderToken,
   getOAuthRedirectUri,
   OAUTH_STORAGE_PREFIX,
-} from '@/features/auth/lib/oauth';
+} from '@/lib/oauth';
 import { useAuthStore } from '@/stores/auth-store';
 import {
   getTravelSurvey,
   saveTravelSurvey,
-} from '@/features/onboarding/api/travel-survey';
-import { travelSurveyQueryKey } from '@/features/onboarding/hooks/use-travel-survey';
-import { toTravelSurveyRequest } from '@/features/onboarding/model/onboarding';
+} from '@/api/travel-survey';
+import { travelSurveyQueryKey } from '@/hooks/use-travel-survey';
+import { toTravelSurveyRequest } from '@/lib/onboarding';
 import {
   clearPendingOnboardingCookie,
   getPendingOnboardingCookie,
-} from '@/features/onboarding/lib/pending-onboarding-cookie';
+} from '@/lib/pending-onboarding-cookie';
 import { useOnboardingStore } from '@/stores/onboarding-store';
 import type { OAuthProvider } from '@/types/auth';
 

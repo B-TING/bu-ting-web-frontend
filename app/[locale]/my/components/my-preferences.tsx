@@ -4,9 +4,9 @@ import { LoaderCircle, LogOut, MapPin, UserRound } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import { useTravelSurvey } from '@/features/onboarding/hooks/use-travel-survey';
-import { fromTravelSurveyResponse } from '@/features/onboarding/model/onboarding';
-import { getOnboardingErrorMessage } from '@/features/onboarding/lib/onboarding-error-message';
+import { useTravelSurvey } from '@/hooks/use-travel-survey';
+import { fromTravelSurveyResponse } from '@/lib/onboarding';
+import { getOnboardingErrorMessage } from '@/lib/onboarding-error-message';
 import { useAuthStore } from '@/stores/auth-store';
 
 const VALUE_LABELS = {
