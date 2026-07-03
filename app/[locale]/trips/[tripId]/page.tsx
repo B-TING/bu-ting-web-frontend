@@ -1,4 +1,5 @@
 import { getTranslations } from 'next-intl/server';
+import { RebootFab } from '../components/RebootFab';
 
 interface TripDetailPageProps {
   params: Promise<{ tripId: string }>;
@@ -12,6 +13,7 @@ export default async function TripDetailPage({ params }: TripDetailPageProps) {
     <main>
       <h1>{t('detailTitle')}</h1>
       <p>{tripId}</p>
+      <RebootFab tripId={tripId} />
     </main>
   );
 }

@@ -46,6 +46,25 @@ async function createCodeChallenge(verifier: string) {
   return toBase64Url(new Uint8Array(digest));
 }
 
+function applyProviderPrompt(
+  params: URLSearchParams,
+  provider: OAuthProvider,
+) {
+  if (provider === 'google') {
+    params.set('prompt', 'select_account');
+    return;
+  }
+
+  if (provider === 'kakao') {
+    params.set('prompt', 'login');
+    return;
+  }
+
+  if (provider === 'naver') {
+    params.set('auth_type', 'reprompt');
+  }
+}
+
 export function getOAuthRedirectUri(provider: OAuthProvider) {
   return `${window.location.origin}/auth/callback/${provider}`;
 }
@@ -95,6 +114,8 @@ export async function startOAuthLogin(provider: OAuthProvider) {
   if (config.scope) {
     params.set('scope', config.scope);
   }
+
+  applyProviderPrompt(params, provider);
 
   window.location.assign(`${config.authorizationUrl}?${params.toString()}`);
 }

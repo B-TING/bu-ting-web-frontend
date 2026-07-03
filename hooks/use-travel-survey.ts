@@ -5,7 +5,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   getTravelSurvey,
   saveTravelSurvey,
-} from '@/features/onboarding/api/travel-survey';
+} from '@/api/travel-survey';
 
 export const travelSurveyQueryKey = ['travel-survey'] as const;
 

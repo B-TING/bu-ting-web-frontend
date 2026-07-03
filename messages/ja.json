@@ -231,6 +231,26 @@
       "save": "保存",
       "cancel": "キャンセル"
     },
+    "reboot": {
+      "fabLabel": "日程リブート",
+      "modalTitle": "日程リブート",
+      "selectSlotPrompt": "どのスポットを変更しますか？",
+      "replaceAction": "この場所を変更",
+      "insertAction": "次に追加",
+      "referenceLabel": "{name} 基準のおすすめ候補",
+      "estimatedNote": "実際の経路ではなく予想所要時間です",
+      "candidateEmpty": "おすすめできる候補がありません",
+      "minutesShort": "分",
+      "confirmReplaceTitle": "変更確認: {from} → {to}",
+      "confirmInsertTitle": "追加確認: {from} の次 → {to}",
+      "cancel": "キャンセル",
+      "apply": "適用する",
+      "transit": {
+        "walk": "徒歩",
+        "public": "公共交通",
+        "car": "車"
+      }
+    },
     "pages": {
       "newTripMeta": "旅行プランを作成 | 부팅",
       "newAiTitle": "AI旅程作成",

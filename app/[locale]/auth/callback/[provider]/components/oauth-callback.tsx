@@ -5,23 +5,23 @@ import { CircleAlert, LoaderCircle } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
-import { useOAuthLogin } from '@/features/auth/hooks/use-oauth-login';
+import { useOAuthLogin } from '@/hooks/use-oauth-login';
 import {
   buildOAuthProviderToken,
   getOAuthRedirectUri,
   OAUTH_STORAGE_PREFIX,
-} from '@/features/auth/lib/oauth';
+} from '@/lib/oauth';
 import { useAuthStore } from '@/stores/auth-store';
 import {
   getTravelSurvey,
   saveTravelSurvey,
-} from '@/features/onboarding/api/travel-survey';
-import { travelSurveyQueryKey } from '@/features/onboarding/hooks/use-travel-survey';
-import { toTravelSurveyRequest } from '@/features/onboarding/model/onboarding';
+} from '@/api/travel-survey';
+import { travelSurveyQueryKey } from '@/hooks/use-travel-survey';
+import { toTravelSurveyRequest } from '@/lib/onboarding';
 import {
   clearPendingOnboardingCookie,
   getPendingOnboardingCookie,
-} from '@/features/onboarding/lib/pending-onboarding-cookie';
+} from '@/lib/pending-onboarding-cookie';
 import { useOnboardingStore } from '@/stores/onboarding-store';
 import type { OAuthProvider } from '@/types/auth';
 
@@ -53,7 +53,7 @@ export function OAuthCallback({ provider }: { provider: OAuthProvider }) {
       }
 
       if (!code || !returnedState || returnedState !== expectedState) {
-        setError('로그인 요청을 확인할 수 없습니다. 다시 시도해 주세요.');
+        setError('로그인 요청 정보를 확인할 수 없습니다. 다시 시도해 주세요.');
         return;
       }
 
@@ -65,11 +65,7 @@ export function OAuthCallback({ provider }: { provider: OAuthProvider }) {
       try {
         const response = await login.mutateAsync({
           provider,
-          providerToken: buildOAuthProviderToken(
-            provider,
-            code,
-            returnedState,
-          ),
+          providerToken: buildOAuthProviderToken(provider, code, returnedState),
           redirectUri: getOAuthRedirectUri(provider),
           codeVerifier,
         });
@@ -100,19 +96,15 @@ export function OAuthCallback({ provider }: { provider: OAuthProvider }) {
           return;
         }
 
-        try {
-          const surveyResponse = await getTravelSurvey();
+        const surveyResponse = await getTravelSurvey();
 
-          if (!surveyResponse) {
-            router.replace('/onboarding');
-            return;
-          }
-
-          queryClient.setQueryData(travelSurveyQueryKey, surveyResponse);
-          router.replace('/');
-        } catch (surveyError) {
-          throw surveyError;
+        if (!surveyResponse) {
+          router.replace('/onboarding');
+          return;
         }
+
+        queryClient.setQueryData(travelSurveyQueryKey, surveyResponse);
+        router.replace('/');
       } catch (loginError) {
         setError(
           loginError instanceof Error

@@ -231,6 +231,26 @@
       "save": "Save",
       "cancel": "Cancel"
     },
+    "reboot": {
+      "fabLabel": "Reboot Schedule",
+      "modalTitle": "Reboot Schedule",
+      "selectSlotPrompt": "Which place would you like to change?",
+      "replaceAction": "Replace",
+      "insertAction": "Add after",
+      "referenceLabel": "Recommended from {name}",
+      "estimatedNote": "Estimated time, not an actual route",
+      "candidateEmpty": "No candidates to suggest",
+      "minutesShort": " min",
+      "confirmReplaceTitle": "Confirm swap: {from} → {to}",
+      "confirmInsertTitle": "Confirm add: after {from} → {to}",
+      "cancel": "Cancel",
+      "apply": "Apply",
+      "transit": {
+        "walk": "Walking",
+        "public": "Public Transit",
+        "car": "Car"
+      }
+    },
     "pages": {
       "newTripMeta": "Plan a Trip | Bu-ting",
       "newAiTitle": "AI Trip Planning",

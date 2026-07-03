@@ -3,7 +3,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import { EMPTY_ONBOARDING_ANSWERS } from '@/features/onboarding/model/onboarding';
+import { EMPTY_ONBOARDING_ANSWERS } from '@/lib/onboarding';
 import type {
   AppLanguage,
   OnboardingAnswers,
