@@ -3,7 +3,7 @@
 import { use, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
-import { TripTabHeader } from '@/features/trip/components/TripTabHeader';
+import { TripTabHeader } from '../../components/TripTabHeader';
 import { RebootFab } from '../../components/RebootFab';
 import type { PlaceRecord } from '@/types/record';
 
@@ -15,14 +15,86 @@ const MOCK_TRIP = {
 };
 
 const MOCK_RECORDS: PlaceRecord[] = [
-  { id: 'p1', name: '해운대 해수욕장', category: '해변', rating: 4, review: '바다가 시원합니다~', tags: ['#힐링'], day: 1, date: '6/25' },
-  { id: 'p2', name: '광안리', category: '해변·야경', rating: 4, review: '바다 따라 걷기 좋았어요~', tags: ['#뷰맛집', '#힐링'], day: 1, date: '6/25' },
-  { id: 'p3', name: '태종대', category: '관광지', rating: 4, review: '', tags: ['#사진스팟', '#힐링', '#추천'], day: 1, date: '6/25' },
-  { id: 'p4', name: '자갈치시장', category: '시장', rating: 5, review: '회가 너무 신선하고 맛있었어요!', tags: ['#맛집', '#현지음식'], day: 2, date: '6/26' },
-  { id: 'p5', name: '국제시장', category: '시장', rating: 3, review: '', tags: ['#쇼핑'], day: 2, date: '6/26' },
-  { id: 'p6', name: '남포동', category: '도심', rating: 0, review: '', tags: [], day: 2, date: '6/26' },
-  { id: 'p7', name: '용두산 공원', category: '공원', rating: 0, review: '', tags: [], day: 3, date: '6/27' },
-  { id: 'p8', name: '감천문화마을', category: '관광지', rating: 5, review: '색깔이 너무 예뻐요. 사진 명소!', tags: ['#사진스팟', '#추천'], day: 3, date: '6/27' },
+  {
+    id: 'p1',
+    name: '해운대 해수욕장',
+    category: '해변',
+    rating: 4,
+    review: '바다가 시원합니다~',
+    tags: ['#힐링'],
+    day: 1,
+    date: '6/25',
+  },
+  {
+    id: 'p2',
+    name: '광안리',
+    category: '해변·야경',
+    rating: 4,
+    review: '바다 따라 걷기 좋았어요~',
+    tags: ['#뷰맛집', '#힐링'],
+    day: 1,
+    date: '6/25',
+  },
+  {
+    id: 'p3',
+    name: '태종대',
+    category: '관광지',
+    rating: 4,
+    review: '',
+    tags: ['#사진스팟', '#힐링', '#추천'],
+    day: 1,
+    date: '6/25',
+  },
+  {
+    id: 'p4',
+    name: '자갈치시장',
+    category: '시장',
+    rating: 5,
+    review: '회가 너무 신선하고 맛있었어요!',
+    tags: ['#맛집', '#현지음식'],
+    day: 2,
+    date: '6/26',
+  },
+  {
+    id: 'p5',
+    name: '국제시장',
+    category: '시장',
+    rating: 3,
+    review: '',
+    tags: ['#쇼핑'],
+    day: 2,
+    date: '6/26',
+  },
+  {
+    id: 'p6',
+    name: '남포동',
+    category: '도심',
+    rating: 0,
+    review: '',
+    tags: [],
+    day: 2,
+    date: '6/26',
+  },
+  {
+    id: 'p7',
+    name: '용두산 공원',
+    category: '공원',
+    rating: 0,
+    review: '',
+    tags: [],
+    day: 3,
+    date: '6/27',
+  },
+  {
+    id: 'p8',
+    name: '감천문화마을',
+    category: '관광지',
+    rating: 5,
+    review: '색깔이 너무 예뻐요. 사진 명소!',
+    tags: ['#사진스팟', '#추천'],
+    day: 3,
+    date: '6/27',
+  },
 ];
 
 // ─── Star Rating (read-only) ──────────────────────────────────────────────────
@@ -85,7 +157,9 @@ function ReviewModal({
         <div className="px-6 py-5 space-y-5">
           {/* 별점 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">{t('labelRating')}</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {t('labelRating')}
+            </label>
             <div className="flex gap-2">
               {[1, 2, 3, 4, 5].map((n) => (
                 <button
@@ -96,7 +170,11 @@ function ReviewModal({
                   onClick={() => setRating(n)}
                   className="text-2xl transition-transform hover:scale-110"
                 >
-                  <span className={n <= (hoverRating || rating) ? 'text-yellow-400' : 'text-gray-200'}>★</span>
+                  <span
+                    className={n <= (hoverRating || rating) ? 'text-yellow-400' : 'text-gray-200'}
+                  >
+                    ★
+                  </span>
                 </button>
               ))}
             </div>
@@ -104,7 +182,9 @@ function ReviewModal({
 
           {/* 후기 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">{t('labelReview')}</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {t('labelReview')}
+            </label>
             <textarea
               rows={4}
               placeholder={t('reviewPlaceholder')}
@@ -124,7 +204,13 @@ function ReviewModal({
                   className="flex items-center gap-1 bg-blue-50 text-blue-600 text-xs px-2.5 py-1 rounded-full font-medium"
                 >
                   {tag}
-                  <button type="button" onClick={() => removeTag(tag)} className="text-blue-400 hover:text-blue-700">×</button>
+                  <button
+                    type="button"
+                    onClick={() => removeTag(tag)}
+                    className="text-blue-400 hover:text-blue-700"
+                  >
+                    ×
+                  </button>
                 </span>
               ))}
             </div>
@@ -150,7 +236,10 @@ function ReviewModal({
 
         <div className="px-6 pb-6 pt-4 border-t border-gray-100 space-y-2">
           <button
-            onClick={() => { onSave(place.id, rating, review, tags); onClose(); }}
+            onClick={() => {
+              onSave(place.id, rating, review, tags);
+              onClose();
+            }}
             disabled={rating === 0 && !review.trim()}
             className={cn(
               'w-full py-3 rounded-xl font-semibold text-sm transition-all',
@@ -161,7 +250,10 @@ function ReviewModal({
           >
             {t('save')}
           </button>
-          <button onClick={onClose} className="w-full py-2 text-sm text-gray-500 hover:text-gray-700">
+          <button
+            onClick={onClose}
+            className="w-full py-2 text-sm text-gray-500 hover:text-gray-700"
+          >
             {t('cancel')}
           </button>
         </div>
@@ -172,28 +264,26 @@ function ReviewModal({
 
 // ─── Place Record Card ────────────────────────────────────────────────────────
 
-function PlaceRecordCard({
-  record,
-  onEdit,
-}: {
-  record: PlaceRecord;
-  onEdit: () => void;
-}) {
+function PlaceRecordCard({ record, onEdit }: { record: PlaceRecord; onEdit: () => void }) {
   const t = useTranslations('trip.records');
   const hasReview = record.rating > 0 || record.review || record.tags.length > 0;
 
   return (
-    <div className={cn(
-      'bg-white rounded-2xl border transition-all',
-      hasReview ? 'border-gray-100 shadow-sm' : 'border-dashed border-gray-200'
-    )}>
+    <div
+      className={cn(
+        'bg-white rounded-2xl border transition-all',
+        hasReview ? 'border-gray-100 shadow-sm' : 'border-dashed border-gray-200'
+      )}
+    >
       <div className="p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-xs text-gray-400">{record.category}</span>
               <span className="text-xs text-gray-200">·</span>
-              <span className="text-xs text-gray-400">Day {record.day} · {record.date}</span>
+              <span className="text-xs text-gray-400">
+                Day {record.day} · {record.date}
+              </span>
             </div>
             <h3 className="font-bold text-gray-900 text-base">{record.name}</h3>
           </div>
@@ -231,9 +321,7 @@ function PlaceRecordCard({
           </div>
         )}
 
-        {!hasReview && (
-          <p className="mt-2 text-sm text-gray-400">{t('noReview')}</p>
-        )}
+        {!hasReview && <p className="mt-2 text-sm text-gray-400">{t('noReview')}</p>}
       </div>
     </div>
   );
@@ -252,7 +340,9 @@ export default function TripRecordsPage({ params }: TripRecordsPageProps) {
   const [records, setRecords] = useState<PlaceRecord[]>(MOCK_RECORDS);
   const [editingPlace, setEditingPlace] = useState<PlaceRecord | null>(null);
 
-  const completedCount = records.filter((r) => r.rating > 0 || r.review || r.tags.length > 0).length;
+  const completedCount = records.filter(
+    (r) => r.rating > 0 || r.review || r.tags.length > 0
+  ).length;
   const totalCount = records.length;
   const progressPct = Math.round((completedCount / totalCount) * 100);
   const allDone = completedCount === totalCount;
@@ -261,9 +351,7 @@ export default function TripRecordsPage({ params }: TripRecordsPageProps) {
   const totalM = MOCK_TRIP.totalMinutes % 60;
 
   const saveReview = (id: string, rating: number, review: string, tags: string[]) => {
-    setRecords((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, rating, review, tags } : r))
-    );
+    setRecords((prev) => prev.map((r) => (r.id === id ? { ...r, rating, review, tags } : r)));
   };
 
   return (
@@ -297,11 +385,7 @@ export default function TripRecordsPage({ params }: TripRecordsPageProps) {
                 style={{ width: `${progressPct}%` }}
               />
             </div>
-            {allDone && (
-              <p className="text-xs text-blue-600 font-medium">
-                {t('allDone')}
-              </p>
-            )}
+            {allDone && <p className="text-xs text-blue-600 font-medium">{t('allDone')}</p>}
           </div>
         </div>
 

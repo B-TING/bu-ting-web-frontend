@@ -6,21 +6,21 @@ import { useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import { OnboardingHeader } from '@/features/onboarding/components/onboarding-header';
-import { PreferenceQuestion } from '@/features/onboarding/components/preference-question';
-import { ONBOARDING_QUESTIONS } from '@/features/onboarding/constants/onboarding';
+import { OnboardingHeader } from '@/components/onboarding/onboarding-header';
+import { PreferenceQuestion } from '@/components/onboarding/preference-question';
+import { ONBOARDING_QUESTIONS } from '@/constants/onboarding';
 import {
   travelSurveyQueryKey,
   useSaveTravelSurvey,
   useTravelSurvey,
-} from '@/features/onboarding/hooks/use-travel-survey';
+} from '@/hooks/use-travel-survey';
 import {
   createOnboardingProfile,
   EMPTY_ONBOARDING_ANSWERS,
   fromTravelSurveyResponse,
   toTravelSurveyRequest,
-} from '@/features/onboarding/model/onboarding';
-import { getOnboardingErrorMessage } from '@/features/onboarding/lib/onboarding-error-message';
+} from '@/lib/onboarding';
+import { getOnboardingErrorMessage } from '@/lib/onboarding-error-message';
 import { useAuthStore } from '@/stores/auth-store';
 import type {
   AppLanguage,
@@ -96,6 +96,27 @@ export function PreferenceEditor() {
     );
   }
 
+  if (!survey.data) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6">
+        <div className="max-w-sm text-center">
+          <h1 className="text-2xl font-bold text-slate-950">
+            저장된 취향 정보가 없어요
+          </h1>
+          <p className="mt-3 text-sm leading-6 text-slate-500">
+            먼저 사용자 온보딩을 완료하면 마이페이지에서 다시 수정할 수 있어요.
+          </p>
+          <Link
+            href="/onboarding"
+            className="mt-6 inline-flex h-11 items-center rounded-xl bg-sky-700 px-6 font-semibold text-white"
+          >
+            온보딩 하러 가기
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
   const question = ONBOARDING_QUESTIONS[step];
   const value = answers[question.id];
   const canContinue = Array.isArray(value) ? value.length > 0 : value !== null;
@@ -130,6 +151,7 @@ export function PreferenceEditor() {
       skippedSteps: Array.from(new Set([...current.skippedSteps, step])).sort(
         (a, b) => a - b,
       ),
+      skippedAll: false,
     }));
 
     if (step < ONBOARDING_QUESTIONS.length - 1) {

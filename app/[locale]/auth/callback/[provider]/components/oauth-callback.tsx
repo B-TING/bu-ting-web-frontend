@@ -5,25 +5,23 @@ import { CircleAlert, LoaderCircle } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
-import { useOAuthLogin } from '@/features/auth/hooks/use-oauth-login';
+import { useOAuthLogin } from '@/hooks/use-oauth-login';
 import {
   buildOAuthProviderToken,
-  clearOAuthEntryMode,
-  getOAuthEntryMode,
   getOAuthRedirectUri,
   OAUTH_STORAGE_PREFIX,
-} from '@/features/auth/lib/oauth';
+} from '@/lib/oauth';
 import { useAuthStore } from '@/stores/auth-store';
 import {
   getTravelSurvey,
   saveTravelSurvey,
-} from '@/features/onboarding/api/travel-survey';
-import { travelSurveyQueryKey } from '@/features/onboarding/hooks/use-travel-survey';
-import { toTravelSurveyRequest } from '@/features/onboarding/model/onboarding';
+} from '@/api/travel-survey';
+import { travelSurveyQueryKey } from '@/hooks/use-travel-survey';
+import { toTravelSurveyRequest } from '@/lib/onboarding';
 import {
   clearPendingOnboardingCookie,
   getPendingOnboardingCookie,
-} from '@/features/onboarding/lib/pending-onboarding-cookie';
+} from '@/lib/pending-onboarding-cookie';
 import { useOnboardingStore } from '@/stores/onboarding-store';
 import type { OAuthProvider } from '@/types/auth';
 
@@ -46,9 +44,8 @@ export function OAuthCallback({ provider }: { provider: OAuthProvider }) {
       const providerError = params.get('error_description') ?? params.get('error');
       const stateKey = `${OAUTH_STORAGE_PREFIX}:${provider}:state`;
       const verifierKey = `${OAUTH_STORAGE_PREFIX}:${provider}:verifier`;
-      const expectedState = localStorage.getItem(stateKey);
-      const codeVerifier = localStorage.getItem(verifierKey);
-      const requiresPkce = provider === 'google';
+      const expectedState = sessionStorage.getItem(stateKey);
+      const codeVerifier = sessionStorage.getItem(verifierKey);
 
       if (providerError) {
         setError(providerError);
@@ -56,51 +53,26 @@ export function OAuthCallback({ provider }: { provider: OAuthProvider }) {
       }
 
       if (!code || !returnedState || returnedState !== expectedState) {
-        setError('로그인 요청을 확인할 수 없습니다. 다시 시도해 주세요.');
+        setError('로그인 요청 정보를 확인할 수 없습니다. 다시 시도해 주세요.');
         return;
       }
 
-      if (requiresPkce && !codeVerifier) {
+      if (!codeVerifier) {
         setError('로그인 세션이 만료되었습니다. 다시 시도해 주세요.');
         return;
       }
 
       try {
-        const response = await login.mutateAsync(
-          provider === 'google'
-            ? {
-                provider,
-                providerToken: buildOAuthProviderToken(
-                  provider,
-                  code,
-                  returnedState,
-                ),
-                redirectUri: getOAuthRedirectUri(provider),
-                codeVerifier: codeVerifier!,
-              }
-            : {
-                provider,
-                providerToken: buildOAuthProviderToken(
-                  provider,
-                  code,
-                  returnedState,
-                ),
-                redirectUri: getOAuthRedirectUri(provider),
-              },
-        );
-
-        const entryMode = getOAuthEntryMode();
-        localStorage.removeItem(stateKey);
-        localStorage.removeItem(verifierKey);
-        clearOAuthEntryMode();
-
-        if (entryMode === 'signup') {
-          useAuthStore.getState().clearSession();
-          router.replace('/onboarding');
-          return;
-        }
+        const response = await login.mutateAsync({
+          provider,
+          providerToken: buildOAuthProviderToken(provider, code, returnedState),
+          redirectUri: getOAuthRedirectUri(provider),
+          codeVerifier,
+        });
 
         setSession(response.data);
+        sessionStorage.removeItem(stateKey);
+        sessionStorage.removeItem(verifierKey);
 
         const pendingProfile =
           getPendingOnboardingCookie() ??
@@ -124,19 +96,15 @@ export function OAuthCallback({ provider }: { provider: OAuthProvider }) {
           return;
         }
 
-        try {
-          const surveyResponse = await getTravelSurvey();
+        const surveyResponse = await getTravelSurvey();
 
-          if (!surveyResponse) {
-            router.replace('/onboarding');
-            return;
-          }
-
-          queryClient.setQueryData(travelSurveyQueryKey, surveyResponse);
-          router.replace('/');
-        } catch (surveyError) {
-          throw surveyError;
+        if (!surveyResponse) {
+          router.replace('/onboarding');
+          return;
         }
+
+        queryClient.setQueryData(travelSurveyQueryKey, surveyResponse);
+        router.replace('/');
       } catch (loginError) {
         setError(
           loginError instanceof Error

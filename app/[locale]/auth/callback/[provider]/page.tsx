@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 
-import { OAuthCallback } from '@/features/auth/components/oauth-callback';
+import { OAuthCallback } from './components/oauth-callback';
 import type { OAuthProvider } from '@/types/auth';
 
 const OAUTH_PROVIDERS: OAuthProvider[] = ['google', 'naver', 'kakao'];

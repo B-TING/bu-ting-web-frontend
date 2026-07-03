@@ -5,14 +5,13 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
-import { TripTabHeader } from '@/features/trip/components/TripTabHeader';
-import { TransitIcon } from '../../components/TransitIcon';
-import { RebootFab } from '../../components/RebootFab';
-import { RebootModal } from '../../components/RebootModal';
-import type { PlaceItem, DayItinerary, ItineraryItem } from '@/types/itinerary';
+import { TripTabHeader } from '../../components/TripTabHeader';
+import type { PlaceItem, TransitItem, DayItinerary } from '@/types/itinerary';
 
 declare global {
-  interface Window { kakao: any; }
+  interface Window {
+    kakao: any;
+  }
 }
 
 // ─── Mock Data ──────────────────────────────────────────────────────────────
@@ -21,31 +20,147 @@ const MOCK_TRIP: { title: string; days: DayItinerary[] } = {
   title: 'B-Side of Busan',
   days: [
     {
-      day: 1, date: '2026-06-25', shortDate: '6/25', dayOfWeek: '목', estimatedDuration: '4시간 39분',
+      day: 1,
+      date: '2026-06-25',
+      shortDate: '6/25',
+      dayOfWeek: '목',
+      estimatedDuration: '4시간 39분',
       items: [
-        { type: 'place', id: 'p1', order: 1, name: '해운대 해수욕장', category: '해변', placeType: '관광명소', time: '09:00 - 18:00', description: '대표 해수욕장으로 산책·야경·해산물 맛집이 가깝습니다.', stayMinutes: 120, address: '부산광역시 해운대구 해운대해변로', lat: 35.1587, lng: 129.1604 },
+        {
+          type: 'place',
+          id: 'p1',
+          order: 1,
+          name: '해운대 해수욕장',
+          category: '해변',
+          placeType: '관광명소',
+          time: '09:00 - 18:00',
+          description: '대표 해수욕장으로 산책·야경·해산물 맛집이 가깝습니다.',
+          stayMinutes: 120,
+          address: '부산광역시 해운대구 해운대해변로',
+          lat: 35.1587,
+          lng: 129.1604,
+        },
         { type: 'transit', mode: 'public', minutes: 19, km: 3.8 },
-        { type: 'place', id: 'p2', order: 2, name: '광안리', category: '해변·야경', placeType: '관광명소', time: '09:00 - 18:00', description: '광안대교 야경과 함께 즐기기 좋은 해변 산책 코스입니다.', stayMinutes: 90, address: '부산광역시 수영구 광안해변로', lat: 35.1533, lng: 129.1186 },
+        {
+          type: 'place',
+          id: 'p2',
+          order: 2,
+          name: '광안리',
+          category: '해변·야경',
+          placeType: '관광명소',
+          time: '09:00 - 18:00',
+          description: '광안대교 야경과 함께 즐기기 좋은 해변 산책 코스입니다.',
+          stayMinutes: 90,
+          address: '부산광역시 수영구 광안해변로',
+          lat: 35.1533,
+          lng: 129.1186,
+        },
         { type: 'transit', mode: 'car', minutes: 35, km: 11.7 },
-        { type: 'place', id: 'p3', order: 3, name: '태종대', category: '관광지', placeType: '자연', time: '09:00 - 18:00', description: '태종대 전망대에서 바다를 조망할 수 있는 부산 대표 자연 명소입니다.', stayMinutes: 120, address: '부산광역시 영도구 전망로', lat: 35.0500, lng: 129.0852 },
+        {
+          type: 'place',
+          id: 'p3',
+          order: 3,
+          name: '태종대',
+          category: '관광지',
+          placeType: '자연',
+          time: '09:00 - 18:00',
+          description: '태종대 전망대에서 바다를 조망할 수 있는 부산 대표 자연 명소입니다.',
+          stayMinutes: 120,
+          address: '부산광역시 영도구 전망로',
+          lat: 35.05,
+          lng: 129.0852,
+        },
       ],
     },
     {
-      day: 2, date: '2026-06-26', shortDate: '6/26', dayOfWeek: '금', estimatedDuration: '3시간 20분',
+      day: 2,
+      date: '2026-06-26',
+      shortDate: '6/26',
+      dayOfWeek: '금',
+      estimatedDuration: '3시간 20분',
       items: [
-        { type: 'place', id: 'p4', order: 1, name: '자갈치시장', category: '시장', placeType: '음식', time: '08:00 - 22:00', description: '부산의 대표 수산시장. 신선한 해산물을 저렴하게 즐길 수 있어요.', stayMinutes: 90, address: '부산광역시 중구 자갈치해안로', lat: 35.0977, lng: 129.0302 },
+        {
+          type: 'place',
+          id: 'p4',
+          order: 1,
+          name: '자갈치시장',
+          category: '시장',
+          placeType: '음식',
+          time: '08:00 - 22:00',
+          description: '부산의 대표 수산시장. 신선한 해산물을 저렴하게 즐길 수 있어요.',
+          stayMinutes: 90,
+          address: '부산광역시 중구 자갈치해안로',
+          lat: 35.0977,
+          lng: 129.0302,
+        },
         { type: 'transit', mode: 'walk', minutes: 10, km: 0.7 },
-        { type: 'place', id: 'p5', order: 2, name: '국제시장', category: '시장·쇼핑', placeType: '쇼핑', time: '10:00 - 20:00', description: '한국전쟁 당시 형성된 부산의 역사적인 전통시장입니다.', stayMinutes: 60, address: '부산광역시 중구 신창동', lat: 35.0996, lng: 129.0269 },
+        {
+          type: 'place',
+          id: 'p5',
+          order: 2,
+          name: '국제시장',
+          category: '시장·쇼핑',
+          placeType: '쇼핑',
+          time: '10:00 - 20:00',
+          description: '한국전쟁 당시 형성된 부산의 역사적인 전통시장입니다.',
+          stayMinutes: 60,
+          address: '부산광역시 중구 신창동',
+          lat: 35.0996,
+          lng: 129.0269,
+        },
         { type: 'transit', mode: 'car', minutes: 20, km: 4.2 },
-        { type: 'place', id: 'p6', order: 3, name: '감천문화마을', category: '문화', placeType: '관광명소', time: '09:00 - 18:00', description: '알록달록한 벽화와 골목길이 있는 부산의 마추픽추.', stayMinutes: 90, address: '부산광역시 사하구 감내2로', lat: 35.0974, lng: 129.0102 },
+        {
+          type: 'place',
+          id: 'p6',
+          order: 3,
+          name: '감천문화마을',
+          category: '문화',
+          placeType: '관광명소',
+          time: '09:00 - 18:00',
+          description: '알록달록한 벽화와 골목길이 있는 부산의 마추픽추.',
+          stayMinutes: 90,
+          address: '부산광역시 사하구 감내2로',
+          lat: 35.0974,
+          lng: 129.0102,
+        },
       ],
     },
     {
-      day: 3, date: '2026-06-27', shortDate: '6/27', dayOfWeek: '토', estimatedDuration: '2시간 15분',
+      day: 3,
+      date: '2026-06-27',
+      shortDate: '6/27',
+      dayOfWeek: '토',
+      estimatedDuration: '2시간 15분',
       items: [
-        { type: 'place', id: 'p7', order: 1, name: '용두산 공원', category: '공원', placeType: '자연', time: '00:00 - 24:00', description: '부산타워가 있는 공원. 시내 전경을 한눈에 볼 수 있어요.', stayMinutes: 60, address: '부산광역시 중구 용두산길', lat: 35.1000, lng: 129.0328 },
+        {
+          type: 'place',
+          id: 'p7',
+          order: 1,
+          name: '용두산 공원',
+          category: '공원',
+          placeType: '자연',
+          time: '00:00 - 24:00',
+          description: '부산타워가 있는 공원. 시내 전경을 한눈에 볼 수 있어요.',
+          stayMinutes: 60,
+          address: '부산광역시 중구 용두산길',
+          lat: 35.1,
+          lng: 129.0328,
+        },
         { type: 'transit', mode: 'car', minutes: 20, km: 5.2 },
-        { type: 'place', id: 'p8', order: 2, name: '범어사', category: '사찰', placeType: '문화', time: '06:00 - 18:00', description: '신라시대에 창건된 천년 고찰. 금정산 자락에 위치합니다.', stayMinutes: 75, address: '부산광역시 금정구 청룡동', lat: 35.2803, lng: 129.0821 },
+        {
+          type: 'place',
+          id: 'p8',
+          order: 2,
+          name: '범어사',
+          category: '사찰',
+          placeType: '문화',
+          time: '06:00 - 18:00',
+          description: '신라시대에 창건된 천년 고찰. 금정산 자락에 위치합니다.',
+          stayMinutes: 75,
+          address: '부산광역시 금정구 청룡동',
+          lat: 35.2803,
+          lng: 129.0821,
+        },
       ],
     },
   ],
@@ -53,17 +168,35 @@ const MOCK_TRIP: { title: string; days: DayItinerary[] } = {
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
-function StarRating({ value, onChange, size = 'md' }: { value: number; onChange?: (v: number) => void; size?: 'sm' | 'md' | 'lg' }) {
+function StarRating({
+  value,
+  onChange,
+  size = 'md',
+}: {
+  value: number;
+  onChange?: (v: number) => void;
+  size?: 'sm' | 'md' | 'lg';
+}) {
   const [hovered, setHovered] = useState(0);
   const cls = size === 'sm' ? 'text-lg' : size === 'lg' ? 'text-3xl' : 'text-2xl';
   return (
     <div className="flex gap-0.5">
       {[1, 2, 3, 4, 5].map((star) => (
-        <button key={star} type="button"
-          onMouseEnter={() => setHovered(star)} onMouseLeave={() => setHovered(0)}
+        <button
+          key={star}
+          type="button"
+          onMouseEnter={() => setHovered(star)}
+          onMouseLeave={() => setHovered(0)}
           onClick={() => onChange?.(star)}
-          className={cn(cls, 'leading-none transition-colors', (hovered || value) >= star ? 'text-yellow-400' : 'text-gray-200', onChange ? 'cursor-pointer' : 'cursor-default')}
-        >★</button>
+          className={cn(
+            cls,
+            'leading-none transition-colors',
+            (hovered || value) >= star ? 'text-yellow-400' : 'text-gray-200',
+            onChange ? 'cursor-pointer' : 'cursor-default'
+          )}
+        >
+          ★
+        </button>
       ))}
     </div>
   );
@@ -138,7 +271,10 @@ export default function TripItineraryPage({ params }: Props) {
     // Clear previous overlays
     overlaysRef.current.forEach((o) => o.setMap(null));
     overlaysRef.current = [];
-    if (polylineRef.current) { polylineRef.current.setMap(null); polylineRef.current = null; }
+    if (polylineRef.current) {
+      polylineRef.current.setMap(null);
+      polylineRef.current = null;
+    }
 
     const path: any[] = [];
 
@@ -151,19 +287,22 @@ export default function TripItineraryPage({ params }: Props) {
       const bg = isSelected ? '#1d4ed8' : isVisited ? '#22c55e' : '#3b82f6';
       const ring = isSelected ? '3px solid #93c5fd' : '2px solid white';
       const size = isSelected ? '38px' : '30px';
-      const shadow = isSelected
-        ? '0 4px 14px rgba(59,130,246,0.55)'
-        : '0 2px 6px rgba(0,0,0,0.25)';
+      const shadow = isSelected ? '0 4px 14px rgba(59,130,246,0.55)' : '0 2px 6px rgba(0,0,0,0.25)';
 
       const el = document.createElement('div');
       Object.assign(el.style, {
-        width: size, height: size,
+        width: size,
+        height: size,
         background: bg,
         borderRadius: '50%',
         border: ring,
         boxShadow: shadow,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        color: 'white', fontSize: '13px', fontWeight: '700',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'white',
+        fontSize: '13px',
+        fontWeight: '700',
         cursor: 'pointer',
         transform: 'translate(-50%, -50%)',
         transition: 'all 0.2s',
@@ -180,12 +319,18 @@ export default function TripItineraryPage({ params }: Props) {
       if (isSelected) {
         const label = document.createElement('div');
         Object.assign(label.style, {
-          position: 'absolute', bottom: '110%', left: '50%',
+          position: 'absolute',
+          bottom: '110%',
+          left: '50%',
           transform: 'translateX(-50%)',
-          background: '#1d4ed8', color: 'white',
-          fontSize: '11px', fontWeight: '600',
-          padding: '3px 8px', borderRadius: '6px',
-          whiteSpace: 'nowrap', boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+          background: '#1d4ed8',
+          color: 'white',
+          fontSize: '11px',
+          fontWeight: '600',
+          padding: '3px 8px',
+          borderRadius: '6px',
+          whiteSpace: 'nowrap',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
           pointerEvents: 'none',
         });
         label.textContent = place.name;
@@ -194,7 +339,11 @@ export default function TripItineraryPage({ params }: Props) {
         wrapper.appendChild(el);
         wrapper.appendChild(label);
 
-        const overlay = new window.kakao.maps.CustomOverlay({ position, content: wrapper, zIndex: 20 });
+        const overlay = new window.kakao.maps.CustomOverlay({
+          position,
+          content: wrapper,
+          zIndex: 20,
+        });
         overlay.setMap(mapInstanceRef.current);
         overlaysRef.current.push(overlay);
       } else {
@@ -229,18 +378,23 @@ export default function TripItineraryPage({ params }: Props) {
   }, [mapReady, activeDay, selectedPlace, visitedPlaces, places]);
 
   const toggleVisit = (id: string) =>
-    setVisitedPlaces((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next; });
+    setVisitedPlaces((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
 
   const t = useTranslations('trip.itinerary');
 
   const openReview = (place: PlaceItem) => {
-    setReviewModal(place); setReviewRating(0); setReviewText('');
+    setReviewModal(place);
+    setReviewRating(0);
+    setReviewText('');
   };
 
   return (
     <>
       <div className="flex h-screen flex-col overflow-hidden bg-white">
-
         {/* ── Header ── */}
         <TripTabHeader
           tripTitle={MOCK_TRIP.title}
@@ -250,16 +404,23 @@ export default function TripItineraryPage({ params }: Props) {
 
         {/* ── Body ── */}
         <div className="flex flex-1 overflow-hidden">
-
           {/* Left panel */}
           <aside className="flex w-[380px] shrink-0 flex-col border-r border-gray-100 bg-white">
             {/* Day tabs */}
             <div className="flex shrink-0 gap-2 border-b border-gray-100 px-4 py-3">
               {days.map((d) => (
-                <button key={d.day} type="button"
-                  onClick={() => { setActiveDay(d.day); setSelectedPlace(null); }}
-                  className={cn('rounded-full px-3 py-1.5 text-sm font-medium transition-all',
-                    activeDay === d.day ? 'bg-blue-600 text-white shadow-sm shadow-blue-200' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                <button
+                  key={d.day}
+                  type="button"
+                  onClick={() => {
+                    setActiveDay(d.day);
+                    setSelectedPlace(null);
+                  }}
+                  className={cn(
+                    'rounded-full px-3 py-1.5 text-sm font-medium transition-all',
+                    activeDay === d.day
+                      ? 'bg-blue-600 text-white shadow-sm shadow-blue-200'
+                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                   )}
                 >
                   {d.dayOfWeek} {d.shortDate}
@@ -269,8 +430,12 @@ export default function TripItineraryPage({ params }: Props) {
 
             {/* Date + duration */}
             <div className="flex shrink-0 items-center justify-between border-b border-gray-50 px-4 py-2.5">
-              <p className="text-sm font-semibold text-gray-800">{currentDay.date} · Day {currentDay.day}</p>
-              <p className="text-xs text-gray-400">{t('estimatedDuration', { duration: currentDay.estimatedDuration })}</p>
+              <p className="text-sm font-semibold text-gray-800">
+                {currentDay.date} · Day {currentDay.day}
+              </p>
+              <p className="text-xs text-gray-400">
+                {t('estimatedDuration', { duration: currentDay.estimatedDuration })}
+              </p>
             </div>
 
             {/* Itinerary list */}
@@ -279,7 +444,10 @@ export default function TripItineraryPage({ params }: Props) {
                 {currentDay.items.map((item, idx) => {
                   if (item.type === 'transit') {
                     return (
-                      <div key={idx} className="flex items-center gap-3 px-3 py-1">
+                      <div
+                        key={idx}
+                        className="flex items-center gap-3 px-3 py-1"
+                      >
                         <div className="flex flex-col items-center gap-0.5">
                           <div className="h-2.5 w-px bg-gray-200" />
                           <div className="flex size-5 items-center justify-center rounded-full bg-gray-100 text-gray-400">
@@ -288,8 +456,16 @@ export default function TripItineraryPage({ params }: Props) {
                           <div className="h-2.5 w-px bg-gray-200" />
                         </div>
                         <div className="flex flex-1 items-center justify-between">
-                          <span className="text-xs text-gray-400">{t(`transit.${item.mode}`)} · {t('transitInfo', { minutes: item.minutes, km: item.km })}</span>
-                          <button type="button" className="text-xs text-blue-500 hover:text-blue-700">{t('navigate')}</button>
+                          <span className="text-xs text-gray-400">
+                            {t(`transit.${item.mode}`)} ·{' '}
+                            {t('transitInfo', { minutes: item.minutes, km: item.km })}
+                          </span>
+                          <button
+                            type="button"
+                            className="text-xs text-blue-500 hover:text-blue-700"
+                          >
+                            {t('navigate')}
+                          </button>
                         </div>
                       </div>
                     );
@@ -300,56 +476,110 @@ export default function TripItineraryPage({ params }: Props) {
                   const rating = quickRatings[item.id] ?? 0;
 
                   return (
-                    <div key={item.id}
-                      className={cn('cursor-pointer rounded-xl border p-4 transition-all',
-                        isSelected ? 'border-blue-300 bg-blue-50/50 shadow-sm shadow-blue-100' : 'border-gray-100 bg-white hover:border-gray-200 hover:shadow-sm'
+                    <div
+                      key={item.id}
+                      className={cn(
+                        'cursor-pointer rounded-xl border p-4 transition-all',
+                        isSelected
+                          ? 'border-blue-300 bg-blue-50/50 shadow-sm shadow-blue-100'
+                          : 'border-gray-100 bg-white hover:border-gray-200 hover:shadow-sm'
                       )}
                       onClick={() => setSelectedPlace(isSelected ? null : item)}
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-start gap-2.5">
-                          <span className={cn('mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white',
-                            isSelected ? 'bg-blue-700' : isVisited ? 'bg-green-500' : 'bg-blue-500'
-                          )}>
+                          <span
+                            className={cn(
+                              'mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white',
+                              isSelected
+                                ? 'bg-blue-700'
+                                : isVisited
+                                  ? 'bg-green-500'
+                                  : 'bg-blue-500'
+                            )}
+                          >
                             {item.order}
                           </span>
                           <div className="min-w-0">
                             <p className="text-sm font-semibold text-gray-900">{item.name}</p>
-                            <p className="text-xs text-gray-400">{item.time} · {item.category}</p>
+                            <p className="text-xs text-gray-400">
+                              {item.time} · {item.category}
+                            </p>
                           </div>
                         </div>
-                        <button type="button" onClick={(e) => e.stopPropagation()}
-                          className="shrink-0 rounded-lg border border-gray-200 px-2.5 py-1 text-xs text-gray-500 hover:border-gray-300">
+                        <button
+                          type="button"
+                          onClick={(e) => e.stopPropagation()}
+                          className="shrink-0 rounded-lg border border-gray-200 px-2.5 py-1 text-xs text-gray-500 hover:border-gray-300"
+                        >
                           {t('edit')}
                         </button>
                       </div>
 
-                      <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-gray-500">{item.description}</p>
+                      <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-gray-500">
+                        {item.description}
+                      </p>
 
-                      <div className="mt-3" onClick={(e) => e.stopPropagation()}>
-                        <button type="button" onClick={() => toggleVisit(item.id)} className="flex items-center gap-2">
-                          <div className={cn('flex size-4 items-center justify-center rounded-full border-2 transition-all',
-                            isVisited ? 'border-blue-500 bg-blue-500' : 'border-gray-300 hover:border-blue-400'
-                          )}>
+                      <div
+                        className="mt-3"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => toggleVisit(item.id)}
+                          className="flex items-center gap-2"
+                        >
+                          <div
+                            className={cn(
+                              'flex size-4 items-center justify-center rounded-full border-2 transition-all',
+                              isVisited
+                                ? 'border-blue-500 bg-blue-500'
+                                : 'border-gray-300 hover:border-blue-400'
+                            )}
+                          >
                             {isVisited && (
-                              <svg className="size-2.5 text-white" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              <svg
+                                className="size-2.5 text-white"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth={3}
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M5 13l4 4L19 7"
+                                />
                               </svg>
                             )}
                           </div>
-                          <span className={cn('text-xs', isVisited ? 'font-medium text-blue-600' : 'text-gray-400')}>
+                          <span
+                            className={cn(
+                              'text-xs',
+                              isVisited ? 'font-medium text-blue-600' : 'text-gray-400'
+                            )}
+                          >
                             {isVisited ? t('visitDone') : t('visitCheck')}
                           </span>
                         </button>
 
                         {isVisited && (
                           <div className="mt-2.5 space-y-2.5">
-                            <button type="button" onClick={() => openReview(item)}
-                              className="w-full rounded-lg bg-blue-600 py-2 text-xs font-semibold text-white shadow-sm shadow-blue-100 transition-all hover:bg-blue-700">
+                            <button
+                              type="button"
+                              onClick={() => openReview(item)}
+                              className="w-full rounded-lg bg-blue-600 py-2 text-xs font-semibold text-white shadow-sm shadow-blue-100 transition-all hover:bg-blue-700"
+                            >
                               {t('addRecord')}
                             </button>
                             <div className="flex items-center gap-2">
-                              <StarRating value={rating} onChange={(v) => setQuickRatings((prev) => ({ ...prev, [item.id]: v }))} size="sm" />
+                              <StarRating
+                                value={rating}
+                                onChange={(v) =>
+                                  setQuickRatings((prev) => ({ ...prev, [item.id]: v }))
+                                }
+                                size="sm"
+                              />
                               <span className="text-xs text-gray-400">{t('ratingOnly')}</span>
                             </div>
                           </div>
@@ -365,7 +595,10 @@ export default function TripItineraryPage({ params }: Props) {
           {/* ── Map area ── */}
           <div className="relative flex-1 overflow-hidden">
             {/* Kakao Map container */}
-            <div ref={mapRef} className="absolute inset-0" />
+            <div
+              ref={mapRef}
+              className="absolute inset-0"
+            />
 
             {/* Loading state */}
             {!mapReady && (
@@ -378,10 +611,12 @@ export default function TripItineraryPage({ params }: Props) {
             )}
 
             {/* ── Place detail panel ── */}
-            <div className={cn(
-              'absolute bottom-0 left-0 right-0 z-20 rounded-t-3xl bg-white shadow-2xl shadow-gray-900/20 transition-transform duration-300 ease-out',
-              selectedPlace ? 'translate-y-0' : 'translate-y-full'
-            )}>
+            <div
+              className={cn(
+                'absolute bottom-0 left-0 right-0 z-20 rounded-t-3xl bg-white shadow-2xl shadow-gray-900/20 transition-transform duration-300 ease-out',
+                selectedPlace ? 'translate-y-0' : 'translate-y-full'
+              )}
+            >
               {selectedPlace && (
                 <>
                   <div className="flex justify-center pt-3 pb-1">
@@ -399,47 +634,84 @@ export default function TripItineraryPage({ params }: Props) {
                     <div className="flex items-start justify-between">
                       <div>
                         <h3 className="text-base font-bold text-gray-900">{selectedPlace.name}</h3>
-                        <p className="mt-0.5 text-xs text-gray-400">{selectedPlace.placeType} · {selectedPlace.category}</p>
+                        <p className="mt-0.5 text-xs text-gray-400">
+                          {selectedPlace.placeType} · {selectedPlace.category}
+                        </p>
                       </div>
-                      <button type="button" onClick={() => setSelectedPlace(null)}
-                        className="flex size-7 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200">
-                        <svg className="size-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      <button
+                        type="button"
+                        onClick={() => setSelectedPlace(null)}
+                        className="flex size-7 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200"
+                      >
+                        <svg
+                          className="size-3.5"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
                         </svg>
                       </button>
                     </div>
 
                     <div className="mt-3 flex gap-2">
-                      <button type="button" onClick={() => toggleVisit(selectedPlace.id)}
-                        className={cn('flex-1 rounded-full border py-2 text-xs font-medium transition-all',
-                          visitedPlaces.has(selectedPlace.id) ? 'border-blue-500 bg-blue-50 text-blue-600' : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                        )}>
+                      <button
+                        type="button"
+                        onClick={() => toggleVisit(selectedPlace.id)}
+                        className={cn(
+                          'flex-1 rounded-full border py-2 text-xs font-medium transition-all',
+                          visitedPlaces.has(selectedPlace.id)
+                            ? 'border-blue-500 bg-blue-50 text-blue-600'
+                            : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                        )}
+                      >
                         {visitedPlaces.has(selectedPlace.id) ? t('visitDone') : t('visitDoneShort')}
                       </button>
-                      <button type="button" className="flex-1 rounded-full border border-gray-200 py-2 text-xs font-medium text-gray-600 hover:border-gray-300">
+                      <button
+                        type="button"
+                        className="flex-1 rounded-full border border-gray-200 py-2 text-xs font-medium text-gray-600 hover:border-gray-300"
+                      >
                         {t('navigate')}
                       </button>
-                      <button type="button" onClick={() => openReview(selectedPlace)}
-                        className="flex-1 rounded-full bg-blue-600 py-2 text-xs font-semibold text-white shadow-sm shadow-blue-200 hover:bg-blue-700">
+                      <button
+                        type="button"
+                        onClick={() => openReview(selectedPlace)}
+                        className="flex-1 rounded-full bg-blue-600 py-2 text-xs font-semibold text-white shadow-sm shadow-blue-200 hover:bg-blue-700"
+                      >
                         {t('leaveReview')}
                       </button>
                     </div>
 
                     <hr className="my-4 border-gray-100" />
 
-                    <p className="text-sm leading-relaxed text-gray-600">{selectedPlace.description}</p>
+                    <p className="text-sm leading-relaxed text-gray-600">
+                      {selectedPlace.description}
+                    </p>
                     <div className="mt-2 space-y-0.5">
-                      <p className="text-xs text-gray-400">{t('stayMinutes', { minutes: selectedPlace.stayMinutes })}</p>
+                      <p className="text-xs text-gray-400">
+                        {t('stayMinutes', { minutes: selectedPlace.stayMinutes })}
+                      </p>
                       <p className="text-xs text-gray-400">{selectedPlace.time}</p>
                       <p className="text-xs text-gray-400">{selectedPlace.address}</p>
                     </div>
 
-                    <Link href={`/places/${selectedPlace.id}`} className="mt-3 inline-block text-xs text-blue-500 hover:text-blue-700">
+                    <Link
+                      href={`/places/${selectedPlace.id}`}
+                      className="mt-3 inline-block text-xs text-blue-500 hover:text-blue-700"
+                    >
                       {t('placeDetail')}
                     </Link>
 
-                    <button type="button" onClick={() => setSelectedPlace(null)}
-                      className="mt-4 w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 py-3 text-sm font-semibold text-white shadow-md shadow-blue-200 hover:from-blue-700 hover:to-indigo-700">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPlace(null)}
+                      className="mt-4 w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 py-3 text-sm font-semibold text-white shadow-md shadow-blue-200 hover:from-blue-700 hover:to-indigo-700"
+                    >
                       {t('close')}
                     </button>
                   </div>
@@ -452,45 +724,74 @@ export default function TripItineraryPage({ params }: Props) {
 
       {/* ── Review Modal ── */}
       {reviewModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-          onClick={(e) => { if (e.target === e.currentTarget) setReviewModal(null); }}>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setReviewModal(null);
+          }}
+        >
           <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
             <div className="mb-5 flex items-start justify-between">
               <div>
                 <h3 className="text-lg font-bold text-gray-900">{reviewModal.name}</h3>
                 <p className="mt-0.5 text-xs text-gray-400">{reviewModal.placeType}</p>
               </div>
-              <button type="button" onClick={() => setReviewModal(null)}
-                className="flex size-7 items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200">
-                <svg className="size-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              <button
+                type="button"
+                onClick={() => setReviewModal(null)}
+                className="flex size-7 items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200"
+              >
+                <svg
+                  className="size-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
 
             <div className="mb-5 flex flex-col items-center gap-2.5">
               <p className="text-sm text-gray-500">{t('reviewQuestion')}</p>
-              <StarRating value={reviewRating} onChange={setReviewRating} size="lg" />
+              <StarRating
+                value={reviewRating}
+                onChange={setReviewRating}
+                size="lg"
+              />
             </div>
 
-            <textarea value={reviewText} onChange={(e) => setReviewText(e.target.value)}
+            <textarea
+              value={reviewText}
+              onChange={(e) => setReviewText(e.target.value)}
               placeholder={t('reviewPlaceholder')}
               rows={4}
               className="w-full resize-none rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-800 outline-none transition-all placeholder:text-gray-300 focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             />
 
             <div className="mt-4 flex gap-2.5">
-              <button type="button" onClick={() => setReviewModal(null)}
-                className="flex-1 rounded-xl border border-gray-200 py-3 text-sm font-medium text-gray-500 hover:bg-gray-50">
+              <button
+                type="button"
+                onClick={() => setReviewModal(null)}
+                className="flex-1 rounded-xl border border-gray-200 py-3 text-sm font-medium text-gray-500 hover:bg-gray-50"
+              >
                 {t('cancel')}
               </button>
-              <button type="button"
+              <button
+                type="button"
                 disabled={reviewRating === 0 && reviewText.trim() === ''}
                 onClick={() => {
-                  if (reviewModal) setQuickRatings((prev) => ({ ...prev, [reviewModal.id]: reviewRating }));
+                  if (reviewModal)
+                    setQuickRatings((prev) => ({ ...prev, [reviewModal.id]: reviewRating }));
                   setReviewModal(null);
                 }}
-                className="flex-1 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 py-3 text-sm font-semibold text-white shadow-md shadow-blue-200 hover:from-blue-700 hover:to-indigo-700 disabled:opacity-40 disabled:shadow-none">
+                className="flex-1 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 py-3 text-sm font-semibold text-white shadow-md shadow-blue-200 hover:from-blue-700 hover:to-indigo-700 disabled:opacity-40 disabled:shadow-none"
+              >
                 {t('saveRecord')}
               </button>
             </div>
@@ -499,7 +800,10 @@ export default function TripItineraryPage({ params }: Props) {
       )}
 
       {/* ── 리부트 ── */}
-      <RebootFab tripId={tripId} onOpen={() => setRebootOpen(true)} />
+      <RebootFab
+        tripId={tripId}
+        onOpen={() => setRebootOpen(true)}
+      />
       <RebootModal
         open={rebootOpen}
         onClose={() => setRebootOpen(false)}

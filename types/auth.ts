@@ -1,17 +1,10 @@
 export type OAuthProvider = 'google' | 'naver' | 'kakao';
 
-export interface GoogleOAuthAuthorizationCodeLoginRequest {
-  provider: 'google';
+export interface OAuthAuthorizationCodeLoginRequest {
+  provider: OAuthProvider;
   providerToken: string;
   redirectUri: string;
   codeVerifier: string;
-}
-
-export interface ProviderOAuthAuthorizationCodeLoginRequest {
-  provider: Exclude<OAuthProvider, 'google'>;
-  providerToken: string;
-  redirectUri: string;
-  codeVerifier?: never;
 }
 
 export interface OAuthIdTokenLoginRequest {
@@ -22,8 +15,7 @@ export interface OAuthIdTokenLoginRequest {
 }
 
 export type OAuthLoginRequest =
-  | GoogleOAuthAuthorizationCodeLoginRequest
-  | ProviderOAuthAuthorizationCodeLoginRequest
+  | OAuthAuthorizationCodeLoginRequest
   | OAuthIdTokenLoginRequest;
 
 export interface OAuthLoginData {
