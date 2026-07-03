@@ -13,14 +13,14 @@ import {
   travelSurveyQueryKey,
   useSaveTravelSurvey,
   useTravelSurvey,
-} from '@/features/onboarding/hooks/use-travel-survey';
-import { getOnboardingErrorMessage } from '@/features/onboarding/lib/onboarding-error-message';
+} from '@/hooks/use-travel-survey';
+import { getOnboardingErrorMessage } from '@/lib/onboarding-error-message';
 import {
   createOnboardingProfile,
   EMPTY_ONBOARDING_ANSWERS,
   fromTravelSurveyResponse,
   toTravelSurveyRequest,
-} from '@/features/onboarding/model/onboarding';
+} from '@/lib/onboarding';
 import { useAuthStore } from '@/stores/auth-store';
 import type { AppLanguage, OnboardingAnswers, VisitPurpose } from '@/types/onboarding';
 
