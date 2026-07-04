@@ -4,9 +4,7 @@ import type {
   FestivalSummary,
 } from '@/types/festival';
 
-const API_BASE_URL = (
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? 'https://api.buting.store'
-).replace(/\/$/, '');
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '') ?? '';
 
 const FALLBACK_FESTIVALS: FestivalSummary[] = [
   {

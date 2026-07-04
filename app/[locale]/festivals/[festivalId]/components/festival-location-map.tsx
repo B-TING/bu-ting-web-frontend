@@ -176,7 +176,7 @@ export function FestivalLocationMap({
   return (
     <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
       <div className="border-b border-slate-100 px-6 py-5">
-        <p className="text-sm font-semibold text-sky-700">Festival Location</p>
+        <p className="text-sm font-semibold text-sky-700">행사 위치</p>
         <h2 className="mt-1 text-2xl font-black text-slate-950">
           {'\uD589\uC0AC \uC704\uCE58 \uC815\uBCF4'}
         </h2>

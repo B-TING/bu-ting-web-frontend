@@ -2,6 +2,7 @@ import { ArrowLeft, Star } from 'lucide-react';
 import Link from 'next/link';
 
 import { FestivalLocationMap } from '@/app/[locale]/festivals/[festivalId]/components/festival-location-map';
+import { formatCompactDate } from '@/lib/utils';
 import type {
   FestivalDetailPageContext,
   FestivalDetailView,
@@ -24,14 +25,6 @@ function getFestivalPosterFallback(contentId?: string | null) {
   }
 
   return fallbackPosters[contentId] ?? null;
-}
-
-function formatApiDate(value: string) {
-  if (!/^\d{8}$/.test(value)) {
-    return value;
-  }
-
-  return `${value.slice(0, 4)}.${value.slice(4, 6)}.${value.slice(6, 8)}`;
 }
 
 function toNullableNumber(value?: string | number | null) {
@@ -83,11 +76,11 @@ function getFestivalPeriod(festival: FestivalResolvedView) {
   const { summary, detail } = festival;
 
   if (summary?.eventStartDate && summary?.eventEndDate) {
-    return `${formatApiDate(summary.eventStartDate)} - ${formatApiDate(summary.eventEndDate)}`;
+    return `${formatCompactDate(summary.eventStartDate)} - ${formatCompactDate(summary.eventEndDate)}`;
   }
 
   if (detail.details?.eventstartdate && detail.details?.eventenddate) {
-    return `${formatApiDate(detail.details.eventstartdate)} - ${formatApiDate(detail.details.eventenddate)}`;
+    return `${formatCompactDate(detail.details.eventstartdate)} - ${formatCompactDate(detail.details.eventenddate)}`;
   }
 
   return '\uC77C\uC815 \uC815\uBCF4 \uC5C6\uC74C';
@@ -201,7 +194,7 @@ export function FestivalDetail({
             <ArrowLeft className="size-5" />
           </Link>
           <div>
-            <p className="text-sm font-semibold text-sky-700">Festival Detail</p>
+            <p className="text-sm font-semibold text-sky-700">축제 상세</p>
             <h1 className="text-2xl font-black text-slate-950 sm:text-3xl">
               {summary?.title ?? '\uCD95\uC81C \uC0C1\uC138 \uC815\uBCF4'}
             </h1>
@@ -213,7 +206,7 @@ export function FestivalDetail({
         <section className="grid gap-8 lg:grid-cols-2">
           <article className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
             <div className="border-b border-slate-100 px-6 py-5">
-              <p className="text-sm font-semibold text-sky-700">Poster</p>
+              <p className="text-sm font-semibold text-sky-700">포스터</p>
               <h2 className="mt-1 text-2xl font-black text-slate-950">
                 {'\uD3EC\uC2A4\uD130'}
               </h2>
@@ -239,7 +232,7 @@ export function FestivalDetail({
 
         <article className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="border-b border-slate-100 pb-6">
-            <p className="text-sm font-semibold text-sky-700">Detail</p>
+            <p className="text-sm font-semibold text-sky-700">상세 정보</p>
             <h2 className="mt-1 text-2xl font-black text-slate-950">
               {'\uCD95\uC81C \uC0C1\uC138 \uC815\uBCF4'}
             </h2>

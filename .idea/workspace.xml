@@ -4,11 +4,10 @@
     <list default="true" id="6bc8d5dc-c404-4a8e-a5ba-972ce0226029" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/[locale]/festivals/[festivalId]/components/festival-detail.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/[locale]/festivals/[festivalId]/components/festival-detail.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/[locale]/festivals/[festivalId]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/[locale]/festivals/[festivalId]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/[locale]/festivals/[festivalId]/components/festival-location-map.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/[locale]/festivals/[festivalId]/components/festival-location-map.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/[locale]/festivals/components/festival-calendar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/[locale]/festivals/components/festival-calendar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/[locale]/festivals/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/[locale]/festivals/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/[locale]/stays/components/stay-detail-sheet.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/[locale]/stays/components/stay-detail-sheet.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/[locale]/stays/data.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/[locale]/stays/data.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/festival.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/festival.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/utils.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,7 +40,7 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;npm.Next.js: server-side.executor&quot;: &quot;Run&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
     &quot;ts.external.directory.path&quot;: &quot;C:\\KB\\BuTing\\bu-ting-web-fronted\\node_modules\\typescript\\lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
@@ -79,6 +78,8 @@
       <workItem from="1782622459798" duration="1473000" />
       <workItem from="1782625079575" duration="7940000" />
       <workItem from="1782781381958" duration="11312000" />
+      <workItem from="1783128287789" duration="3676000" />
+      <workItem from="1783169467225" duration="1273000" />
     </task>
     <servers />
   </component>

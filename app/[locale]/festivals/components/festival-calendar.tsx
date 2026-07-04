@@ -31,7 +31,7 @@ export function FestivalCalendar({
             <ArrowLeft className="size-5" />
           </Link>
           <div>
-            <p className="text-sm font-semibold text-sky-700">Festival Directory</p>
+            <p className="text-sm font-semibold text-sky-700">축제 디렉토리</p>
             <h1 className="text-2xl font-black text-slate-950 sm:text-3xl">
               {'\uBD80\uC0B0 \uCD95\uC81C \uC815\uBCF4'}
             </h1>
