@@ -14,6 +14,7 @@ import {
   type KakaoMap,
 } from '@/lib/kakao-map';
 import { MOCK_LUGGAGE_STATIONS } from '@/constants/luggage-stations';
+import { useLuggageFavoriteStore } from '@/stores/luggage-favorite-store';
 import type { LuggageStation } from '@/types/luggage';
 import { LuggageStationCard } from './components/LuggageStationCard';
 import { LuggageStationDetailPanel } from './components/LuggageStationDetailPanel';
@@ -28,6 +29,15 @@ export default function LuggagePage() {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<KakaoMap | null>(null);
   const overlaysRef = useRef<KakaoCustomOverlay[]>([]);
+
+  const hydrate = useLuggageFavoriteStore((state) => state.hydrate);
+  const favoriteStationIds = useLuggageFavoriteStore((state) => state.favoriteStationIds);
+  const toggleFavorite = useLuggageFavoriteStore((state) => state.toggleFavorite);
+  const isFavorite = (stationId: string) => favoriteStationIds.has(stationId);
+
+  useEffect(() => {
+    hydrate();
+  }, [hydrate]);
 
   // ── Kakao Maps SDK 로드 ──
   useEffect(() => {
@@ -98,6 +108,8 @@ export default function LuggagePage() {
           {selectedStation ? (
             <LuggageStationDetailPanel
               station={selectedStation}
+              isFavorite={isFavorite(selectedStation.id)}
+              onToggleFavorite={() => toggleFavorite(selectedStation.id)}
               onBack={() => setSelectedStation(null)}
             />
           ) : (
@@ -106,6 +118,7 @@ export default function LuggagePage() {
                 <LuggageStationCard
                   key={station.id}
                   station={station}
+                  isFavorite={isFavorite(station.id)}
                   onClick={() => setSelectedStation(station)}
                 />
               ))}

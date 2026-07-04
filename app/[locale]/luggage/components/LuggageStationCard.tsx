@@ -3,11 +3,13 @@ import type { LuggageStation } from '@/types/luggage';
 
 interface LuggageStationCardProps {
   station: LuggageStation;
+  isFavorite: boolean;
   onClick: () => void;
 }
 
 export function LuggageStationCard({
   station,
+  isFavorite,
   onClick,
 }: LuggageStationCardProps) {
   return (
@@ -31,6 +33,7 @@ export function LuggageStationCard({
             총 보관함 {station.totalLockers}개 · {station.detailLocation}
           </p>
         </div>
+        {isFavorite && <span className="shrink-0 text-yellow-400">★</span>}
       </div>
     </button>
   );
