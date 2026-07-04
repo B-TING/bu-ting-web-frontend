@@ -16,6 +16,7 @@ import {
 import { MOCK_LUGGAGE_STATIONS } from '@/constants/luggage-stations';
 import type { LuggageStation } from '@/types/luggage';
 import { LuggageStationCard } from './components/LuggageStationCard';
+import { LuggageStationDetailPanel } from './components/LuggageStationDetailPanel';
 
 const BUSAN_CENTER = { lat: 35.1587, lng: 129.0756 };
 
@@ -94,15 +95,22 @@ export default function LuggagePage() {
 
       <div className="flex flex-1 overflow-hidden">
         <aside className="flex w-[380px] shrink-0 flex-col overflow-hidden border-r border-gray-100 bg-white">
-          <div className="flex-1 space-y-2 overflow-y-auto p-3">
-            {stations.map((station) => (
-              <LuggageStationCard
-                key={station.id}
-                station={station}
-                onClick={() => setSelectedStation(station)}
-              />
-            ))}
-          </div>
+          {selectedStation ? (
+            <LuggageStationDetailPanel
+              station={selectedStation}
+              onBack={() => setSelectedStation(null)}
+            />
+          ) : (
+            <div className="flex-1 space-y-2 overflow-y-auto p-3">
+              {stations.map((station) => (
+                <LuggageStationCard
+                  key={station.id}
+                  station={station}
+                  onClick={() => setSelectedStation(station)}
+                />
+              ))}
+            </div>
+          )}
         </aside>
 
         <div className="relative flex-1 overflow-hidden">
