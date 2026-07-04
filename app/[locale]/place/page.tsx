@@ -14,7 +14,7 @@ import {
 } from '@/lib/kakao-map';
 import { usePlaceDetail, usePlaceList } from '@/hooks/use-place';
 import type { Place, PlaceContentTypeId } from '@/types/place';
-import { getMapViewport, onMapIdle } from './kakao-map-viewport';
+import { getMapViewport, onMapIdle, panMapByPixels } from './kakao-map-viewport';
 import { PlaceCard } from './components/PlaceCard';
 import {
   PlaceCategoryFilter,
@@ -44,6 +44,8 @@ export default function PlacePage() {
   const skipNextIdleRef = useRef(false);
   const listContainerRef = useRef<HTMLDivElement>(null);
   const listEndRef = useRef<HTMLDivElement>(null);
+  const markerDraggedRef = useRef(false);
+  const idleDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const {
     data: listPages,
@@ -91,17 +93,23 @@ export default function PlacePage() {
           return;
         }
 
-        const { center, radius } = getMapViewport(map);
-        setViewport({
-          lat: center.lat,
-          lng: center.lng,
-          radius: Math.min(Math.round(radius), MAX_RADIUS),
-        });
+        if (idleDebounceRef.current) clearTimeout(idleDebounceRef.current);
+        idleDebounceRef.current = setTimeout(() => {
+          setSelectedPlace(null);
+
+          const { center, radius } = getMapViewport(map);
+          setViewport({
+            lat: center.lat,
+            lng: center.lng,
+            radius: Math.min(Math.round(radius), MAX_RADIUS),
+          });
+        }, 300);
       });
     });
 
     return () => {
       cancelled = true;
+      if (idleDebounceRef.current) clearTimeout(idleDebounceRef.current);
       unsubscribeIdle?.();
     };
   }, []);
@@ -121,8 +129,36 @@ export default function PlacePage() {
         selected: isSelected,
       });
       el.style.background = PLACE_CATEGORY_COLORS[place.contentTypeId] ?? '#3b82f6';
+
+      // 마커(CustomOverlay) 위에서 시작한 드래그는 카카오맵이 지도 자체의
+      // 드래그로 인식하지 않아 지도가 움직이지 않는다. 드래그 중에만
+      // document에 임시 리스너를 붙여 픽셀 델타만큼 지도를 수동으로 이동시킨다.
+      el.addEventListener('mousedown', (downEvent) => {
+        let last = { x: downEvent.clientX, y: downEvent.clientY };
+        markerDraggedRef.current = false;
+
+        const handleMove = (moveEvent: MouseEvent) => {
+          const dx = moveEvent.clientX - last.x;
+          const dy = moveEvent.clientY - last.y;
+          if (markerDraggedRef.current || Math.abs(dx) > 2 || Math.abs(dy) > 2) {
+            markerDraggedRef.current = true;
+            last = { x: moveEvent.clientX, y: moveEvent.clientY };
+            panMapByPixels(map, -dx, -dy);
+          }
+        };
+
+        const handleUp = () => {
+          document.removeEventListener('mousemove', handleMove);
+          document.removeEventListener('mouseup', handleUp);
+        };
+
+        document.addEventListener('mousemove', handleMove);
+        document.addEventListener('mouseup', handleUp);
+      });
+
       el.addEventListener('click', (e) => {
         e.stopPropagation();
+        if (markerDraggedRef.current) return;
         setSelectedPlace(place);
       });
 

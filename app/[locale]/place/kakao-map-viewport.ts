@@ -18,6 +18,14 @@ interface KakaoMapWithViewport extends KakaoMap {
     getSouthWest(): KakaoLatLngLike;
     getNorthEast(): KakaoLatLngLike;
   };
+  panBy(dx: number, dy: number): void;
+}
+
+// 마커(CustomOverlay) 위에서 시작한 드래그는 카카오맵이 지도 자체의
+// 드래그로 인식하지 않아 지도가 움직이지 않는다. 마커 위 드래그를
+// 감지해 픽셀 델타만큼 수동으로 지도를 이동시켜 보완한다.
+export function panMapByPixels(map: KakaoMap, dx: number, dy: number) {
+  (map as KakaoMapWithViewport).panBy(dx, dy);
 }
 
 function getKakaoMapsEvent() {
