@@ -1,6 +1,10 @@
 import { apiRequest } from '@/lib/api-client';
-import { ApiResponse } from '@/types/auth';
-import { PlaceListRequest, PlaceListResponse } from '@/types/place';
+import {
+  PlaceDetailRequest,
+  PlaceDetailResponse,
+  PlaceListRequest,
+  PlaceListResponse,
+} from '@/types/place';
 
 export function getPlaceList(request: PlaceListRequest) {
   const params = new URLSearchParams({
@@ -14,7 +18,13 @@ export function getPlaceList(request: PlaceListRequest) {
   if (request.contentTypeId) params.set('contentTypeId', request.contentTypeId);
   if (request.arrange) params.set('arrange', request.arrange);
 
-  return apiRequest<ApiResponse<PlaceListResponse>>(
-    `/api/v1/places/location?${params.toString()}`,
-  );
+  return apiRequest<PlaceListResponse>(`/api/v1/places/location?${params.toString()}`);
+}
+
+export function getPlaceDetail({ contentId, contentTypeId, googleSearchText }: PlaceDetailRequest) {
+  const params = new URLSearchParams({ contentTypeId });
+
+  if (googleSearchText) params.set('googleSearchText', googleSearchText);
+
+  return apiRequest<PlaceDetailResponse>(`/api/v1/places/${contentId}/detail?${params.toString()}`);
 }

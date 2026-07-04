@@ -25,7 +25,7 @@ export interface PlaceListRequest {
 
 export interface Place {
   contentId: string;
-  contentTypeId: string;
+  contentTypeId: PlaceContentTypeId;
   title: string;
   address: string;
   imageUrl: string;
@@ -41,4 +41,34 @@ export interface PlaceListResponse {
   size: number;
   totalCount: number;
   places: Place[];
+}
+
+export interface PlaceDetailRequest {
+  contentId: string;
+  contentTypeId: PlaceContentTypeId;
+  googleSearchText?: string;
+}
+
+export interface PlaceGoogleReview {
+  rating: number;
+  text: string;
+  authorName: string;
+  relativePublishTimeDescription: string;
+  publishTime: string;
+}
+
+export interface PlaceGooglePlace {
+  placeId: string;
+  rating: number;
+  reviewCount: number;
+  priceLevel: string;
+  openingHours: string[];
+  reviews: PlaceGoogleReview[];
+}
+
+export interface PlaceDetailResponse {
+  contentId: string;
+  contentTypeId: PlaceContentTypeId;
+  details: Record<string, string>;
+  googlePlace: PlaceGooglePlace | null;
 }
