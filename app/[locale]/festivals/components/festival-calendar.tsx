@@ -43,16 +43,14 @@ export function FestivalCalendar({
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-5 sm:px-6">
           <Link
             href="/"
-            aria-label={'\uBA54\uC778\uC73C\uB85C \uB3CC\uC544\uAC00\uAE30'}
+            aria-label="메인으로 돌아가기"
             className="flex size-10 items-center justify-center rounded-full text-sky-700 transition hover:bg-sky-50"
           >
             <ArrowLeft className="size-5" />
           </Link>
           <div>
-            <p className="text-sm font-semibold text-sky-700">축제 디렉토리</p>
-            <h1 className="text-2xl font-black text-slate-950 sm:text-3xl">
-              {'\uBD80\uC0B0 \uCD95\uC81C \uC815\uBCF4'}
-            </h1>
+            <p className="text-sm font-semibold text-sky-700">축제 둘러보기</p>
+            <h1 className="text-2xl font-black text-slate-950 sm:text-3xl">부산 축제 정보</h1>
           </div>
         </div>
       </header>
@@ -60,14 +58,11 @@ export function FestivalCalendar({
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         <div className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div>
-            <p className="text-sm font-semibold text-slate-500">
-              {'\uC6D4\uBCC4 \uCD95\uC81C \uB458\uB7EC\uBCF4\uAE30'}
-            </p>
+            <p className="text-sm font-semibold text-slate-500">월별 축제 둘러보기</p>
             <h2 className="mt-1 text-2xl font-black text-slate-950">{monthLabel}</h2>
             <p className="mt-2 text-sm text-slate-500">
-              {'\uCD1D '}
-              <span className="font-bold text-slate-900">{sortedFestivals.length}</span>
-              {'\uAC1C\uC758 \uCD95\uC81C\uAC00 \uC870\uD68C\uB418\uC5C8\uC2B5\uB2C8\uB2E4.'}
+              총 <span className="font-bold text-slate-900">{sortedFestivals.length}</span>개의
+              축제가 조회되었습니다.
             </p>
           </div>
 
@@ -77,13 +72,13 @@ export function FestivalCalendar({
               className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-sky-200 hover:bg-sky-50 hover:text-sky-700"
             >
               <ChevronLeft className="size-4" />
-              {'\uC774\uC804 \uB2EC'}
+              이전 달
             </Link>
             <Link
               href={`/festivals?month=${nextMonth}`}
               className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-sky-200 hover:bg-sky-50 hover:text-sky-700"
             >
-              {'\uB2E4\uC74C \uB2EC'}
+              다음 달
               <ChevronRight className="size-4" />
             </Link>
           </div>
@@ -101,13 +96,9 @@ export function FestivalCalendar({
           </div>
         ) : (
           <div className="mt-6 rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-20 text-center">
-            <p className="text-lg font-black text-slate-800">
-              {'\uC774\uBC88 \uB2EC\uC5D0 \uC870\uD68C\uB41C \uCD95\uC81C\uAC00 \uC5C6\uC5B4\uC694.'}
-            </p>
+            <p className="text-lg font-black text-slate-800">이번 달에 조회된 축제가 없어요.</p>
             <p className="mt-3 text-sm leading-6 text-slate-500">
-              {
-                '\uC774\uC804 \uB2EC\uC774\uB098 \uB2E4\uC74C \uB2EC\uB85C \uC774\uB3D9\uD574\uC11C \uB2E4\uB978 \uD589\uC0AC \uC815\uBCF4\uB97C \uD655\uC778\uD574 \uBCF4\uC138\uC694.'
-              }
+              이전 달이나 다음 달로 이동해서 다른 행사 정보를 확인해 보세요.
             </p>
           </div>
         )}

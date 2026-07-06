@@ -156,7 +156,7 @@ export function FestivalLocationMap({
 
         if (isMounted) {
           setIsMapReady(true);
-          setMapError('좌표와 주소 정보가 없어 기본 위치로 표시 중이에요.');
+          setMapError('좌표나 주소 정보가 없어 기본 위치로 표시 중이에요.');
         }
       } catch {
         if (isMounted) {
@@ -177,9 +177,7 @@ export function FestivalLocationMap({
     <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
       <div className="border-b border-slate-100 px-6 py-5">
         <p className="text-sm font-semibold text-sky-700">행사 위치</p>
-        <h2 className="mt-1 text-2xl font-black text-slate-950">
-          {'\uD589\uC0AC \uC704\uCE58 \uC815\uBCF4'}
-        </h2>
+        <h2 className="mt-1 text-2xl font-black text-slate-950">행사 위치 정보</h2>
       </div>
 
       <div className="relative h-[720px] bg-slate-100">

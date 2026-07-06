@@ -83,26 +83,26 @@ function getFestivalPeriod(festival: FestivalResolvedView) {
     return `${formatCompactDate(detail.details.eventstartdate)} - ${formatCompactDate(detail.details.eventenddate)}`;
   }
 
-  return '\uC77C\uC815 \uC815\uBCF4 \uC5C6\uC74C';
+  return '일정 정보 없음';
 }
 
 function prettifyDetailLabel(key: string) {
   const labels: Record<string, string> = {
-    eventplace: '\uD589\uC0AC \uC7A5\uC18C',
-    playtime: '\uC6B4\uC601 \uC2DC\uAC04',
-    sponsor1: '\uC8FC\uCD5C',
-    sponsor1tel: '\uC8FC\uCD5C \uC5F0\uB77D\uCC98',
-    sponsor2: '\uC8FC\uAD00',
-    sponsor2tel: '\uC8FC\uAD00 \uC5F0\uB77D\uCC98',
-    usetimefestival: '\uC774\uC6A9 \uC694\uAE08',
-    bookingplace: '\uC608\uB9E4\uCC98',
-    homepage: '\uD648\uD398\uC774\uC9C0',
-    subevent: '\uBD80\uB300 \uD589\uC0AC',
-    program: '\uD504\uB85C\uADF8\uB7A8',
-    agelimit: '\uC5F0\uB839 \uC81C\uD55C',
-    usetime: '\uC774\uC6A9 \uC2DC\uAC04',
-    discountinfofestival: '\uD560\uC778 \uC815\uBCF4',
-    eventhomepage: '\uD589\uC0AC \uD648\uD398\uC774\uC9C0',
+    eventplace: '행사 장소',
+    playtime: '운영 시간',
+    sponsor1: '주최',
+    sponsor1tel: '주최 연락처',
+    sponsor2: '주관',
+    sponsor2tel: '주관 연락처',
+    usetimefestival: '이용 요금',
+    bookingplace: '예매처',
+    homepage: '홈페이지',
+    subevent: '부대 행사',
+    program: '프로그램',
+    agelimit: '연령 제한',
+    usetime: '이용 시간',
+    discountinfofestival: '할인 정보',
+    eventhomepage: '행사 홈페이지',
   };
 
   return labels[key.toLowerCase()] ?? key;
@@ -188,7 +188,7 @@ export function FestivalDetail({
         <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-5 sm:px-6 lg:px-8">
           <Link
             href={backHref}
-            aria-label={'\uCD95\uC81C \uBAA9\uB85D\uC73C\uB85C \uB3CC\uC544\uAC00\uAE30'}
+            aria-label="축제 목록으로 돌아가기"
             className="flex size-10 items-center justify-center rounded-full text-sky-700 transition hover:bg-sky-50"
           >
             <ArrowLeft className="size-5" />
@@ -196,7 +196,7 @@ export function FestivalDetail({
           <div>
             <p className="text-sm font-semibold text-sky-700">축제 상세</p>
             <h1 className="text-2xl font-black text-slate-950 sm:text-3xl">
-              {summary?.title ?? '\uCD95\uC81C \uC0C1\uC138 \uC815\uBCF4'}
+              {summary?.title ?? '축제 상세 정보'}
             </h1>
           </div>
         </div>
@@ -207,21 +207,19 @@ export function FestivalDetail({
           <article className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
             <div className="border-b border-slate-100 px-6 py-5">
               <p className="text-sm font-semibold text-sky-700">포스터</p>
-              <h2 className="mt-1 text-2xl font-black text-slate-950">
-                {'\uD3EC\uC2A4\uD130'}
-              </h2>
+              <h2 className="mt-1 text-2xl font-black text-slate-950">포스터</h2>
             </div>
 
             <div className="bg-slate-100">
               {posterImage ? (
                 <img
                   src={posterImage}
-                  alt={summary?.title ?? '\uCD95\uC81C \uD3EC\uC2A4\uD130'}
+                  alt={summary?.title ?? '축제 포스터'}
                   className="block h-auto w-full"
                 />
               ) : (
                 <div className="flex min-h-[520px] items-center justify-center text-sm font-semibold text-slate-400">
-                  {'\uD3EC\uC2A4\uD130 \uC774\uBBF8\uC9C0 \uC5C6\uC74C'}
+                  포스터 이미지 없음
                 </div>
               )}
             </div>
@@ -233,9 +231,7 @@ export function FestivalDetail({
         <article className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="border-b border-slate-100 pb-6">
             <p className="text-sm font-semibold text-sky-700">상세 정보</p>
-            <h2 className="mt-1 text-2xl font-black text-slate-950">
-              {'\uCD95\uC81C \uC0C1\uC138 \uC815\uBCF4'}
-            </h2>
+            <h2 className="mt-1 text-2xl font-black text-slate-950">축제 상세 정보</h2>
           </div>
 
           {detailEntries.length > 0 ? (
@@ -246,9 +242,7 @@ export function FestivalDetail({
                   className="grid gap-2 px-4 py-4 sm:grid-cols-[180px_1fr] sm:px-5"
                 >
                   <dt className="text-sm font-semibold text-slate-500">
-                    {key === 'festivalPeriod'
-                      ? '\uD589\uC0AC \uAE30\uAC04'
-                      : prettifyDetailLabel(key)}
+                    {key === 'festivalPeriod' ? '행사 기간' : prettifyDetailLabel(key)}
                   </dt>
                   <dd className="break-words text-sm leading-7 text-slate-800">
                     {key === 'festivalPeriod' ? value : renderDetailValue(key, value)}
@@ -258,7 +252,7 @@ export function FestivalDetail({
             </dl>
           ) : (
             <div className="mt-6 rounded-2xl border border-dashed border-slate-300 px-5 py-12 text-center text-sm text-slate-500">
-              {'\uD604\uC7AC \uC0C1\uC138 API\uC5D0\uC11C \uB0B4\uB824\uC628 \uCD94\uAC00 \uC815\uBCF4\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4.'}
+              현재 상세 API에서 내려온 추가 정보가 없습니다.
             </div>
           )}
 
@@ -266,9 +260,7 @@ export function FestivalDetail({
             <section className="mt-6 rounded-2xl border border-slate-100 bg-slate-50 p-5">
               <div className="flex items-center gap-2 text-sky-700">
                 <Star className="size-5 fill-current" />
-                <p className="text-sm font-semibold">
-                  {'Google Places \uC815\uBCF4'}
-                </p>
+                <p className="text-sm font-semibold">Google Places 정보</p>
               </div>
 
               <div className="mt-4 flex flex-wrap items-end gap-3">
@@ -276,15 +268,13 @@ export function FestivalDetail({
                   {detail.googlePlace.rating.toFixed(1)}
                 </p>
                 <p className="pb-1 text-sm text-slate-500">
-                  {`\uB9AC\uBDF0 ${detail.googlePlace.reviewCount.toLocaleString()}\uAC1C`}
+                  {`리뷰 ${detail.googlePlace.reviewCount.toLocaleString()}개`}
                 </p>
               </div>
 
               {detail.googlePlace.openingHours?.length ? (
                 <div className="mt-5 border-t border-slate-200 pt-5">
-                  <h3 className="font-bold text-slate-900">
-                    {'\uC6B4\uC601 \uC2DC\uAC04'}
-                  </h3>
+                  <h3 className="font-bold text-slate-900">운영 시간</h3>
                   <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
                     {detail.googlePlace.openingHours.map((item) => (
                       <li key={item}>{item}</li>
