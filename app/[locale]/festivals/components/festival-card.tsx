@@ -1,6 +1,10 @@
 import { CalendarDays, MapPin } from 'lucide-react';
 import Link from 'next/link';
 
+import {
+  getFestivalStatus,
+  getFestivalStatusMeta,
+} from '@/app/[locale]/festivals/components/festival-status';
 import type { FestivalSummary } from '@/types/festival';
 
 function formatDateRange(startDate: string, endDate: string) {
@@ -20,6 +24,8 @@ export function FestivalCard({
   month: string;
 }) {
   const posterImage = festival.imageUrl || festival.thumbnailUrl;
+  const status = getFestivalStatus(festival);
+  const statusMeta = getFestivalStatusMeta(status);
   const detailSearchParams = new URLSearchParams();
 
   detailSearchParams.set('month', month);
@@ -48,10 +54,15 @@ export function FestivalCard({
       </div>
 
       <div className="p-5">
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-700">
-          Festival
-        </p>
-        <h2 className="mt-2 line-clamp-2 text-xl font-black text-slate-950">
+        <span
+          className={[
+            'inline-flex rounded-full border px-3 py-1 text-xs font-semibold',
+            statusMeta.className,
+          ].join(' ')}
+        >
+          {statusMeta.label}
+        </span>
+        <h2 className="mt-3 line-clamp-2 text-xl font-black text-slate-950">
           {festival.title}
         </h2>
 

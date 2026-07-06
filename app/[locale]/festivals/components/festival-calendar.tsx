@@ -2,6 +2,10 @@ import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
 import { FestivalCard } from '@/app/[locale]/festivals/components/festival-card';
+import {
+  getFestivalStatus,
+  getFestivalStatusMeta,
+} from '@/app/[locale]/festivals/components/festival-status';
 import type { FestivalSummary } from '@/types/festival';
 
 interface FestivalCalendarProps {
@@ -19,6 +23,20 @@ export function FestivalCalendar({
   previousMonth,
   nextMonth,
 }: FestivalCalendarProps) {
+  const sortedFestivals = festivals
+    .map((festival, index) => ({ festival, index }))
+    .sort((left, right) => {
+      const leftOrder = getFestivalStatusMeta(getFestivalStatus(left.festival)).order;
+      const rightOrder = getFestivalStatusMeta(getFestivalStatus(right.festival)).order;
+
+      if (leftOrder !== rightOrder) {
+        return leftOrder - rightOrder;
+      }
+
+      return left.index - right.index;
+    })
+    .map(({ festival }) => festival);
+
   return (
     <main className="min-h-screen bg-slate-50">
       <header className="border-b border-slate-200 bg-white">
@@ -48,7 +66,7 @@ export function FestivalCalendar({
             <h2 className="mt-1 text-2xl font-black text-slate-950">{monthLabel}</h2>
             <p className="mt-2 text-sm text-slate-500">
               {'\uCD1D '}
-              <span className="font-bold text-slate-900">{festivals.length}</span>
+              <span className="font-bold text-slate-900">{sortedFestivals.length}</span>
               {'\uAC1C\uC758 \uCD95\uC81C\uAC00 \uC870\uD68C\uB418\uC5C8\uC2B5\uB2C8\uB2E4.'}
             </p>
           </div>
@@ -71,9 +89,9 @@ export function FestivalCalendar({
           </div>
         </div>
 
-        {festivals.length > 0 ? (
+        {sortedFestivals.length > 0 ? (
           <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {festivals.map((festival) => (
+            {sortedFestivals.map((festival) => (
               <FestivalCard
                 key={festival.contentId}
                 festival={festival}
