@@ -1,7 +1,8 @@
+import { StoriesFeed } from '@/app/[locale]/stories/components/StoriesFeed';
+import { getStoryFeedItems } from '@/app/[locale]/stories/story-data';
+
 export default function StoriesPage() {
-  return (
-    <main>
-      <h1>여행기 피드</h1>
-    </main>
-  );
+  const stories = getStoryFeedItems();
+
+  return <StoriesFeed stories={stories} />;
 }

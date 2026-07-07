@@ -1,0 +1,261 @@
+{
+  "trip": {
+    "tabs": {
+      "overview": "개요",
+      "itinerary": "일정",
+      "budget": "가계부",
+      "records": "기록"
+    },
+    "wizard": {
+      "step1": {
+        "title": "언제 여행하시나요?",
+        "subtitle": "시작일과 종료일을 선택해 주세요",
+        "startDate": "시작일",
+        "endDate": "종료일",
+        "endBeforeStart": "종료일은 시작일 이후여야 합니다.",
+        "duration": "{days}일 여행"
+      },
+      "step2": {
+        "title": "몇 명이서 가시나요?",
+        "subtitle": "본인 포함 인원",
+        "unit": "명",
+        "maxWarning": "최대 20명까지 선택할 수 있어요."
+      },
+      "step3": {
+        "title": "동행인 유형은?",
+        "subtitle": "복수 선택 가능"
+      },
+      "step4": {
+        "title": "선호하는 여행 스타일은?",
+        "subtitle": "여행 테마 · 복수 선택"
+      },
+      "step5": {
+        "title": "여행 제약 조건이 있나요?",
+        "subtitle": "해당하는 항목을 모두 선택해 주세요"
+      },
+      "step6": {
+        "title": "가고 싶은 관광지",
+        "subtitle": "부산 대표 스팟 · 복수 선택"
+      },
+      "step7": {
+        "title": "좋아하는 음식",
+        "subtitle": "맛집 추천에 반영"
+      },
+      "step8": {
+        "title": "숙소는 정하셨나요?",
+        "subtitle": "예약 완료 또는 후보 지역 선택"
+      },
+      "step9": {
+        "title": "일정 생성 방식",
+        "subtitle": "AI 자동 생성 또는 후보에서 선택"
+      },
+      "nav": {
+        "prev": "이전",
+        "next": "다음",
+        "done": "완료"
+      },
+      "companionType": {
+        "solo": "혼자",
+        "family": "가족",
+        "couple": "애인·연인",
+        "friends": "친구",
+        "colleagues": "동료"
+      },
+      "travelStyle": {
+        "culture_history": "문화·역사",
+        "nature_healing": "자연·힐링",
+        "food_dining": "미식·맛집",
+        "shopping": "쇼핑",
+        "activities": "액티비티",
+        "photo_insta": "사진·인스타",
+        "night_view": "야경·나이트"
+      },
+      "constraint": {
+        "heavy_luggage": "짐이 많음",
+        "heavy_luggage_desc": "캐리어 또는 대형 짐",
+        "light_luggage": "짐이 적음",
+        "light_luggage_desc": "백팩 또는 소형 짐",
+        "pet": "애완동물 동반",
+        "pet_desc": "반려동물 동반 여행",
+        "stroller": "유모차",
+        "stroller_desc": "영아·유아 동반",
+        "wheelchair": "휠체어·접근성",
+        "wheelchair_desc": "배리어 프리 장소 우선",
+        "diet_allergy": "식단·알레르기",
+        "diet_allergy_desc": "특정 음식 제한",
+        "none": "없음",
+        "none_desc": "해당 사항 없음"
+      },
+      "attraction": {
+        "gamcheon": "감천문화마을",
+        "haeundae": "해운대 해수욕장",
+        "gwangalli": "광안리",
+        "taejongdae": "태종대",
+        "jagalchi": "자갈치시장",
+        "haedong": "해동용궁사",
+        "songjeong": "송정 해수욕장",
+        "hwangnyeong": "황령산 봉수대",
+        "yongdusan": "용두산 공원",
+        "beomeosa": "범어사",
+        "yeongdo": "영도 절영로",
+        "moca": "부산현대미술관"
+      },
+      "food": {
+        "milmyeon": "밀면",
+        "dwaeji_gukbap": "돼지국밥",
+        "haemul_hoe": "해물탕·회",
+        "eomuk": "어묵·부산 간식",
+        "patbingsu": "팥빙수·디저트",
+        "chimaek": "치맥·야식"
+      },
+      "accommodation": {
+        "booked_label": "숙소 예약 완료",
+        "booked_desc": "이미 숙소를 예약했어요",
+        "candidate_label": "숙소 후보 지역만",
+        "candidate_desc": "아직 예약 전, 지역만 골랐어요",
+        "regionHint": "선호 지역 선택 (복수 선택 가능)",
+        "haeundae_marine": "해운대·마린시티",
+        "seomyeon_bujeon": "서면·부전",
+        "nampo_junggu": "남포·중구",
+        "gwangalli": "광안리",
+        "yeongdo": "영도"
+      },
+      "generation": {
+        "ai_label": "AI가 일정 생성",
+        "ai_desc": "입력한 정보로 바로 플랜을 짬",
+        "manual_label": "후보에서 직접 선택",
+        "manual_desc": "AI 후보를 보고 마음에 드는 플랜 선택"
+      }
+    },
+    "overview": {
+      "newTrip": "새 여행 만들기",
+      "period": "여행 기간",
+      "daysNights": "{days}일 · {nights}박",
+      "scheduleHighlight": "일정 하이라이트",
+      "view": "보기",
+      "nextSchedule": "다음 일정",
+      "morePlaces": "외 {count}곳",
+      "companions": "함께하는 일행",
+      "inviteCompanion": "일행 초대하기",
+      "invite": "초대",
+      "budget": "가계부",
+      "noBudget": "아직 기록된 지출이 없어요",
+      "records": "기록",
+      "recordsAvailable": "여행기 작성 가능",
+      "role": {
+        "owner": "방장",
+        "editor": "편집",
+        "viewer": "보기"
+      },
+      "empty": {
+        "title": "아직 여행 일정이 없어요",
+        "desc": "부산 여행을 계획하고\n새로운 추억을 만들어보세요",
+        "cta": "새 여행 일정 만들기"
+      }
+    },
+    "itinerary": {
+      "estimatedDuration": "예상 소요 {duration}",
+      "transitInfo": "{minutes}분 · {km}km",
+      "navigate": "길찾기",
+      "edit": "수정",
+      "visitCheck": "방문 체크",
+      "visitDone": "✓ 방문 완료",
+      "visitDoneShort": "방문 완료",
+      "addRecord": "기록 남기기",
+      "ratingOnly": "별점만 남기기",
+      "mapLoading": "지도 불러오는 중...",
+      "mapPreview": "지도 미리보기",
+      "mapApiComingSoon": "상세 지도 API 연동 예정",
+      "placeDetail": "장소 상세 보기 →",
+      "close": "닫기",
+      "leaveReview": "후기 남기기",
+      "reviewQuestion": "이 장소는 어떠셨나요?",
+      "reviewPlaceholder": "방문 후기를 자유롭게 남겨주세요...",
+      "cancel": "취소",
+      "saveRecord": "기록 저장",
+      "stayMinutes": "보통 {minutes}분 머무름",
+      "transit": {
+        "public": "대중교통",
+        "car": "차량",
+        "walk": "도보"
+      }
+    },
+    "budget": {
+      "addExpense": "+ 지출 추가",
+      "addExpenseShort": "지출 추가",
+      "addTitle": "지출 추가",
+      "totalExpense": "총 지출",
+      "expenseCount": "{count}건의 지출",
+      "byCategory": "항목별 지출",
+      "expenseList": "지출 내역",
+      "empty": "아직 기록된 지출이 없어요",
+      "emptyDesc": "여행 중 발생한 지출을 기록해보세요",
+      "colCategory": "분류",
+      "colAmount": "금액",
+      "colDate": "날짜",
+      "labelItem": "항목",
+      "labelPayer": "지불자",
+      "labelSplit": "나누기",
+      "labelDate": "날짜",
+      "labelMemo": "메모",
+      "memoPlaceholder": "메모를 입력하세요",
+      "ocrHint": "영수증 OCR — 곧 제공 예정",
+      "save": "저장",
+      "cancel": "취소",
+      "all": "전원",
+      "category": {
+        "food": "식비",
+        "shopping": "쇼핑",
+        "accommodation": "숙박비",
+        "transport": "교통비",
+        "experience": "관람·체험",
+        "other": "기타"
+      }
+    },
+    "records": {
+      "title": "여행 후기",
+      "desc": "방문한 여행지마다 후기를 남기고, 원할 때 여행기를 게시할 수 있어요",
+      "totalDuration": "총 소요시간 {duration}",
+      "hours": "{h}시간 {m}분",
+      "progressLabel": "{completed} / {total}곳 후기 완료",
+      "allDone": "모든 여행지 후기가 완료됐어요! 🎉",
+      "edit": "수정",
+      "writeReview": "후기 작성",
+      "noReview": "아직 후기가 없어요. 방문 어떠셨나요?",
+      "labelRating": "별점",
+      "labelReview": "후기",
+      "reviewPlaceholder": "이 장소는 어떠셨나요?",
+      "labelTags": "태그",
+      "tagPlaceholder": "#태그 입력",
+      "addTag": "추가",
+      "save": "저장",
+      "cancel": "취소"
+    },
+    "reboot": {
+      "fabLabel": "일정 리부트",
+      "modalTitle": "일정 리부트",
+      "selectSlotPrompt": "어떤 장소를 바꾸고 싶으세요?",
+      "replaceAction": "이 장소 교체",
+      "insertAction": "다음에 추가",
+      "referenceLabel": "{name} 기준 추천 후보",
+      "estimatedNote": "실제 경로가 아닌 예상 소요시간이에요",
+      "candidateEmpty": "추천할 후보가 없어요",
+      "minutesShort": "분",
+      "confirmReplaceTitle": "교체 확인: {from} → {to}",
+      "confirmInsertTitle": "추가 확인: {from} 다음 → {to}",
+      "cancel": "취소",
+      "apply": "적용하기",
+      "transit": {
+        "walk": "도보",
+        "public": "대중교통",
+        "car": "차량"
+      }
+    },
+    "pages": {
+      "newTripMeta": "여행 계획 만들기 | 부팅",
+      "newAiTitle": "여행계획 AI 생성",
+      "rebootTitle": "리부트",
+      "detailTitle": "여행계획 상세"
+    }
+  }
+}
