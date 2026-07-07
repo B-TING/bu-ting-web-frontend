@@ -1,0 +1,261 @@
+{
+  "trip": {
+    "tabs": {
+      "overview": "Overview",
+      "itinerary": "Itinerary",
+      "budget": "Budget",
+      "records": "Records"
+    },
+    "wizard": {
+      "step1": {
+        "title": "When are you traveling?",
+        "subtitle": "Select your start and end dates",
+        "startDate": "Start date",
+        "endDate": "End date",
+        "endBeforeStart": "End date must be after the start date.",
+        "duration": "{days}-day trip"
+      },
+      "step2": {
+        "title": "How many people?",
+        "subtitle": "Including yourself",
+        "unit": "people",
+        "maxWarning": "You can select up to 20 people."
+      },
+      "step3": {
+        "title": "Who are you traveling with?",
+        "subtitle": "Multiple selections allowed"
+      },
+      "step4": {
+        "title": "What's your travel style?",
+        "subtitle": "Travel theme · Multiple selections"
+      },
+      "step5": {
+        "title": "Any travel constraints?",
+        "subtitle": "Select all that apply"
+      },
+      "step6": {
+        "title": "Places you want to visit",
+        "subtitle": "Top Busan spots · Multiple selections"
+      },
+      "step7": {
+        "title": "What food do you like?",
+        "subtitle": "Used for restaurant recommendations"
+      },
+      "step8": {
+        "title": "Have you decided on accommodation?",
+        "subtitle": "Select booked or preferred area"
+      },
+      "step9": {
+        "title": "How would you like to create your itinerary?",
+        "subtitle": "AI auto-generate or choose from suggestions"
+      },
+      "nav": {
+        "prev": "Back",
+        "next": "Next",
+        "done": "Done"
+      },
+      "companionType": {
+        "solo": "Solo",
+        "family": "Family",
+        "couple": "Partner",
+        "friends": "Friends",
+        "colleagues": "Colleagues"
+      },
+      "travelStyle": {
+        "culture_history": "Culture & History",
+        "nature_healing": "Nature & Relaxation",
+        "food_dining": "Food & Dining",
+        "shopping": "Shopping",
+        "activities": "Activities",
+        "photo_insta": "Photo & Instagram",
+        "night_view": "Night Views"
+      },
+      "constraint": {
+        "heavy_luggage": "Heavy Luggage",
+        "heavy_luggage_desc": "Suitcase or large bags",
+        "light_luggage": "Light Luggage",
+        "light_luggage_desc": "Backpack or small bags",
+        "pet": "Traveling with Pets",
+        "pet_desc": "Bringing a pet along",
+        "stroller": "Stroller",
+        "stroller_desc": "Traveling with infants or toddlers",
+        "wheelchair": "Wheelchair & Accessibility",
+        "wheelchair_desc": "Barrier-free places preferred",
+        "diet_allergy": "Dietary Restrictions",
+        "diet_allergy_desc": "Food allergies or restrictions",
+        "none": "None",
+        "none_desc": "No constraints"
+      },
+      "attraction": {
+        "gamcheon": "Gamcheon Culture Village",
+        "haeundae": "Haeundae Beach",
+        "gwangalli": "Gwangalli Beach",
+        "taejongdae": "Taejongdae",
+        "jagalchi": "Jagalchi Market",
+        "haedong": "Haedong Yonggungsa Temple",
+        "songjeong": "Songjeong Beach",
+        "hwangnyeong": "Hwangnyeong Mountain",
+        "yongdusan": "Yongdusan Park",
+        "beomeosa": "Beomeosa Temple",
+        "yeongdo": "Yeongdo Jeollyeong-ro",
+        "moca": "Museum of Contemporary Art Busan"
+      },
+      "food": {
+        "milmyeon": "Milmyeon (Busan Noodles)",
+        "dwaeji_gukbap": "Dwaeji Gukbap (Pork Rice Soup)",
+        "haemul_hoe": "Seafood & Raw Fish",
+        "eomuk": "Fish Cake & Busan Snacks",
+        "patbingsu": "Patbingsu & Desserts",
+        "chimaek": "Fried Chicken & Beer"
+      },
+      "accommodation": {
+        "booked_label": "Accommodation booked",
+        "booked_desc": "I've already booked a place",
+        "candidate_label": "Preferred area only",
+        "candidate_desc": "Not booked yet, just have an area in mind",
+        "regionHint": "Select preferred area (multiple allowed)",
+        "haeundae_marine": "Haeundae · Marine City",
+        "seomyeon_bujeon": "Seomyeon · Bujeon",
+        "nampo_junggu": "Nampo · Jung-gu",
+        "gwangalli": "Gwangalli",
+        "yeongdo": "Yeongdo"
+      },
+      "generation": {
+        "ai_label": "AI-generated itinerary",
+        "ai_desc": "Automatically creates a plan from your inputs",
+        "manual_label": "Choose from suggestions",
+        "manual_desc": "Review AI suggestions and pick your favorite"
+      }
+    },
+    "overview": {
+      "newTrip": "New Trip",
+      "period": "Trip Period",
+      "daysNights": "{days} days · {nights} nights",
+      "scheduleHighlight": "Itinerary Highlights",
+      "view": "View",
+      "nextSchedule": "Next Schedule",
+      "morePlaces": "+{count} more",
+      "companions": "Travel Companions",
+      "inviteCompanion": "Invite Companion",
+      "invite": "Invite",
+      "budget": "Budget",
+      "noBudget": "No expenses recorded yet",
+      "records": "Records",
+      "recordsAvailable": "Travel journal available",
+      "role": {
+        "owner": "Owner",
+        "editor": "Editor",
+        "viewer": "Viewer"
+      },
+      "empty": {
+        "title": "No trips yet",
+        "desc": "Plan your Busan trip\nand create new memories",
+        "cta": "Create New Trip"
+      }
+    },
+    "itinerary": {
+      "estimatedDuration": "Est. {duration}",
+      "transitInfo": "{minutes} min · {km}km",
+      "navigate": "Directions",
+      "edit": "Edit",
+      "visitCheck": "Check Visit",
+      "visitDone": "✓ Visited",
+      "visitDoneShort": "Visited",
+      "addRecord": "Add Record",
+      "ratingOnly": "Rate only",
+      "mapLoading": "Loading map...",
+      "mapPreview": "Map Preview",
+      "mapApiComingSoon": "Detailed map API coming soon",
+      "placeDetail": "View place details →",
+      "close": "Close",
+      "leaveReview": "Leave Review",
+      "reviewQuestion": "How was this place?",
+      "reviewPlaceholder": "Share your thoughts about this place...",
+      "cancel": "Cancel",
+      "saveRecord": "Save Record",
+      "stayMinutes": "Avg. stay {minutes} min",
+      "transit": {
+        "public": "Public Transit",
+        "car": "Car",
+        "walk": "Walking"
+      }
+    },
+    "budget": {
+      "addExpense": "+ Add Expense",
+      "addExpenseShort": "Add Expense",
+      "addTitle": "Add Expense",
+      "totalExpense": "Total Expenses",
+      "expenseCount": "{count} expenses",
+      "byCategory": "By Category",
+      "expenseList": "Expense List",
+      "empty": "No expenses recorded yet",
+      "emptyDesc": "Record expenses as they happen during your trip",
+      "colCategory": "Category",
+      "colAmount": "Amount",
+      "colDate": "Date",
+      "labelItem": "Category",
+      "labelPayer": "Paid by",
+      "labelSplit": "Split with",
+      "labelDate": "Date",
+      "labelMemo": "Memo",
+      "memoPlaceholder": "Add a note",
+      "ocrHint": "Receipt OCR — coming soon",
+      "save": "Save",
+      "cancel": "Cancel",
+      "all": "Everyone",
+      "category": {
+        "food": "Food",
+        "shopping": "Shopping",
+        "accommodation": "Accommodation",
+        "transport": "Transport",
+        "experience": "Activities",
+        "other": "Other"
+      }
+    },
+    "records": {
+      "title": "Travel Reviews",
+      "desc": "Leave a review for each place you visit, and publish your travel journal when ready",
+      "totalDuration": "Total time {duration}",
+      "hours": "{h}h {m}m",
+      "progressLabel": "{completed} / {total} reviews done",
+      "allDone": "All reviews completed! 🎉",
+      "edit": "Edit",
+      "writeReview": "Write Review",
+      "noReview": "No review yet. How was your visit?",
+      "labelRating": "Rating",
+      "labelReview": "Review",
+      "reviewPlaceholder": "How was this place?",
+      "labelTags": "Tags",
+      "tagPlaceholder": "#tag",
+      "addTag": "Add",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "reboot": {
+      "fabLabel": "Reboot Schedule",
+      "modalTitle": "Reboot Schedule",
+      "selectSlotPrompt": "Which place would you like to change?",
+      "replaceAction": "Replace",
+      "insertAction": "Add after",
+      "referenceLabel": "Recommended from {name}",
+      "estimatedNote": "Estimated time, not an actual route",
+      "candidateEmpty": "No candidates to suggest",
+      "minutesShort": " min",
+      "confirmReplaceTitle": "Confirm swap: {from} → {to}",
+      "confirmInsertTitle": "Confirm add: after {from} → {to}",
+      "cancel": "Cancel",
+      "apply": "Apply",
+      "transit": {
+        "walk": "Walking",
+        "public": "Public Transit",
+        "car": "Car"
+      }
+    },
+    "pages": {
+      "newTripMeta": "Plan a Trip | Bu-ting",
+      "newAiTitle": "AI Trip Planning",
+      "rebootTitle": "Reboot",
+      "detailTitle": "Trip Details"
+    }
+  }
+}
