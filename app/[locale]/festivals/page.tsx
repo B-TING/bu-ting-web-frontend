@@ -1,7 +1,27 @@
-export default function FestivalsPage() {
+import { FestivalCalendar } from '@/app/[locale]/festivals/components/festival-calendar';
+import {
+  getAdjacentMonth,
+  getFestivals,
+  getMonthLabel,
+  getMonthParam,
+} from '@/lib/festival';
+
+interface FestivalsPageProps {
+  searchParams: Promise<{ month?: string }>;
+}
+
+export default async function FestivalsPage({ searchParams }: FestivalsPageProps) {
+  const { month } = await searchParams;
+  const festivals = await getFestivals(month);
+  const currentMonth = month ?? getMonthParam(new Date());
+
   return (
-    <main>
-      <h1>축제 목록</h1>
-    </main>
+    <FestivalCalendar
+      festivals={festivals}
+      currentMonth={currentMonth}
+      monthLabel={getMonthLabel(currentMonth)}
+      previousMonth={getAdjacentMonth(currentMonth, -1)}
+      nextMonth={getAdjacentMonth(currentMonth, 1)}
+    />
   );
 }
