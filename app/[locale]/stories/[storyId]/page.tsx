@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 
-import StoryDetail from '../components/StoryDetail';
-import { getStoryBySlug } from '../story-data';
+import { StoryDetail } from '@/app/[locale]/stories/[storyId]/components/StoryDetail';
+import { getStoryFeedItemById } from '@/app/[locale]/stories/story-data';
 
 interface StoryDetailPageProps {
   params: Promise<{ storyId: string }>;
@@ -9,7 +9,7 @@ interface StoryDetailPageProps {
 
 export default async function StoryDetailPage({ params }: StoryDetailPageProps) {
   const { storyId } = await params;
-  const story = getStoryBySlug(storyId);
+  const story = getStoryFeedItemById(storyId);
 
   if (!story) {
     notFound();
