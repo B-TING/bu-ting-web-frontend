@@ -1,5 +1,5 @@
-import { MyPreferences } from './components/my-preferences';
+import { MyPageContent } from './components/MyPageContent';
 
 export default function MyPage() {
-  return <MyPreferences />;
+  return <MyPageContent />;
 }
