@@ -60,7 +60,13 @@ function getProfileErrorMessage(error: unknown, fallback: string) {
 
 export function MyPageContent() {
   const router = useRouter();
-  const { user, accessToken, autoLoginEnabled, clearSession } = useAuthStore();
+  const {
+    user,
+    accessToken,
+    autoLoginEnabled,
+    setAutoLoginEnabled,
+    clearSession,
+  } = useAuthStore();
   const myProfile = useMyProfile(Boolean(accessToken));
   const updateProfile = useUpdateMyProfile();
   const survey = useTravelSurvey(Boolean(accessToken));
@@ -300,11 +306,33 @@ export function MyPageContent() {
 
         <section className="mt-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-bold text-slate-900">로그인 세션</h2>
-          <div className="mt-5 text-sm">
-            <p className="text-slate-400">자동 로그인</p>
-            <p className="mt-1 font-semibold text-slate-800">
-              {autoLoginEnabled ? '켜짐' : '꺼짐'}
-            </p>
+          <div className="mt-5 flex items-center justify-between gap-5">
+            <div>
+              <p className="text-sm text-slate-400">자동 로그인</p>
+              <p className="mt-1 text-sm font-semibold text-slate-800">
+                {autoLoginEnabled ? '켜짐' : '꺼짐'}
+              </p>
+              <p className="mt-1 text-xs leading-5 text-slate-500">
+                켜면 브라우저를 닫아도 로그인 상태를 유지해요.
+              </p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={autoLoginEnabled}
+              aria-label="자동 로그인"
+              onClick={() => setAutoLoginEnabled(!autoLoginEnabled)}
+              className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${
+                autoLoginEnabled ? 'bg-sky-700' : 'bg-slate-300'
+              }`}
+            >
+              <span
+                aria-hidden="true"
+                className={`absolute left-1 top-1 size-5 rounded-full bg-white shadow-sm transition-transform ${
+                  autoLoginEnabled ? 'translate-x-5' : 'translate-x-0'
+                }`}
+              />
+            </button>
           </div>
         </section>
 
