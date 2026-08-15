@@ -4,7 +4,16 @@ import { ArrowLeft, Plus, Star } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
-const QUICK_TAGS = ['#맛집', '#뷰맛집', '#사진스팟', '#힐링', '#가족', '#데이트', '#재방문', '#추천'];
+const QUICK_TAGS = [
+  '#맛집',
+  '#뷰맛집',
+  '#사진스팟',
+  '#힐링',
+  '#가족',
+  '#데이트',
+  '#재방문',
+  '#추천',
+];
 
 export default function StoryNewPage() {
   const [rating, setRating] = useState(5);
@@ -19,7 +28,7 @@ export default function StoryNewPage() {
     setSelectedTags((currentTags) =>
       currentTags.includes(tag)
         ? currentTags.filter((currentTag) => currentTag !== tag)
-        : [...currentTags, tag],
+        : [...currentTags, tag]
     );
   };
 
@@ -33,7 +42,7 @@ export default function StoryNewPage() {
     const normalizedTag = trimmed.startsWith('#') ? trimmed : `#${trimmed}`;
 
     setSelectedTags((currentTags) =>
-      currentTags.includes(normalizedTag) ? currentTags : [...currentTags, normalizedTag],
+      currentTags.includes(normalizedTag) ? currentTags : [...currentTags, normalizedTag]
     );
     setCustomTag('');
   };
@@ -182,7 +191,10 @@ export default function StoryNewPage() {
             <div className="mt-3 flex flex-wrap gap-2">
               {previewTags.length > 0 ? (
                 previewTags.map((tag) => (
-                  <span key={tag} className="rounded-full bg-white px-3 py-2 text-sm font-semibold text-sky-700">
+                  <span
+                    key={tag}
+                    className="rounded-full bg-white px-3 py-2 text-sm font-semibold text-sky-700"
+                  >
                     {tag}
                   </span>
                 ))

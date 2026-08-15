@@ -60,8 +60,8 @@ export function StoriesFeed({ stories }: { stories: StoryFeedItem[] }) {
                 여행자들이 방문한 장소 후기를 한 화면에서 편하게 둘러보세요.
               </h2>
               <p className="mt-3 text-base leading-7 text-slate-600">
-                공개된 여행기에서 장소별 후기와 평점을 모아 보고, 상세 페이지에서는 이동 동선과 댓글까지
-                이어서 확인할 수 있어요.
+                공개된 여행기에서 장소별 후기와 평점을 모아 보고, 상세 페이지에서는 이동 동선과
+                댓글까지 이어서 확인할 수 있어요.
               </p>
             </div>
 
@@ -81,7 +81,11 @@ export function StoriesFeed({ stories }: { stories: StoryFeedItem[] }) {
                         : 'border-slate-200 bg-white text-slate-600 hover:border-sky-200 hover:text-sky-700',
                     ].join(' ')}
                   >
-                    {option.value === 1 ? <Rows3 className="size-4" /> : <LayoutGrid className="size-4" />}
+                    {option.value === 1 ? (
+                      <Rows3 className="size-4" />
+                    ) : (
+                      <LayoutGrid className="size-4" />
+                    )}
                     {option.label}
                   </button>
                 );
@@ -92,7 +96,11 @@ export function StoriesFeed({ stories }: { stories: StoryFeedItem[] }) {
 
         <div className={['mt-6 grid gap-6', getGridClass(columnCount)].join(' ')}>
           {stories.map((story) => (
-            <StoryCard key={story.id} story={story} compact={columnCount !== 1} />
+            <StoryCard
+              key={story.id}
+              story={story}
+              compact={columnCount !== 1}
+            />
           ))}
         </div>
       </section>
