@@ -18,7 +18,7 @@ interface Props {
   onChange: (updates: Partial<TripWizardData>) => void;
 }
 
-export default function Step8Accommodation({ data, onChange }: Props) {
+export default function Step10Accommodation({ data, onChange }: Props) {
   const t = useTranslations('trip.wizard.accommodation');
 
   const toggleRegion = (region: AccommodationRegion) => {

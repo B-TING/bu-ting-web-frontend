@@ -2,15 +2,21 @@
 
 import { useTranslations } from 'next-intl';
 import OptionButton from '../OptionButton';
-import type { FoodPreference, TripWizardData } from '@/types/tripWizard';
+import type { Attraction, TripWizardData } from '@/types/tripWizard';
 
-const OPTIONS: FoodPreference[] = [
-  'milmyeon',
-  'dwaeji_gukbap',
-  'haemul_hoe',
-  'eomuk',
-  'patbingsu',
-  'chimaek',
+const OPTIONS: Attraction[] = [
+  'gamcheon',
+  'haeundae',
+  'gwangalli',
+  'taejongdae',
+  'jagalchi',
+  'haedong',
+  'songjeong',
+  'hwangnyeong',
+  'yongdusan',
+  'beomeosa',
+  'yeongdo',
+  'moca',
 ];
 
 interface Props {
@@ -18,15 +24,15 @@ interface Props {
   onChange: (updates: Partial<TripWizardData>) => void;
 }
 
-export default function Step7Food({ data, onChange }: Props) {
-  const t = useTranslations('trip.wizard.food');
+export default function Step8Attractions({ data, onChange }: Props) {
+  const t = useTranslations('trip.wizard.attraction');
 
-  const toggle = (option: FoodPreference) => {
-    const current = data.foods;
+  const toggle = (option: Attraction) => {
+    const current = data.attractions;
     const next = current.includes(option)
       ? current.filter((v) => v !== option)
       : [...current, option];
-    onChange({ foods: next });
+    onChange({ attractions: next });
   };
 
   return (
@@ -35,7 +41,7 @@ export default function Step7Food({ data, onChange }: Props) {
         <OptionButton
           key={option}
           label={t(option)}
-          selected={data.foods.includes(option)}
+          selected={data.attractions.includes(option)}
           onClick={() => toggle(option)}
         />
       ))}

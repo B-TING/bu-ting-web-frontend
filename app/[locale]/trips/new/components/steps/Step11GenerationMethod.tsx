@@ -11,7 +11,7 @@ interface Props {
   onChange: (updates: Partial<TripWizardData>) => void;
 }
 
-export default function Step9GenerationMethod({ data, onChange }: Props) {
+export default function Step11GenerationMethod({ data, onChange }: Props) {
   const t = useTranslations('trip.wizard.generation');
 
   return (

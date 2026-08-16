@@ -8,8 +8,8 @@ interface Props {
   onChange: (updates: Partial<TripWizardData>) => void;
 }
 
-export default function Step2HeadCount({ data, onChange }: Props) {
-  const t = useTranslations('trip.wizard.step2');
+export default function Step3HeadCount({ data, onChange }: Props) {
+  const t = useTranslations('trip.wizard.step3');
   const count = data.headCount;
 
   return (
@@ -38,9 +38,7 @@ export default function Step2HeadCount({ data, onChange }: Props) {
         </button>
       </div>
 
-      {count >= 10 && (
-        <p className="text-sm text-gray-400">{t('maxWarning')}</p>
-      )}
+      {count >= 10 && <p className="text-sm text-gray-400">{t('maxWarning')}</p>}
     </div>
   );
 }

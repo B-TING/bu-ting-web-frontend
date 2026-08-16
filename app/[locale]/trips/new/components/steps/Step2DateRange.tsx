@@ -9,11 +9,10 @@ interface Props {
   onChange: (updates: Partial<TripWizardData>) => void;
 }
 
-export default function Step1DateRange({ data, onChange }: Props) {
-  const t = useTranslations('trip.wizard.step1');
+export default function Step2DateRange({ data, onChange }: Props) {
+  const t = useTranslations('trip.wizard.step2');
 
-  const isEndBeforeStart =
-    data.startDate && data.endDate && data.endDate < data.startDate;
+  const isEndBeforeStart = data.startDate && data.endDate && data.endDate < data.startDate;
 
   return (
     <div className="space-y-5">
@@ -43,12 +42,14 @@ export default function Step1DateRange({ data, onChange }: Props) {
             'w-full rounded-xl border px-4 py-3 text-sm text-gray-800 shadow-sm outline-none',
             'transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100',
             'bg-white placeholder:text-gray-400',
-            isEndBeforeStart ? 'border-red-400' : data.endDate ? 'border-gray-300' : 'border-gray-200'
+            isEndBeforeStart
+              ? 'border-red-400'
+              : data.endDate
+                ? 'border-gray-300'
+                : 'border-gray-200'
           )}
         />
-        {isEndBeforeStart && (
-          <p className="text-xs text-red-500">{t('endBeforeStart')}</p>
-        )}
+        {isEndBeforeStart && <p className="text-xs text-red-500">{t('endBeforeStart')}</p>}
       </div>
 
       {data.startDate && data.endDate && !isEndBeforeStart && (
