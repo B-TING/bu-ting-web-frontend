@@ -37,6 +37,7 @@ export function mapTravelPlansResponseToDays(response: TravelPlansResponse): Day
           address: place.address,
           lat: place.latitude ?? 0,
           lng: place.longitude ?? 0,
+          providerPlaceId: place.providerPlaceId,
         });
 
         const route = place.routeToNext;

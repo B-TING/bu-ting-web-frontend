@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState, useEffect, useRef } from 'react';
+import { use, useState, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -11,9 +11,13 @@ import { RebootFab } from '../../components/RebootFab';
 import { RebootModal } from '../../components/RebootModal';
 import { TransitIcon } from '../../components/TransitIcon';
 import { useTravelPlans } from '@/hooks/use-travel-plans';
+import { useMyTravels } from '@/hooks/use-my-travels';
+import { useCreatePlanPlace } from '@/hooks/use-create-plan-place';
+import { usePlaceSearch } from '@/hooks/use-place';
 import { useCreatePlan } from '@/hooks/use-create-plan';
 import { useUpdatePlanPlaceVisited } from '@/hooks/use-update-plan-place-visited';
 import { mapTravelPlansResponseToDays } from '@/lib/travel-plans-to-itinerary';
+import type { Place } from '@/types/place';
 
 declare global {
   interface Window {
@@ -22,6 +26,20 @@ declare global {
 }
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function getTravelDates(startDate: string, endDate: string) {
+  const dates: string[] = [];
+  const current = new Date(`${startDate}T00:00:00`);
+  const end = new Date(`${endDate}T00:00:00`);
+
+  while (current <= end) {
+    const localDate = new Date(current.getTime() - current.getTimezoneOffset() * 60_000);
+    dates.push(localDate.toISOString().slice(0, 10));
+    current.setDate(current.getDate() + 1);
+  }
+
+  return dates;
+}
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
@@ -72,14 +90,20 @@ export default function TripItineraryPage({ params }: Props) {
   const t = useTranslations('trip.itinerary');
 
   const plansQuery = useTravelPlans(tripId);
+  const travelsQuery = useMyTravels();
   const createPlan = useCreatePlan(tripId);
+  const createPlanPlace = useCreatePlanPlace(tripId);
   const updateVisited = useUpdatePlanPlaceVisited();
 
   const [days, setDays] = useState<DayItinerary[]>([]);
+  const [syncedTravelId, setSyncedTravelId] = useState(tripId);
   const [activeDay, setActiveDay] = useState(1);
   const [selectedPlace, setSelectedPlace] = useState<PlaceItem | null>(null);
   const [visitedPlaces, setVisitedPlaces] = useState<Set<string>>(new Set());
-  const [syncedPlansData, setSyncedPlansData] = useState(plansQuery.data);
+  // 개요에서 이미 캐시된 plans 데이터로 진입해도 첫 렌더에서 days 변환이 실행되어야 한다.
+  const [syncedPlansData, setSyncedPlansData] = useState<
+    typeof plansQuery.data | undefined
+  >(undefined);
   const [quickRatings, setQuickRatings] = useState<Record<string, number>>({});
   const [reviewModal, setReviewModal] = useState<PlaceItem | null>(null);
   const [reviewText, setReviewText] = useState('');
@@ -88,6 +112,10 @@ export default function TripItineraryPage({ params }: Props) {
   const [rebootOpen, setRebootOpen] = useState(() => searchParams.get('reboot') === '1');
   const [addDayOpen, setAddDayOpen] = useState(false);
   const [newDayDate, setNewDayDate] = useState('');
+  const [targetPlanId, setTargetPlanId] = useState<string | null>(null);
+  const [placeSearchText, setPlaceSearchText] = useState('');
+  const [placeKeyword, setPlaceKeyword] = useState('');
+  const placeSearchQuery = usePlaceSearch(placeKeyword);
 
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
@@ -98,6 +126,27 @@ export default function TripItineraryPage({ params }: Props) {
   const places = currentDay
     ? currentDay.items.filter((i): i is PlaceItem => i.type === 'place')
     : [];
+  const travel = travelsQuery.data?.find((item) => item.travelId === tripId);
+  const travelDates = useMemo(
+    () => travel ? getTravelDates(travel.startDate, travel.endDate) : [],
+    [travel],
+  );
+  const selectedExistingDay = days.find((day) => day.date === newDayDate);
+  const selectedPlaceImageQuery = usePlaceSearch(selectedPlace?.name ?? '');
+  const selectedPlaceImage = selectedPlaceImageQuery.data?.places.find(
+    (place) =>
+      place.contentId === selectedPlace?.providerPlaceId ||
+      place.title === selectedPlace?.name,
+  );
+
+  if (syncedTravelId !== tripId) {
+    setSyncedTravelId(tripId);
+    setSyncedPlansData(undefined);
+    setDays([]);
+    setActiveDay(1);
+    setSelectedPlace(null);
+    setVisitedPlaces(new Set());
+  }
 
   // ── 서버에서 받아온 일정을 로컬 편집 상태(리부트 적용용)로 동기화 ──
   // (렌더 중 상태를 조정하는 React 권장 패턴: https://react.dev/learn/you-might-not-need-an-effect)
@@ -276,15 +325,53 @@ export default function TripItineraryPage({ params }: Props) {
   };
 
   const handleAddDay = () => {
-    if (!newDayDate) return;
+    if (!newDayDate || !travelDates.includes(newDayDate)) return;
+
+    if (selectedExistingDay) {
+      const existingPlan = plansQuery.data?.days.find((day) => day.visitDate === newDayDate);
+      if (!existingPlan) return;
+      setActiveDay(selectedExistingDay.day);
+      setSelectedPlace(null);
+      setTargetPlanId(existingPlan.planId);
+      return;
+    }
+
+    const dayNumber = travelDates.indexOf(newDayDate) + 1;
     createPlan.mutate(
-      { dayNumber: days.length + 1, visitDate: newDayDate },
+      { dayNumber, visitDate: newDayDate },
       {
-        onSuccess: () => {
-          setAddDayOpen(false);
-          setNewDayDate('');
+        onSuccess: (plan) => {
+          setActiveDay(dayNumber);
+          setTargetPlanId(plan.planId);
         },
       }
+    );
+  };
+
+  const closePlaceAdd = () => {
+    setAddDayOpen(false);
+    setNewDayDate('');
+    setTargetPlanId(null);
+    setPlaceSearchText('');
+    setPlaceKeyword('');
+  };
+
+  const handleAddPlace = (place: Place) => {
+    if (!targetPlanId) return;
+    createPlanPlace.mutate(
+      {
+        planId: targetPlanId,
+        request: {
+          placeName: place.title,
+          address: place.address,
+          latitude: place.latitude,
+          longitude: place.longitude,
+          provider: 'GOOGLE',
+          providerPlaceId: place.contentId,
+          visited: false,
+        },
+      },
+      { onSuccess: closePlaceAdd },
     );
   };
 
@@ -347,21 +434,109 @@ export default function TripItineraryPage({ params }: Props) {
               </div>
 
               {addDayOpen && (
-                <div className="flex shrink-0 items-center gap-2 border-b border-gray-100 px-4 py-2.5">
-                  <input
-                    type="date"
-                    value={newDayDate}
-                    onChange={(e) => setNewDayDate(e.target.value)}
-                    className="flex-1 rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs text-gray-700 outline-none focus:border-blue-400"
-                  />
-                  <button
-                    type="button"
-                    disabled={!newDayDate || createPlan.isPending}
-                    onClick={handleAddDay}
-                    className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-40"
-                  >
-                    {t('addDay')}
-                  </button>
+                <div className="shrink-0 space-y-2 border-b border-gray-100 px-4 py-3">
+                  {!targetPlanId ? (
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={newDayDate}
+                        onChange={(e) => setNewDayDate(e.target.value)}
+                        className="min-w-0 flex-1 rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs text-gray-700 outline-none focus:border-blue-400"
+                        disabled={travelDates.length === 0}
+                      >
+                        <option value="">
+                          {travelDates.length === 0
+                            ? '여행 날짜를 불러오지 못했습니다'
+                            : '장소를 추가할 여행 날짜 선택'}
+                        </option>
+                        {travelDates.map((date) => {
+                          const hasPlan = days.some((day) => day.date === date);
+                          return (
+                            <option key={date} value={date}>
+                              {date}{hasPlan ? ' · 일정 있음' : ' · 새 일정'}
+                            </option>
+                          );
+                        })}
+                      </select>
+                      <button
+                        type="button"
+                        disabled={!newDayDate || !travelDates.includes(newDayDate) || createPlan.isPending}
+                        onClick={handleAddDay}
+                        className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-40"
+                      >
+                        다음
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <input
+                          value={placeSearchText}
+                          onChange={(e) => setPlaceSearchText(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') setPlaceKeyword(placeSearchText.trim());
+                          }}
+                          placeholder="추가할 부산 장소 검색"
+                          className="min-w-0 flex-1 rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs text-gray-700 outline-none focus:border-blue-400"
+                        />
+                        <button
+                          type="button"
+                          disabled={!placeSearchText.trim()}
+                          onClick={() => setPlaceKeyword(placeSearchText.trim())}
+                          className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-40"
+                        >
+                          검색
+                        </button>
+                        <button type="button" onClick={closePlaceAdd} className="px-1 text-xs text-gray-400">
+                          닫기
+                        </button>
+                      </div>
+                      {placeSearchQuery.isPending && placeKeyword && (
+                        <p className="text-xs text-gray-400">장소를 검색하는 중입니다.</p>
+                      )}
+                      {placeSearchQuery.isError && (
+                        <p className="text-xs text-red-500">검색 결과를 불러오지 못했습니다.</p>
+                      )}
+                      {placeSearchQuery.data && (
+                        <div className="max-h-44 space-y-1 overflow-y-auto">
+                          {placeSearchQuery.data.places.map((place) => (
+                            <button
+                              key={place.contentId}
+                              type="button"
+                              disabled={createPlanPlace.isPending}
+                              onClick={() => handleAddPlace(place)}
+                              className="flex w-full items-start justify-between gap-3 rounded-lg bg-gray-50 px-3 py-2 text-left hover:bg-blue-50 disabled:opacity-50"
+                            >
+                              {place.thumbnailUrl || place.imageUrl ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img
+                                  src={place.thumbnailUrl || place.imageUrl}
+                                  alt=""
+                                  className="size-10 shrink-0 rounded-md object-cover"
+                                />
+                              ) : (
+                                <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-gray-100 text-[10px] text-gray-400">
+                                  이미지 없음
+                                </span>
+                              )}
+                              <span className="min-w-0">
+                                <span className="block truncate text-xs font-semibold text-gray-800">{place.title}</span>
+                                <span className="mt-0.5 block truncate text-[11px] text-gray-400">{place.address}</span>
+                              </span>
+                              <span className="shrink-0 text-xs font-medium text-blue-600">
+                                {createPlanPlace.isPending ? '추가 중…' : '추가'}
+                              </span>
+                            </button>
+                          ))}
+                          {placeSearchQuery.data.places.length === 0 && (
+                            <p className="py-3 text-center text-xs text-gray-400">검색 결과가 없습니다.</p>
+                          )}
+                        </div>
+                      )}
+                      {createPlanPlace.isError && (
+                        <p className="text-xs text-red-500">장소를 일정에 추가하지 못했습니다.</p>
+                      )}
+                    </>
+                  )}
                 </div>
               )}
 
@@ -568,13 +743,18 @@ export default function TripItineraryPage({ params }: Props) {
                       <div className="h-1 w-10 rounded-full bg-gray-200" />
                     </div>
                     <div className="max-h-72 overflow-y-auto px-5 pb-6">
-                      {/* Naver map thumbnail placeholder — 추후 지도 미리보기 */}
-                      <div className="mb-4 flex h-28 items-center justify-center rounded-2xl bg-gradient-to-br from-gray-100 to-gray-50 shadow-inner">
-                        <div className="text-center">
-                          <p className="text-xs font-semibold text-gray-400">{t('mapPreview')}</p>
-                          <p className="mt-0.5 text-xs text-gray-300">{t('mapApiComingSoon')}</p>
+                      {selectedPlaceImage?.imageUrl || selectedPlaceImage?.thumbnailUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={selectedPlaceImage.imageUrl || selectedPlaceImage.thumbnailUrl}
+                          alt={selectedPlace.name}
+                          className="mb-4 h-36 w-full rounded-2xl object-cover shadow-sm"
+                        />
+                      ) : (
+                        <div className="mb-4 flex h-28 items-center justify-center rounded-2xl bg-gradient-to-br from-gray-100 to-gray-50 shadow-inner">
+                          <p className="text-xs font-semibold text-gray-400">이미지 없음</p>
                         </div>
-                      </div>
+                      )}
 
                       <div className="flex items-start justify-between">
                         <div>

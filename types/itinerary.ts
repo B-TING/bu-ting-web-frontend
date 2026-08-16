@@ -9,6 +9,7 @@ export interface PlaceItem {
   address: string;
   lat: number;
   lng: number;
+  providerPlaceId?: string;
   // 백엔드 실데이터에는 없는 필드 (Mock/Reboot 후보에서만 채워짐)
   category?: string;
   placeType?: string;

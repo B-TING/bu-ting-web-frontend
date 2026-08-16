@@ -2,6 +2,7 @@ import { apiRequest } from '@/lib/api-client';
 import type {
   PlanCreateRequest,
   PlanPlaceResponse,
+  PlanPlaceCreateRequest,
   PlanResponse,
   TravelCreateRequest,
   TravelPlansResponse,
@@ -30,5 +31,12 @@ export function updatePlanPlaceVisited(planPlaceId: string, visited: boolean) {
   return apiRequest<PlanPlaceResponse>(`/api/v1/plans/places/${planPlaceId}/visited`, {
     method: 'PATCH',
     body: JSON.stringify({ visited }),
+  });
+}
+
+export function createPlanPlace(planId: string, request: PlanPlaceCreateRequest) {
+  return apiRequest<PlanPlaceResponse>(`/api/v1/plans/${planId}/places`, {
+    method: 'POST',
+    body: JSON.stringify(request),
   });
 }

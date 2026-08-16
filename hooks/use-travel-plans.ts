@@ -9,5 +9,8 @@ export function useTravelPlans(travelId: string) {
     queryKey: ['travel-plans', travelId],
     queryFn: () => getTravelPlans(travelId),
     enabled: !!travelId,
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: 'always',
   });
 }
