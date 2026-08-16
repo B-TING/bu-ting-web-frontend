@@ -8,5 +8,8 @@ export function useMyTravels() {
   return useQuery({
     queryKey: ['my-travels'],
     queryFn: getMyTravels,
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: 'always',
   });
 }

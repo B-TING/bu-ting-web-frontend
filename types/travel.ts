@@ -49,6 +49,20 @@ export interface PlanPlaceVisitedUpdateRequest {
   visited: boolean;
 }
 
+export interface PlanPlaceCreateRequest {
+  sequence?: number | null;
+  placeName: string;
+  address: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  provider: ApiPlaceProvider;
+  providerPlaceId: string;
+  durationMinutes?: number | null;
+  memo?: string | null;
+  scheduledTime?: string | null;
+  visited?: boolean | null;
+}
+
 export interface PlanPlaceResponse {
   planPlaceId: string;
   planId: string;
@@ -113,4 +127,39 @@ export interface MyTravelListEnvelope {
   success: boolean;
   message: string;
   data: MyTravelResponse[];
+}
+
+export interface TravelMemberResponse {
+  memberId: string;
+  userId: string;
+  email?: string | null;
+  nickname: string;
+  profileImageUrl?: string | null;
+  role: ApiTravelTeamRole;
+}
+
+export interface TravelMemberListEnvelope {
+  success: boolean;
+  message: string;
+  data: TravelMemberResponse[];
+}
+
+export interface TravelInviteLinkResponse {
+  inviteLink: string;
+}
+
+export interface TravelInviteLinkInfoResponse extends TravelInviteLinkResponse {
+  expiredAt: string;
+}
+
+export interface TravelInviteLinkInfoEnvelope {
+  success: boolean;
+  message: string;
+  data: TravelInviteLinkInfoResponse;
+}
+
+export interface EmptyTravelTeamEnvelope {
+  success: boolean;
+  message: string;
+  data: null;
 }
