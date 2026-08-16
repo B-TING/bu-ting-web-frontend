@@ -2,7 +2,7 @@
 
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 
-import { getPlaceDetail, getPlaceList } from '@/api/place-api';
+import { getPlaceDetail, getPlaceList, searchPlaces } from '@/api/place-api';
 import type { PlaceDetailRequest, PlaceListRequest } from '@/types/place';
 
 type PlaceListSearchParams = Omit<PlaceListRequest, 'page'>;
@@ -27,5 +27,13 @@ export function usePlaceDetail(request: PlaceDetailRequest | null) {
     queryKey: ['place-detail', request],
     queryFn: () => getPlaceDetail(request as PlaceDetailRequest),
     enabled: request !== null,
+  });
+}
+
+export function usePlaceSearch(keyword: string) {
+  return useQuery({
+    queryKey: ['place-search', keyword],
+    queryFn: () => searchPlaces({ keyword }),
+    enabled: keyword.trim().length > 0,
   });
 }

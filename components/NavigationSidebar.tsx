@@ -9,6 +9,7 @@ import { useAuthStore } from '@/stores/auth-store';
 const NAV_ITEMS = [
   { label: '짐 보관소', href: '/luggage' },
   { label: '피드', href: '/stories' },
+  { label: '여행 목록', href: '/trips' },
   { label: '여행 생성', href: '/trips/new' },
   { label: '축제 캘린더', href: '/festivals' },
 ];

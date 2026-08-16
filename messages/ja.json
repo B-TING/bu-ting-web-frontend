@@ -8,6 +8,11 @@
     },
     "wizard": {
       "step1": {
+        "title": "旅行の名前を付けましょう",
+        "subtitle": "任意入力 · 最大15文字",
+        "placeholder": "例：釜山ヒーリング旅行"
+      },
+      "step2": {
         "title": "いつ旅行しますか？",
         "subtitle": "出発日と帰着日を選択してください",
         "startDate": "出発日",
@@ -15,37 +20,41 @@
         "endBeforeStart": "帰着日は出発日より後でなければなりません。",
         "duration": "{days}日間の旅"
       },
-      "step2": {
+      "step3": {
         "title": "何名様ですか？",
         "subtitle": "ご自身を含む人数",
         "unit": "名",
         "maxWarning": "最大20名まで選択できます。"
       },
-      "step3": {
-        "title": "同行者のタイプは？",
-        "subtitle": "複数選択可"
-      },
       "step4": {
-        "title": "旅行スタイルは？",
-        "subtitle": "旅のテーマ · 複数選択"
+        "title": "同行者のタイプは？",
+        "subtitle": "一つだけ選択してください"
       },
       "step5": {
+        "title": "旅行スタイルは？",
+        "subtitle": "旅のテーマ · 一つだけ選択"
+      },
+      "step6": {
+        "title": "旅行のペースはどうしますか？",
+        "subtitle": "一つだけ選択してください"
+      },
+      "step7": {
         "title": "旅行の制約はありますか？",
         "subtitle": "該当する項目をすべて選択してください"
       },
-      "step6": {
+      "step8": {
         "title": "行きたい観光スポット",
         "subtitle": "釜山の人気スポット · 複数選択"
       },
-      "step7": {
+      "step9": {
         "title": "好きな食べ物は？",
         "subtitle": "グルメ推薦に反映"
       },
-      "step8": {
+      "step10": {
         "title": "宿泊先は決まりましたか？",
         "subtitle": "予約済みまたは候補エリアを選択"
       },
-      "step9": {
+      "step11": {
         "title": "スケジュール作成方法",
         "subtitle": "AI自動生成または候補から選択"
       },
@@ -69,6 +78,14 @@
         "activities": "アクティビティ",
         "photo_insta": "写真・インスタ",
         "night_view": "夜景・ナイト"
+      },
+      "pace": {
+        "relaxed_label": "ゆったり",
+        "relaxed_desc": "1日2〜3か所、余裕のある日程",
+        "balanced_label": "ふつう",
+        "balanced_desc": "1日4〜5か所、バランスの取れた日程",
+        "tight_label": "ぎっしり",
+        "tight_desc": "1日6か所以上、盛りだくさんな日程"
       },
       "constraint": {
         "heavy_luggage": "荷物が多い",
@@ -151,7 +168,11 @@
         "title": "まだ旅行プランがありません",
         "desc": "釜山旅行を計画して\n新しい思い出を作りましょう",
         "cta": "旅行プランを作成"
-      }
+      },
+      "noSchedule": "まだ日程が登録されていません",
+      "companionsComingSoon": "同行者管理機能は準備中です",
+      "loading": "旅行情報を読み込み中...",
+      "loadError": "旅行情報を読み込めませんでした。"
     },
     "itinerary": {
       "estimatedDuration": "所要時間 {duration}",
@@ -178,7 +199,11 @@
         "public": "公共交通",
         "car": "車",
         "walk": "徒歩"
-      }
+      },
+      "noDays": "まだ日程が登録されていません",
+      "addDay": "日程を追加",
+      "loading": "日程を読み込み中...",
+      "loadError": "日程を読み込めませんでした。"
     },
     "budget": {
       "addExpense": "+ 支出追加",
@@ -255,7 +280,14 @@
       "newTripMeta": "旅行プランを作成 | 부팅",
       "newAiTitle": "AI旅程作成",
       "rebootTitle": "リブート",
-      "detailTitle": "旅行詳細"
+      "detailTitle": "旅行詳細",
+      "detailLoading": "旅行情報を読み込み中...",
+      "detailNotFound": "旅行情報が見つかりません。"
+    },
+    "status": {
+      "PLANNED": "予定",
+      "IN_PROGRESS": "進行中",
+      "COMPLETED": "完了"
     }
   }
 }

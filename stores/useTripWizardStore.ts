@@ -4,14 +4,16 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { TripWizardData } from '@/types/tripWizard';
 
-const TOTAL_STEPS = 9;
+const TOTAL_STEPS = 11;
 
 const initialData: TripWizardData = {
+  title: '',
   startDate: '',
   endDate: '',
   headCount: 1,
-  companionTypes: [],
-  travelStyles: [],
+  companionType: null,
+  travelStyle: null,
+  pace: null,
   constraints: [],
   attractions: [],
   foods: [],

@@ -4,6 +4,7 @@ import {
   PlaceDetailResponse,
   PlaceListRequest,
   PlaceListResponse,
+  PlaceSearchRequest,
 } from '@/types/place';
 
 export function getPlaceList(request: PlaceListRequest) {
@@ -27,4 +28,13 @@ export function getPlaceDetail({ contentId, contentTypeId, googleSearchText }: P
   if (googleSearchText) params.set('googleSearchText', googleSearchText);
 
   return apiRequest<PlaceDetailResponse>(`/api/v1/places/${contentId}/detail?${params.toString()}`);
+}
+
+export function searchPlaces({ keyword, page = 1, size = 10 }: PlaceSearchRequest) {
+  const params = new URLSearchParams({
+    keyword,
+    page: String(page),
+    size: String(size),
+  });
+  return apiRequest<PlaceListResponse>(`/api/v1/places/search?${params.toString()}`);
 }

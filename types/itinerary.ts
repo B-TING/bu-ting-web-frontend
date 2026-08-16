@@ -5,14 +5,16 @@ export interface PlaceItem {
   id: string;
   order: number;
   name: string;
-  category: string;
-  placeType: string;
-  time: string;
-  description: string;
   stayMinutes: number;
   address: string;
   lat: number;
   lng: number;
+  providerPlaceId?: string;
+  // 백엔드 실데이터에는 없는 필드 (Mock/Reboot 후보에서만 채워짐)
+  category?: string;
+  placeType?: string;
+  time?: string;
+  description?: string;
 }
 
 export interface TransitItem {

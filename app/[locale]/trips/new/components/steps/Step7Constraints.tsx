@@ -19,7 +19,7 @@ interface Props {
   onChange: (updates: Partial<TripWizardData>) => void;
 }
 
-export default function Step5Constraints({ data, onChange }: Props) {
+export default function Step7Constraints({ data, onChange }: Props) {
   const t = useTranslations('trip.wizard.constraint');
 
   const toggle = (option: TravelConstraint) => {

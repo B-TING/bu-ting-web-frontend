@@ -22,7 +22,7 @@ export function TripTabHeader({
   const t = useTranslations('trip.tabs');
 
   const tabs = [
-    { key: 'overview', href: '/trips' },
+    { key: 'overview', href: `/trips?travelId=${tripId}` },
     { key: 'itinerary', href: `/trips/${tripId}/itinerary` },
     { key: 'budget', href: `/trips/${tripId}/budget` },
     { key: 'records', href: `/trips/${tripId}/records` },
@@ -48,7 +48,9 @@ export function TripTabHeader({
       <div className="mx-auto max-w-5xl px-6">
         <nav className="flex gap-6">
           {tabs.map(({ key, href }) => {
-            const active = pathname === href || pathname.endsWith(href);
+            const active = key === 'overview'
+              ? pathname === '/trips'
+              : pathname === href || pathname.endsWith(href);
             return (
               <Link
                 key={key}

@@ -43,6 +43,12 @@ export interface PlaceListResponse {
   places: Place[];
 }
 
+export interface PlaceSearchRequest {
+  keyword: string;
+  page?: number;
+  size?: number;
+}
+
 export interface PlaceDetailRequest {
   contentId: string;
   contentTypeId: PlaceContentTypeId;

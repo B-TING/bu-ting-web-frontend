@@ -8,6 +8,11 @@
     },
     "wizard": {
       "step1": {
+        "title": "给旅行起个名字吧",
+        "subtitle": "选填 · 最多15字",
+        "placeholder": "例：釜山治愈之旅"
+      },
+      "step2": {
         "title": "您什么时候出行？",
         "subtitle": "请选择开始日期和结束日期",
         "startDate": "开始日期",
@@ -15,37 +20,41 @@
         "endBeforeStart": "结束日期必须在开始日期之后。",
         "duration": "{days}天旅行"
       },
-      "step2": {
+      "step3": {
         "title": "一共几位？",
         "subtitle": "包括您本人",
         "unit": "人",
         "maxWarning": "最多可选择20人。"
       },
-      "step3": {
-        "title": "与谁同行？",
-        "subtitle": "可多选"
-      },
       "step4": {
-        "title": "您喜欢哪种旅行风格？",
-        "subtitle": "旅行主题 · 可多选"
+        "title": "与谁同行？",
+        "subtitle": "仅可单选"
       },
       "step5": {
+        "title": "您喜欢哪种旅行风格？",
+        "subtitle": "旅行主题 · 仅可单选"
+      },
+      "step6": {
+        "title": "希望的旅行节奏是？",
+        "subtitle": "仅可单选"
+      },
+      "step7": {
         "title": "有什么旅行限制吗？",
         "subtitle": "请选择所有适用项"
       },
-      "step6": {
+      "step8": {
         "title": "想去的景点",
         "subtitle": "釜山代表景点 · 可多选"
       },
-      "step7": {
+      "step9": {
         "title": "喜欢什么食物？",
         "subtitle": "用于餐厅推荐"
       },
-      "step8": {
+      "step10": {
         "title": "住宿定好了吗？",
         "subtitle": "选择已预订或意向地区"
       },
-      "step9": {
+      "step11": {
         "title": "行程生成方式",
         "subtitle": "AI自动生成或从候选中选择"
       },
@@ -69,6 +78,14 @@
         "activities": "户外活动",
         "photo_insta": "拍照·Instagram",
         "night_view": "夜景·夜生活"
+      },
+      "pace": {
+        "relaxed_label": "轻松",
+        "relaxed_desc": "每天2-3个地点，节奏悠闲",
+        "balanced_label": "适中",
+        "balanced_desc": "每天4-5个地点，节奏均衡",
+        "tight_label": "紧凑",
+        "tight_desc": "每天6个以上地点，行程充实"
       },
       "constraint": {
         "heavy_luggage": "行李较多",
@@ -151,7 +168,11 @@
         "title": "暂无旅行计划",
         "desc": "规划您的釜山之旅\n留下美好回忆",
         "cta": "创建旅行计划"
-      }
+      },
+      "noSchedule": "还没有添加行程",
+      "companionsComingSoon": "同行管理功能即将上线",
+      "loading": "正在加载旅行信息...",
+      "loadError": "无法加载旅行信息。"
     },
     "itinerary": {
       "estimatedDuration": "预计 {duration}",
@@ -178,7 +199,11 @@
         "public": "公共交通",
         "car": "自驾",
         "walk": "步行"
-      }
+      },
+      "noDays": "还没有添加行程",
+      "addDay": "添加日期",
+      "loading": "正在加载行程...",
+      "loadError": "无法加载行程。"
     },
     "budget": {
       "addExpense": "+ 添加消费",
@@ -255,7 +280,14 @@
       "newTripMeta": "制定旅行计划 | 부팅",
       "newAiTitle": "AI行程生成",
       "rebootTitle": "重启",
-      "detailTitle": "行程详情"
+      "detailTitle": "行程详情",
+      "detailLoading": "正在加载旅行信息...",
+      "detailNotFound": "未找到旅行信息。"
+    },
+    "status": {
+      "PLANNED": "计划中",
+      "IN_PROGRESS": "进行中",
+      "COMPLETED": "已完成"
     }
   }
 }

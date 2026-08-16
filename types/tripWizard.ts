@@ -9,6 +9,8 @@ export type TravelStyle =
   | 'photo_insta'
   | 'night_view';
 
+export type TravelPace = 'relaxed' | 'balanced' | 'tight';
+
 export type TravelConstraint =
   | 'heavy_luggage'
   | 'light_luggage'
@@ -52,11 +54,13 @@ export type AccommodationRegion =
 export type GenerationMethod = 'ai' | 'manual';
 
 export interface TripWizardData {
+  title: string;
   startDate: string;
   endDate: string;
   headCount: number;
-  companionTypes: CompanionType[];
-  travelStyles: TravelStyle[];
+  companionType: CompanionType | null;
+  travelStyle: TravelStyle | null;
+  pace: TravelPace | null;
   constraints: TravelConstraint[];
   attractions: Attraction[];
   foods: FoodPreference[];
