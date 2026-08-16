@@ -22,6 +22,7 @@ export interface OAuthLoginData {
   userId: string;
   email: string | null;
   nickname: string;
+  profileImageUrl?: string | null;
   provider: OAuthProvider;
   loggedIn: boolean;
   emailRequired: boolean;

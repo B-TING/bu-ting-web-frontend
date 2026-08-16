@@ -1,5 +1,4 @@
-import { getTranslations } from 'next-intl/server';
-import { RebootFab } from '../components/RebootFab';
+import { redirect } from 'next/navigation';
 
 interface TripDetailPageProps {
   params: Promise<{ tripId: string }>;
@@ -7,13 +6,5 @@ interface TripDetailPageProps {
 
 export default async function TripDetailPage({ params }: TripDetailPageProps) {
   const { tripId } = await params;
-  const t = await getTranslations('trip.pages');
-
-  return (
-    <main>
-      <h1>{t('detailTitle')}</h1>
-      <p>{tripId}</p>
-      <RebootFab tripId={tripId} />
-    </main>
-  );
+  redirect(`/trips?travelId=${tripId}`);
 }

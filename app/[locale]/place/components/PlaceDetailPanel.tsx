@@ -127,7 +127,16 @@ export function PlaceDetailPanel({
         </span>
       </div>
 
-      <div ref={mapRef} className="h-40 w-full shrink-0 bg-gray-100" />
+      {place.imageUrl || place.thumbnailUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={place.imageUrl || place.thumbnailUrl}
+          alt={place.title}
+          className="h-48 w-full shrink-0 object-cover"
+        />
+      ) : (
+        <div ref={mapRef} className="h-40 w-full shrink-0 bg-gray-100" />
+      )}
 
       <div className="flex-1">
         {isLoading && (

@@ -1,11 +1,12 @@
 'use client';
 
-import { ArrowLeft, LayoutGrid, Rows3 } from 'lucide-react';
+import { ArrowLeft, LayoutGrid, LoaderCircle, Rows3 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 
 import { StoryCard } from '@/app/[locale]/stories/components/StoryCard';
-import type { StoryFeedItem } from '@/app/[locale]/stories/story-data';
+import { useTravelRecordFeed } from '@/app/[locale]/stories/hooks/use-travel-records';
+import { feedRecordToStory } from '@/app/[locale]/stories/travel-record-adapter';
 
 type FeedColumnCount = 1 | 2 | 3;
 
@@ -27,8 +28,10 @@ function getGridClass(columnCount: FeedColumnCount) {
   return 'grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3';
 }
 
-export function StoriesFeed({ stories }: { stories: StoryFeedItem[] }) {
+export function StoriesFeed() {
   const [columnCount, setColumnCount] = useState<FeedColumnCount>(1);
+  const feed = useTravelRecordFeed();
+  const records = feed.data?.pages.flatMap((page) => page.items) ?? [];
 
   return (
     <main className="min-h-screen bg-slate-50">
@@ -94,15 +97,47 @@ export function StoriesFeed({ stories }: { stories: StoryFeedItem[] }) {
           </div>
         </div>
 
-        <div className={['mt-6 grid gap-6', getGridClass(columnCount)].join(' ')}>
-          {stories.map((story) => (
-            <StoryCard
-              key={story.id}
-              story={story}
-              compact={columnCount !== 1}
-            />
-          ))}
-        </div>
+        {feed.isLoading ? (
+          <LoaderCircle className="mx-auto mt-16 size-8 animate-spin text-sky-700" />
+        ) : feed.isError ? (
+          <div className="mt-10 rounded-3xl border border-red-100 bg-red-50 p-8 text-center">
+            <p className="text-sm text-red-600">여행기 피드를 불러오지 못했어요.</p>
+            <button
+              type="button"
+              onClick={() => void feed.refetch()}
+              className="mt-4 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-red-600"
+            >
+              다시 시도
+            </button>
+          </div>
+        ) : records.length === 0 ? (
+          <div className="mt-10 rounded-3xl border border-dashed border-slate-300 p-12 text-center text-slate-500">
+            공개된 여행기가 아직 없어요.
+          </div>
+        ) : (
+          <>
+            <div className={['mt-6 grid gap-6', getGridClass(columnCount)].join(' ')}>
+              {records.map((record) => (
+                <StoryCard
+                  key={record.travelRecordId}
+                  story={feedRecordToStory(record)}
+                  initialLiked={record.likedByMe}
+                  compact={columnCount !== 1}
+                />
+              ))}
+            </div>
+            {feed.hasNextPage ? (
+              <button
+                type="button"
+                onClick={() => void feed.fetchNextPage()}
+                disabled={feed.isFetchingNextPage}
+                className="mx-auto mt-8 flex h-11 items-center rounded-xl bg-sky-700 px-6 text-sm font-semibold text-white disabled:opacity-60"
+              >
+                {feed.isFetchingNextPage ? '불러오는 중...' : '여행기 더 보기'}
+              </button>
+            ) : null}
+          </>
+        )}
       </section>
     </main>
   );

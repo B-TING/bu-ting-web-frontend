@@ -19,16 +19,8 @@ interface Props {
   onChange: (updates: Partial<TripWizardData>) => void;
 }
 
-export default function Step4TravelStyle({ data, onChange }: Props) {
+export default function Step5TravelStyle({ data, onChange }: Props) {
   const t = useTranslations('trip.wizard.travelStyle');
-
-  const toggle = (option: TravelStyle) => {
-    const current = data.travelStyles;
-    const next = current.includes(option)
-      ? current.filter((v) => v !== option)
-      : [...current, option];
-    onChange({ travelStyles: next });
-  };
 
   return (
     <div className="grid grid-cols-2 gap-2.5">
@@ -36,8 +28,8 @@ export default function Step4TravelStyle({ data, onChange }: Props) {
         <OptionButton
           key={option}
           label={t(option)}
-          selected={data.travelStyles.includes(option)}
-          onClick={() => toggle(option)}
+          selected={data.travelStyle === option}
+          onClick={() => onChange({ travelStyle: option })}
         />
       ))}
     </div>

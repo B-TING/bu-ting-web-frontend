@@ -8,6 +8,11 @@
     },
     "wizard": {
       "step1": {
+        "title": "Name your trip",
+        "subtitle": "Optional · Up to 15 characters",
+        "placeholder": "e.g. Busan Healing Trip"
+      },
+      "step2": {
         "title": "When are you traveling?",
         "subtitle": "Select your start and end dates",
         "startDate": "Start date",
@@ -15,37 +20,41 @@
         "endBeforeStart": "End date must be after the start date.",
         "duration": "{days}-day trip"
       },
-      "step2": {
+      "step3": {
         "title": "How many people?",
         "subtitle": "Including yourself",
         "unit": "people",
         "maxWarning": "You can select up to 20 people."
       },
-      "step3": {
-        "title": "Who are you traveling with?",
-        "subtitle": "Multiple selections allowed"
-      },
       "step4": {
-        "title": "What's your travel style?",
-        "subtitle": "Travel theme · Multiple selections"
+        "title": "Who are you traveling with?",
+        "subtitle": "Choose one"
       },
       "step5": {
+        "title": "What's your travel style?",
+        "subtitle": "Travel theme · Choose one"
+      },
+      "step6": {
+        "title": "What pace do you prefer?",
+        "subtitle": "Choose one"
+      },
+      "step7": {
         "title": "Any travel constraints?",
         "subtitle": "Select all that apply"
       },
-      "step6": {
+      "step8": {
         "title": "Places you want to visit",
         "subtitle": "Top Busan spots · Multiple selections"
       },
-      "step7": {
+      "step9": {
         "title": "What food do you like?",
         "subtitle": "Used for restaurant recommendations"
       },
-      "step8": {
+      "step10": {
         "title": "Have you decided on accommodation?",
         "subtitle": "Select booked or preferred area"
       },
-      "step9": {
+      "step11": {
         "title": "How would you like to create your itinerary?",
         "subtitle": "AI auto-generate or choose from suggestions"
       },
@@ -69,6 +78,14 @@
         "activities": "Activities",
         "photo_insta": "Photo & Instagram",
         "night_view": "Night Views"
+      },
+      "pace": {
+        "relaxed_label": "Relaxed",
+        "relaxed_desc": "2-3 spots a day, a leisurely pace",
+        "balanced_label": "Balanced",
+        "balanced_desc": "4-5 spots a day, a balanced pace",
+        "tight_label": "Packed",
+        "tight_desc": "6+ spots a day, a jam-packed pace"
       },
       "constraint": {
         "heavy_luggage": "Heavy Luggage",
@@ -151,7 +168,11 @@
         "title": "No trips yet",
         "desc": "Plan your Busan trip\nand create new memories",
         "cta": "Create New Trip"
-      }
+      },
+      "noSchedule": "No itinerary yet",
+      "companionsComingSoon": "Companion management is coming soon",
+      "loading": "Loading your trips...",
+      "loadError": "Couldn't load your trips."
     },
     "itinerary": {
       "estimatedDuration": "Est. {duration}",
@@ -178,7 +199,11 @@
         "public": "Public Transit",
         "car": "Car",
         "walk": "Walking"
-      }
+      },
+      "noDays": "No days added yet",
+      "addDay": "Add day",
+      "loading": "Loading itinerary...",
+      "loadError": "Couldn't load the itinerary."
     },
     "budget": {
       "addExpense": "+ Add Expense",
@@ -255,7 +280,14 @@
       "newTripMeta": "Plan a Trip | Bu-ting",
       "newAiTitle": "AI Trip Planning",
       "rebootTitle": "Reboot",
-      "detailTitle": "Trip Details"
+      "detailTitle": "Trip Details",
+      "detailLoading": "Loading trip info...",
+      "detailNotFound": "Trip not found."
+    },
+    "status": {
+      "PLANNED": "Planned",
+      "IN_PROGRESS": "In progress",
+      "COMPLETED": "Completed"
     }
   }
 }

@@ -11,16 +11,8 @@ interface Props {
   onChange: (updates: Partial<TripWizardData>) => void;
 }
 
-export default function Step3CompanionType({ data, onChange }: Props) {
+export default function Step4CompanionType({ data, onChange }: Props) {
   const t = useTranslations('trip.wizard.companionType');
-
-  const toggle = (option: CompanionType) => {
-    const current = data.companionTypes;
-    const next = current.includes(option)
-      ? current.filter((v) => v !== option)
-      : [...current, option];
-    onChange({ companionTypes: next });
-  };
 
   return (
     <div className="space-y-2.5">
@@ -28,8 +20,8 @@ export default function Step3CompanionType({ data, onChange }: Props) {
         <OptionButton
           key={option}
           label={t(option)}
-          selected={data.companionTypes.includes(option)}
-          onClick={() => toggle(option)}
+          selected={data.companionType === option}
+          onClick={() => onChange({ companionType: option })}
         />
       ))}
     </div>
