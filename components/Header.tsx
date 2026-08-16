@@ -45,13 +45,15 @@ export default function Header({ title }: HeaderProps) {
                   className="size-8 rounded-full object-cover"
                 />
               ) : (
-                <UserRound className="size-5  bg-blue-200" />
+                <div className="flex items-center justify-center rounded-full bg-blue-50 w-9 h-9">
+                  <UserRound className="size-5 " />
+                </div>
               )}
             </Link>
           ) : (
             <Link
               href="/auth/login"
-              className="rounded-lg px-3 py-2 text-sm font-medium text-blue-600 transition-colors hover:bg-blue-50"
+              className="rounded-lg px-3 py-2 text-sm font-semibold text-gray-600 transition-colors hover:bg-blue-50 bg-gray-100"
             >
               로그인
             </Link>
