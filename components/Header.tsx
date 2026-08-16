@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Menu } from 'lucide-react';
+import { Menu, UserRound } from 'lucide-react';
 
 import NavigationSidebar from './NavigationSidebar';
 import Link from 'next/link';
+import { useAuthStore } from '@/stores/auth-store';
 
 interface HeaderProps {
   title?: string;
@@ -12,6 +13,10 @@ interface HeaderProps {
 
 export default function Header({ title }: HeaderProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [profileImageFailed, setProfileImageFailed] = useState(false);
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const user = useAuthStore((state) => state.user);
+  const isLoggedIn = Boolean(accessToken);
 
   return (
     <>
@@ -24,13 +29,42 @@ export default function Header({ title }: HeaderProps) {
           </Link>
           {title && <h1 className="text-base font-bold text-gray-900 pl-2">{title}</h1>}
         </div>
-        <button
-          type="button"
-          onClick={() => setIsSidebarOpen(true)}
-          className="flex h-10 w-10 items-center justify-center rounded-xl transition-colors hover:bg-gray-100"
-        >
-          <Menu className="h-5 w-5 text-gray-700" />
-        </button>
+        <div className="flex items-center gap-1.5">
+          {isLoggedIn ? (
+            <Link
+              href="/my"
+              aria-label="마이페이지"
+              className="flex size-10 items-center justify-center overflow-hidden rounded-xl text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
+            >
+              {user?.profileImageUrl && !profileImageFailed ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={user.profileImageUrl}
+                  alt={user.nickname || '프로필'}
+                  onError={() => setProfileImageFailed(true)}
+                  className="size-8 rounded-full object-cover"
+                />
+              ) : (
+                <UserRound className="size-5  bg-blue-200" />
+              )}
+            </Link>
+          ) : (
+            <Link
+              href="/auth/login"
+              className="rounded-lg px-3 py-2 text-sm font-medium text-blue-600 transition-colors hover:bg-blue-50"
+            >
+              로그인
+            </Link>
+          )}
+          <button
+            type="button"
+            aria-label="메뉴 열기"
+            onClick={() => setIsSidebarOpen(true)}
+            className="flex h-10 w-10 items-center justify-center rounded-xl transition-colors hover:bg-gray-100"
+          >
+            <Menu className="h-5 w-5 text-gray-700" />
+          </button>
+        </div>
       </header>
       <NavigationSidebar
         isOpen={isSidebarOpen}
