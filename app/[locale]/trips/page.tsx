@@ -4,52 +4,69 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { TripTabHeader } from './components/TripTabHeader';
-import type { Companion, DayHighlight, NextSchedule } from '@/types/trip';
-
-const MOCK_TRIP: {
-  id: string;
-  title: string;
-  startDate: string;
-  endDate: string;
-  totalDays: number;
-  totalNights: number;
-  days: DayHighlight[];
-  nextSchedule: NextSchedule;
-  companions: Companion[];
-  budget: number;
-  recordCount: number;
-  totalRecords: number;
-} = {
-  id: 'demo-1',
-  title: 'B-Side of Busan',
-  startDate: '2026-06-25',
-  endDate: '2026-06-27',
-  totalDays: 3,
-  totalNights: 2,
-  days: [
-    { day: 1, date: '6/25', dayOfWeek: '목', places: ['해운대 해수욕장', '광안리', '센텀시티'] },
-    { day: 2, date: '6/26', dayOfWeek: '금', places: ['자갈치시장', '국제시장', '남포동'] },
-    { day: 3, date: '6/27', dayOfWeek: '토', places: ['용두산 공원', '감천문화마을'] },
-  ],
-  nextSchedule: { place: '해운대 해수욕장', day: 1, date: '6/25', dayOfWeek: '목' },
-  companions: [
-    { id: '1', name: '여행자', role: 'owner', initial: '여', color: 'bg-blue-500' },
-    { id: '2', name: '일행 1', role: 'editor', initial: '일', color: 'bg-cyan-400' },
-    { id: '3', name: '일행 2', role: 'viewer', initial: '일', color: 'bg-orange-400' },
-  ],
-  budget: 0,
-  recordCount: 0,
-  totalRecords: 8,
-};
-
-const HAS_TRIP = true;
+import { useMyTravels } from '@/hooks/use-my-travels';
+import { useTravelPlans } from '@/hooks/use-travel-plans';
+import { mapTravelPlansResponseToDays } from '@/lib/travel-plans-to-itinerary';
+import { diffDaysInclusive, formatDayOfWeek, formatShortDate } from '@/lib/format-date';
+import type { MyTravelResponse } from '@/types/travel';
 
 export default function TripsPage() {
-  return HAS_TRIP ? <TripOverview trip={MOCK_TRIP} /> : <EmptyState />;
+  const { data: travels, isPending, isError } = useMyTravels();
+
+  if (isPending) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/20 to-white">
+        <LoadingOrErrorMessage textKey="loading" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/20 to-white">
+        <LoadingOrErrorMessage
+          textKey="loadError"
+          isError
+        />
+      </div>
+    );
+  }
+
+  const upcomingTrip = pickUpcomingTrip(travels ?? []);
+
+  return upcomingTrip ? <TripOverview trip={upcomingTrip} /> : <EmptyState />;
 }
 
-function TripOverview({ trip }: { trip: typeof MOCK_TRIP }) {
+function pickUpcomingTrip(travels: MyTravelResponse[]): MyTravelResponse | null {
+  const candidates = travels.filter((trip) => trip.status !== 'COMPLETED');
+  const pool = candidates.length > 0 ? candidates : travels;
+  if (pool.length === 0) return null;
+
+  return pool.slice().sort((a, b) => a.startDate.localeCompare(b.startDate))[0];
+}
+
+function LoadingOrErrorMessage({
+  textKey,
+  isError = false,
+}: {
+  textKey: 'loading' | 'loadError';
+  isError?: boolean;
+}) {
   const t = useTranslations('trip.overview');
+  return <p className={cn('text-sm', isError ? 'text-red-500' : 'text-gray-400')}>{t(textKey)}</p>;
+}
+
+function TripOverview({ trip }: { trip: MyTravelResponse }) {
+  const t = useTranslations('trip.overview');
+  const plansQuery = useTravelPlans(trip.travelId);
+
+  const days = plansQuery.data ? mapTravelPlansResponseToDays(plansQuery.data) : [];
+  const highlightDays = days.slice(0, 3);
+  const nextDay = days.find((day) => day.items.some((item) => item.type === 'place'));
+  const nextPlace = nextDay?.items.find((item) => item.type === 'place');
+
+  const totalDays = diffDaysInclusive(trip.startDate, trip.endDate);
+  const totalNights = Math.max(totalDays - 1, 0);
 
   const newTripAction = (
     <Link
@@ -76,8 +93,8 @@ function TripOverview({ trip }: { trip: typeof MOCK_TRIP }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-white">
       <TripTabHeader
-        tripTitle={trip.title}
-        tripId={trip.id}
+        tripTitle={trip.title || ''}
+        tripId={trip.travelId}
         backHref="/"
         action={newTripAction}
       />
@@ -88,15 +105,17 @@ function TripOverview({ trip }: { trip: typeof MOCK_TRIP }) {
           <div className="flex items-center justify-between bg-gradient-to-r from-blue-600 to-indigo-500 px-6 py-3">
             <span className="text-sm font-medium text-blue-100">{t('period')}</span>
             <span className="rounded-full bg-white/20 px-3 py-0.5 text-sm font-semibold text-white">
-              {t('daysNights', { days: trip.totalDays, nights: trip.totalNights })}
+              {t('daysNights', { days: totalDays, nights: totalNights })}
             </span>
           </div>
           <div className="bg-white px-6 py-5">
             <div className="flex items-center gap-6">
               <div>
-                <p className="text-3xl font-bold text-blue-600">{trip.days[0].date}</p>
+                <p className="text-3xl font-bold text-blue-600">
+                  {formatShortDate(trip.startDate)}
+                </p>
                 <p className="mt-0.5 text-sm text-gray-400">
-                  {trip.days[0].dayOfWeek} {trip.startDate}
+                  {formatDayOfWeek(trip.startDate)} {trip.startDate}
                 </p>
               </div>
               <div className="flex flex-1 items-center gap-3">
@@ -117,18 +136,16 @@ function TripOverview({ trip }: { trip: typeof MOCK_TRIP }) {
                 <div className="h-px flex-1 bg-gradient-to-r from-indigo-200 to-blue-200" />
               </div>
               <div className="text-right">
-                <p className="text-3xl font-bold text-blue-600">
-                  {trip.days[trip.days.length - 1].date}
-                </p>
+                <p className="text-3xl font-bold text-blue-600">{formatShortDate(trip.endDate)}</p>
                 <p className="mt-0.5 text-sm text-gray-400">
-                  {trip.days[trip.days.length - 1].dayOfWeek} {trip.endDate}
+                  {formatDayOfWeek(trip.endDate)} {trip.endDate}
                 </p>
               </div>
             </div>
             <div className="mt-4 flex items-center gap-1.5">
-              {trip.days.map((d, i) => (
+              {Array.from({ length: totalDays }).map((_, i) => (
                 <span
-                  key={d.day}
+                  key={i}
                   className={cn(
                     'block rounded-full transition-all',
                     i === 0 ? 'h-2 w-6 bg-blue-600' : 'size-2 bg-blue-200'
@@ -144,7 +161,7 @@ function TripOverview({ trip }: { trip: typeof MOCK_TRIP }) {
           <div className="mb-4 flex items-center justify-between">
             <h2 className="font-semibold text-gray-900">{t('scheduleHighlight')}</h2>
             <Link
-              href={`/trips/${trip.id}/itinerary`}
+              href={`/trips/${trip.travelId}/itinerary`}
               className="flex items-center gap-1 text-sm text-blue-500 hover:text-blue-700"
             >
               {t('view')}
@@ -164,39 +181,56 @@ function TripOverview({ trip }: { trip: typeof MOCK_TRIP }) {
             </Link>
           </div>
 
-          <div className="mb-4 rounded-xl bg-blue-50/70 px-5 py-4">
-            <p className="text-xs font-medium text-blue-500">{t('nextSchedule')}</p>
-            <p className="mt-1 text-base font-bold text-gray-900">{trip.nextSchedule.place}</p>
-            <p className="mt-0.5 text-sm text-gray-400">
-              Day {trip.nextSchedule.day} · {trip.nextSchedule.dayOfWeek} {trip.nextSchedule.date}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-3 gap-3">
-            {trip.days.map((day) => (
-              <div
-                key={day.day}
-                className="group cursor-pointer rounded-xl border border-gray-100 bg-white p-4 transition-all hover:border-blue-200 hover:shadow-sm"
-              >
-                <div className="mb-2 flex items-center gap-2">
-                  <span className="flex size-6 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
-                    {day.day}
-                  </span>
-                  <span className="text-xs text-gray-400">
-                    {day.dayOfWeek} {day.date}
-                  </span>
-                </div>
-                <p className="font-medium text-gray-800 group-hover:text-blue-700">
-                  {day.places[0]}
-                </p>
-                {day.places.length > 1 && (
-                  <p className="mt-0.5 text-xs text-gray-400">
-                    {t('morePlaces', { count: day.places.length - 1 })}
+          {highlightDays.length === 0 ? (
+            <p className="py-6 text-center text-sm text-gray-400">{t('noSchedule')}</p>
+          ) : (
+            <>
+              {nextDay && nextPlace && nextPlace.type === 'place' && (
+                <div className="mb-4 rounded-xl bg-blue-50/70 px-5 py-4">
+                  <p className="text-xs font-medium text-blue-500">{t('nextSchedule')}</p>
+                  <p className="mt-1 text-base font-bold text-gray-900">{nextPlace.name}</p>
+                  <p className="mt-0.5 text-sm text-gray-400">
+                    Day {nextDay.day} · {nextDay.dayOfWeek} {nextDay.shortDate}
                   </p>
-                )}
+                </div>
+              )}
+
+              <div className="grid grid-cols-3 gap-3">
+                {highlightDays.map((day) => {
+                  const dayPlaces = day.items.filter((item) => item.type === 'place');
+                  return (
+                    <div
+                      key={day.day}
+                      className="group cursor-pointer rounded-xl border border-gray-100 bg-white p-4 transition-all hover:border-blue-200 hover:shadow-sm"
+                    >
+                      <div className="mb-2 flex items-center gap-2">
+                        <span className="flex size-6 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
+                          {day.day}
+                        </span>
+                        <span className="text-xs text-gray-400">
+                          {day.dayOfWeek} {day.shortDate}
+                        </span>
+                      </div>
+                      {dayPlaces.length > 0 ? (
+                        <>
+                          <p className="font-medium text-gray-800 group-hover:text-blue-700">
+                            {dayPlaces[0].name}
+                          </p>
+                          {dayPlaces.length > 1 && (
+                            <p className="mt-0.5 text-xs text-gray-400">
+                              {t('morePlaces', { count: dayPlaces.length - 1 })}
+                            </p>
+                          )}
+                        </>
+                      ) : (
+                        <p className="text-xs text-gray-300">{t('noSchedule')}</p>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-            ))}
-          </div>
+            </>
+          )}
         </section>
 
         {/* 일행 + 가계부 & 기록 */}
@@ -204,55 +238,8 @@ function TripOverview({ trip }: { trip: typeof MOCK_TRIP }) {
           <section className="col-span-2 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
             <div className="mb-5 flex items-center justify-between">
               <h2 className="font-semibold text-gray-900">{t('companions')}</h2>
-              <button
-                type="button"
-                className="rounded-full border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition-all hover:border-blue-300 hover:text-blue-600"
-              >
-                {t('inviteCompanion')}
-              </button>
             </div>
-            <div className="flex flex-wrap gap-4">
-              {trip.companions.map((companion) => (
-                <div
-                  key={companion.id}
-                  className="flex flex-col items-center gap-2"
-                >
-                  <div
-                    className={cn(
-                      'flex size-14 items-center justify-center rounded-2xl text-lg font-bold text-white shadow-sm',
-                      companion.color
-                    )}
-                  >
-                    {companion.initial}
-                  </div>
-                  <div className="text-center">
-                    <p className="text-xs font-medium text-gray-700">{companion.name}</p>
-                    <p className="text-xs text-gray-400">{t(`role.${companion.role}`)}</p>
-                  </div>
-                </div>
-              ))}
-              <div className="flex flex-col items-center gap-2">
-                <button
-                  type="button"
-                  className="flex size-14 items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 text-gray-300 transition-all hover:border-blue-300 hover:text-blue-400"
-                >
-                  <svg
-                    className="size-5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={1.5}
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M12 4v16m8-8H4"
-                    />
-                  </svg>
-                </button>
-                <p className="text-xs text-gray-300">{t('invite')}</p>
-              </div>
-            </div>
+            <p className="text-sm text-gray-400">{t('companionsComingSoon')}</p>
           </section>
 
           <div className="col-span-1 flex flex-col gap-4">
@@ -260,7 +247,7 @@ function TripOverview({ trip }: { trip: typeof MOCK_TRIP }) {
               <div className="flex items-center justify-between">
                 <h2 className="text-sm font-semibold text-gray-900">{t('budget')}</h2>
                 <Link
-                  href={`/trips/${trip.id}/budget`}
+                  href={`/trips/${trip.travelId}/budget`}
                   className="flex items-center gap-0.5 text-xs text-blue-500 hover:text-blue-700"
                 >
                   {t('view')}
@@ -280,7 +267,7 @@ function TripOverview({ trip }: { trip: typeof MOCK_TRIP }) {
                 </Link>
               </div>
               <div className="mt-4">
-                <p className="text-2xl font-bold text-blue-600">₩{trip.budget.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-blue-600">₩0</p>
                 <p className="mt-1 text-xs text-gray-400">{t('noBudget')}</p>
               </div>
             </section>
@@ -289,7 +276,7 @@ function TripOverview({ trip }: { trip: typeof MOCK_TRIP }) {
               <div className="flex items-center justify-between">
                 <h2 className="text-sm font-semibold text-gray-900">{t('records')}</h2>
                 <Link
-                  href={`/trips/${trip.id}/records`}
+                  href={`/trips/${trip.travelId}/records`}
                   className="flex items-center gap-0.5 text-xs text-blue-500 hover:text-blue-700"
                 >
                   {t('view')}
@@ -309,10 +296,7 @@ function TripOverview({ trip }: { trip: typeof MOCK_TRIP }) {
                 </Link>
               </div>
               <div className="mt-4">
-                <p className="text-2xl font-bold text-gray-800">
-                  {trip.recordCount}
-                  <span className="text-base font-normal text-gray-400">/{trip.totalRecords}</span>
-                </p>
+                <p className="text-2xl font-bold text-gray-800">0</p>
                 <p className="mt-1 text-xs text-gray-400">{t('recordsAvailable')}</p>
               </div>
             </section>
