@@ -1,9 +1,21 @@
 import type { Metadata } from 'next';
+import { Geist, Geist_Mono } from 'next/font/google';
 
 import { AuthHydrator } from '@/components/common/auth-hydrator';
 import { QueryProvider } from '@/components/common/query-provider';
+import { routing } from '@/i18n/routing';
 
 import './globals.css';
+
+const geistSans = Geist({
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
+});
+
+const geistMono = Geist_Mono({
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
+});
 
 export const metadata: Metadata = {
   title: 'B-ting | 부산 여행 플래너',
@@ -16,9 +28,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <QueryProvider>
-      <AuthHydrator />
-      {children}
-    </QueryProvider>
+    <html
+      lang={routing.defaultLocale}
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <body className="flex min-h-full flex-col">
+        <QueryProvider>
+          <AuthHydrator />
+          {children}
+        </QueryProvider>
+      </body>
+    </html>
   );
 }
