@@ -253,8 +253,17 @@
       "labelTags": "태그",
       "tagPlaceholder": "#태그 입력",
       "addTag": "추가",
+      "labelStay": "체류 시간(분)",
       "save": "저장",
-      "cancel": "취소"
+      "cancel": "취소",
+      "delete": "삭제",
+      "saved": "후기를 저장했어요",
+      "deleted": "후기를 삭제했어요",
+      "saveError": "후기를 저장하지 못했어요",
+      "deleteError": "후기를 삭제하지 못했어요",
+      "loadError": "후기를 불러오지 못했어요",
+      "planLoadError": "일정을 불러오지 못했어요",
+      "noPlaces": "일정에 등록된 장소가 없어요"
     },
     "reboot": {
       "fabLabel": "일정 리부트",

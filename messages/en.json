@@ -253,8 +253,17 @@
       "labelTags": "Tags",
       "tagPlaceholder": "#tag",
       "addTag": "Add",
+      "labelStay": "Time spent (min)",
       "save": "Save",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "saved": "Review saved",
+      "deleted": "Review deleted",
+      "saveError": "Couldn't save the review",
+      "deleteError": "Couldn't delete the review",
+      "loadError": "Couldn't load the review",
+      "planLoadError": "Couldn't load the itinerary",
+      "noPlaces": "No places in the itinerary yet"
     },
     "reboot": {
       "fabLabel": "Reboot Schedule",

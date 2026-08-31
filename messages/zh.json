@@ -253,8 +253,17 @@
       "labelTags": "标签",
       "tagPlaceholder": "#标签",
       "addTag": "添加",
+      "labelStay": "停留时间（分钟）",
       "save": "保存",
-      "cancel": "取消"
+      "cancel": "取消",
+      "delete": "删除",
+      "saved": "评价已保存",
+      "deleted": "评价已删除",
+      "saveError": "评价保存失败",
+      "deleteError": "评价删除失败",
+      "loadError": "评价加载失败",
+      "planLoadError": "行程加载失败",
+      "noPlaces": "行程中还没有地点"
     },
     "reboot": {
       "fabLabel": "行程重启",
