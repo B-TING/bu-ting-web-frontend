@@ -130,7 +130,7 @@
         "booked_desc": "I've already booked a place",
         "candidate_label": "Preferred area only",
         "candidate_desc": "Not booked yet, just have an area in mind",
-        "regionHint": "Select preferred area (multiple allowed)",
+        "regionHint": "Select accommodation area (multiple allowed)",
         "haeundae_marine": "Haeundae · Marine City",
         "seomyeon_bujeon": "Seomyeon · Bujeon",
         "nampo_junggu": "Nampo · Jung-gu",

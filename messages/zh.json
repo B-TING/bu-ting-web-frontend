@@ -130,7 +130,7 @@
         "booked_desc": "已经预订了住宿",
         "candidate_label": "仅选意向地区",
         "candidate_desc": "尚未预订，只选好了地区",
-        "regionHint": "选择意向地区（可多选）",
+        "regionHint": "选择住宿地区（可多选）",
         "haeundae_marine": "海云台·海洋城",
         "seomyeon_bujeon": "西面·釜田",
         "nampo_junggu": "南浦·中区",

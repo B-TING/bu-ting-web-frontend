@@ -68,7 +68,7 @@ function getCanProceed(step: number, data: TripWizardData): boolean {
     case 9:
       return data.foods.length > 0;
     case 10:
-      return data.accommodationStatus !== null;
+      return data.accommodationStatus !== null && data.accommodationRegions.length > 0;
     case 11:
       return data.generationMethod !== null;
     default:

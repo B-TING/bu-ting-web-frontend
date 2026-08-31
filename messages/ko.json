@@ -130,7 +130,7 @@
         "booked_desc": "이미 숙소를 예약했어요",
         "candidate_label": "숙소 후보 지역만",
         "candidate_desc": "아직 예약 전, 지역만 골랐어요",
-        "regionHint": "선호 지역 선택 (복수 선택 가능)",
+        "regionHint": "숙소 지역 선택 (복수 선택 가능)",
         "haeundae_marine": "해운대·마린시티",
         "seomyeon_bujeon": "서면·부전",
         "nampo_junggu": "남포·중구",
