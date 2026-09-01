@@ -35,12 +35,16 @@ interface MapOptions {
   accommodationRegionLabels: string[];
 }
 
+/** 부산 지역 특화 서비스이므로 여행 지역(destination)은 고정값이다. */
+const DEFAULT_DESTINATION = '부산';
+
 export function mapTripWizardDataToTravelCreateRequest(
   data: TripWizardData,
   { foodLabels, accommodationRegionLabels }: MapOptions
 ): TravelCreateRequest {
   return {
     title: data.title || null,
+    destination: DEFAULT_DESTINATION,
     startDate: data.startDate,
     endDate: data.endDate,
     hasHeavyBaggage: data.constraints.includes('heavy_luggage'),
@@ -53,8 +57,6 @@ export function mapTripWizardDataToTravelCreateRequest(
     preferredFoods: foodLabels.length > 0 ? foodLabels.join(', ') : null,
     companionType: data.companionType ? COMPANION_TYPE_MAP[data.companionType] : null,
     accommodationArea:
-      data.accommodationStatus === 'candidate' && accommodationRegionLabels.length > 0
-        ? accommodationRegionLabels.join(', ')
-        : null,
+      accommodationRegionLabels.length > 0 ? accommodationRegionLabels.join(', ') : null,
   };
 }

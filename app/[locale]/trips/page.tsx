@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { TripTabHeader } from './components/TripTabHeader';
 import { useMyTravels } from '@/hooks/use-my-travels';
@@ -44,13 +45,20 @@ export default function TripsPage() {
   const allTravels = sortTravels(travels ?? []);
   const upcomingTrip = pickUpcomingTrip(allTravels);
   const selectedTravelId = searchParams.get('travelId');
-  const selectedTrip = allTravels.find((trip) => trip.travelId === selectedTravelId) ?? upcomingTrip;
+  const selectedTrip =
+    allTravels.find((trip) => trip.travelId === selectedTravelId) ?? upcomingTrip;
 
   if (allTravels.length === 0) return <EmptyState />;
 
-  return selectedTrip
-    ? <TripOverview trip={selectedTrip} travels={allTravels} upcomingTripId={upcomingTrip?.travelId} />
-    : <TripsListOnly travels={allTravels} />;
+  return selectedTrip ? (
+    <TripOverview
+      trip={selectedTrip}
+      travels={allTravels}
+      upcomingTripId={upcomingTrip?.travelId}
+    />
+  ) : (
+    <TripsListOnly travels={allTravels} />
+  );
 }
 
 function pickUpcomingTrip(travels: MyTravelResponse[]): MyTravelResponse | null {
@@ -101,7 +109,11 @@ function LoadingOrErrorMessage({
   return <p className={cn('text-sm', isError ? 'text-red-500' : 'text-gray-400')}>{t(textKey)}</p>;
 }
 
-function TripOverview({ trip, travels, upcomingTripId }: {
+function TripOverview({
+  trip,
+  travels,
+  upcomingTripId,
+}: {
   trip: MyTravelResponse;
   travels: MyTravelResponse[];
   upcomingTripId?: string;
@@ -118,7 +130,7 @@ function TripOverview({ trip, travels, upcomingTripId }: {
   const totalDays = diffDaysInclusive(trip.startDate, trip.endDate);
   const totalNights = Math.max(totalDays - 1, 0);
   const krwSummary = expenseSummaryQuery.data?.currencySummaries.find(
-    (summary) => summary.currency === 'KRW',
+    (summary) => summary.currency === 'KRW'
   );
 
   const newTripAction = (
@@ -288,7 +300,10 @@ function TripOverview({ trip, travels, upcomingTripId }: {
 
         {/* 일행 + 가계부 & 기록 */}
         <div className="grid grid-cols-3 gap-5">
-          <TravelTeamSection travelId={trip.travelId} isLeader={trip.role === 'LEADER'} />
+          <TravelTeamSection
+            travelId={trip.travelId}
+            isLeader={trip.role === 'LEADER'}
+          />
 
           <div className="col-span-1 flex flex-col gap-4">
             <section className="flex flex-1 flex-col justify-between rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
@@ -425,7 +440,9 @@ function TripList({
               href={`/trips?travelId=${travel.travelId}`}
               className={cn(
                 'group rounded-xl border p-4 transition-all hover:border-blue-300 hover:shadow-sm',
-                isSelected ? 'border-blue-400 bg-blue-50/70 ring-1 ring-blue-200' : 'border-gray-100 bg-white',
+                isSelected
+                  ? 'border-blue-400 bg-blue-50/70 ring-1 ring-blue-200'
+                  : 'border-gray-100 bg-white'
               )}
             >
               <div className="flex items-start justify-between gap-3">
@@ -449,14 +466,16 @@ function TripList({
                     {travel.startDate} ~ {travel.endDate}
                   </p>
                 </div>
-                <span className={cn(
-                  'shrink-0 rounded-full px-2.5 py-1 text-xs font-medium',
-                  travel.status === 'COMPLETED'
-                    ? 'bg-gray-100 text-gray-500'
-                    : travel.status === 'IN_PROGRESS'
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-blue-100 text-blue-700',
-                )}>
+                <span
+                  className={cn(
+                    'shrink-0 rounded-full px-2.5 py-1 text-xs font-medium',
+                    travel.status === 'COMPLETED'
+                      ? 'bg-gray-100 text-gray-500'
+                      : travel.status === 'IN_PROGRESS'
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-blue-100 text-blue-700'
+                  )}
+                >
                   {tStatus(travel.status)}
                 </span>
               </div>
@@ -483,7 +502,12 @@ function TravelTeamSection({ travelId, isLeader }: { travelId: string; isLeader:
 
   const copyInvite = async () => {
     if (!invite?.inviteLink) return;
-    await navigator.clipboard.writeText(invite.inviteLink);
+    try {
+      await navigator.clipboard.writeText(invite.inviteLink);
+      toast.success('초대 링크를 복사했어요');
+    } catch {
+      toast.error('복사에 실패했어요. 링크를 직접 선택해 복사해 주세요.');
+    }
   };
 
   return (
@@ -500,7 +524,7 @@ function TravelTeamSection({ travelId, isLeader }: { travelId: string; isLeader:
               invite
                 ? 'bg-red-50 text-red-600 hover:bg-red-100'
                 : 'bg-blue-600 text-white hover:bg-blue-700',
-              isMutating && 'cursor-not-allowed opacity-50',
+              isMutating && 'cursor-not-allowed opacity-50'
             )}
           >
             {invite ? '초대 링크 폐기' : '초대 링크 만들기'}
@@ -515,7 +539,10 @@ function TravelTeamSection({ travelId, isLeader }: { travelId: string; isLeader:
       ) : (
         <div className="flex flex-wrap gap-3">
           {(membersQuery.data ?? []).map((member) => (
-            <div key={member.memberId} className="flex items-center gap-2 rounded-xl bg-gray-50 px-3 py-2">
+            <div
+              key={member.memberId}
+              className="flex items-center gap-2 rounded-xl bg-gray-50 px-3 py-2"
+            >
               <span className="flex size-8 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
                 {member.nickname.slice(0, 1).toUpperCase()}
               </span>

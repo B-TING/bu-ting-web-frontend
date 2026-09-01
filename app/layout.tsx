@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { Toaster } from 'sonner';
 
 import { AuthHydrator } from '@/components/common/auth-hydrator';
 import { QueryProvider } from '@/components/common/query-provider';
@@ -37,6 +38,10 @@ export default function RootLayout({
           <AuthHydrator />
           {children}
         </QueryProvider>
+        <Toaster
+          position="bottom-center"
+          richColors
+        />
       </body>
     </html>
   );

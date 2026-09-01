@@ -8,6 +8,7 @@ export type ApiTravelStatus = 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED';
 
 export interface TravelCreateRequest {
   title?: string | null;
+  destination: string;
   startDate: string;
   endDate: string;
   hasHeavyBaggage?: boolean | null;

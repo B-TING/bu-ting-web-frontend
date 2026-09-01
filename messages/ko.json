@@ -130,7 +130,7 @@
         "booked_desc": "이미 숙소를 예약했어요",
         "candidate_label": "숙소 후보 지역만",
         "candidate_desc": "아직 예약 전, 지역만 골랐어요",
-        "regionHint": "선호 지역 선택 (복수 선택 가능)",
+        "regionHint": "숙소 지역 선택 (복수 선택 가능)",
         "haeundae_marine": "해운대·마린시티",
         "seomyeon_bujeon": "서면·부전",
         "nampo_junggu": "남포·중구",
@@ -253,8 +253,17 @@
       "labelTags": "태그",
       "tagPlaceholder": "#태그 입력",
       "addTag": "추가",
+      "labelStay": "체류 시간(분)",
       "save": "저장",
-      "cancel": "취소"
+      "cancel": "취소",
+      "delete": "삭제",
+      "saved": "후기를 저장했어요",
+      "deleted": "후기를 삭제했어요",
+      "saveError": "후기를 저장하지 못했어요",
+      "deleteError": "후기를 삭제하지 못했어요",
+      "loadError": "후기를 불러오지 못했어요",
+      "planLoadError": "일정을 불러오지 못했어요",
+      "noPlaces": "일정에 등록된 장소가 없어요"
     },
     "reboot": {
       "fabLabel": "일정 리부트",

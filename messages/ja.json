@@ -130,7 +130,7 @@
         "booked_desc": "すでに宿泊先を予約しました",
         "candidate_label": "候補エリアのみ",
         "candidate_desc": "まだ予約前、エリアだけ決めました",
-        "regionHint": "希望エリア選択（複数可）",
+        "regionHint": "宿泊エリア選択（複数可）",
         "haeundae_marine": "海雲台・マリンシティ",
         "seomyeon_bujeon": "西面・釜田",
         "nampo_junggu": "南浦・中区",
@@ -253,8 +253,17 @@
       "labelTags": "タグ",
       "tagPlaceholder": "#タグ入力",
       "addTag": "追加",
+      "labelStay": "滞在時間（分）",
       "save": "保存",
-      "cancel": "キャンセル"
+      "cancel": "キャンセル",
+      "delete": "削除",
+      "saved": "レビューを保存しました",
+      "deleted": "レビューを削除しました",
+      "saveError": "レビューを保存できませんでした",
+      "deleteError": "レビューを削除できませんでした",
+      "loadError": "レビューを読み込めませんでした",
+      "planLoadError": "旅程を読み込めませんでした",
+      "noPlaces": "旅程に登録された場所がありません"
     },
     "reboot": {
       "fabLabel": "日程リブート",

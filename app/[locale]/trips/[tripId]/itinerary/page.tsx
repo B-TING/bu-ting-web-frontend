@@ -1,7 +1,6 @@
 'use client';
 
 import { use, useState, useEffect, useMemo, useRef } from 'react';
-import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
@@ -13,11 +12,11 @@ import { TransitIcon } from '../../components/TransitIcon';
 import { useTravelPlans } from '@/hooks/use-travel-plans';
 import { useMyTravels } from '@/hooks/use-my-travels';
 import { useCreatePlanPlace } from '@/hooks/use-create-plan-place';
-import { usePlaceSearch } from '@/hooks/use-place';
+import { usePlaceDetail, usePlaceSearch } from '@/hooks/use-place';
 import { useCreatePlan } from '@/hooks/use-create-plan';
 import { useUpdatePlanPlaceVisited } from '@/hooks/use-update-plan-place-visited';
 import { mapTravelPlansResponseToDays } from '@/lib/travel-plans-to-itinerary';
-import type { Place } from '@/types/place';
+import type { Place, PlaceDetailResponse } from '@/types/place';
 
 declare global {
   interface Window {
@@ -101,9 +100,9 @@ export default function TripItineraryPage({ params }: Props) {
   const [selectedPlace, setSelectedPlace] = useState<PlaceItem | null>(null);
   const [visitedPlaces, setVisitedPlaces] = useState<Set<string>>(new Set());
   // 개요에서 이미 캐시된 plans 데이터로 진입해도 첫 렌더에서 days 변환이 실행되어야 한다.
-  const [syncedPlansData, setSyncedPlansData] = useState<
-    typeof plansQuery.data | undefined
-  >(undefined);
+  const [syncedPlansData, setSyncedPlansData] = useState<typeof plansQuery.data | undefined>(
+    undefined
+  );
   const [quickRatings, setQuickRatings] = useState<Record<string, number>>({});
   const [reviewModal, setReviewModal] = useState<PlaceItem | null>(null);
   const [reviewText, setReviewText] = useState('');
@@ -128,15 +127,30 @@ export default function TripItineraryPage({ params }: Props) {
     : [];
   const travel = travelsQuery.data?.find((item) => item.travelId === tripId);
   const travelDates = useMemo(
-    () => travel ? getTravelDates(travel.startDate, travel.endDate) : [],
-    [travel],
+    () => (travel ? getTravelDates(travel.startDate, travel.endDate) : []),
+    [travel]
   );
   const selectedExistingDay = days.find((day) => day.date === newDayDate);
   const selectedPlaceImageQuery = usePlaceSearch(selectedPlace?.name ?? '');
   const selectedPlaceImage = selectedPlaceImageQuery.data?.places.find(
     (place) =>
-      place.contentId === selectedPlace?.providerPlaceId ||
-      place.title === selectedPlace?.name,
+      place.contentId === selectedPlace?.providerPlaceId || place.title === selectedPlace?.name
+  );
+
+  // ── 장소 상세(관광공사 detail + Google 리뷰): "상세 보기"를 눌렀을 때만 조회 ──
+  // contentTypeId는 일정 데이터에 없어 검색 결과(selectedPlaceImage)에서 가져온다.
+  const [showPlaceDetail, setShowPlaceDetail] = useState(false);
+  useEffect(() => {
+    setShowPlaceDetail(false);
+  }, [selectedPlace?.id]);
+  const placeDetailQuery = usePlaceDetail(
+    showPlaceDetail && selectedPlaceImage
+      ? {
+          contentId: selectedPlaceImage.contentId,
+          contentTypeId: selectedPlaceImage.contentTypeId,
+          googleSearchText: selectedPlace?.name,
+        }
+      : null
   );
 
   if (syncedTravelId !== tripId) {
@@ -371,7 +385,7 @@ export default function TripItineraryPage({ params }: Props) {
           visited: false,
         },
       },
-      { onSuccess: closePlaceAdd },
+      { onSuccess: closePlaceAdd }
     );
   };
 
@@ -451,15 +465,21 @@ export default function TripItineraryPage({ params }: Props) {
                         {travelDates.map((date) => {
                           const hasPlan = days.some((day) => day.date === date);
                           return (
-                            <option key={date} value={date}>
-                              {date}{hasPlan ? ' · 일정 있음' : ' · 새 일정'}
+                            <option
+                              key={date}
+                              value={date}
+                            >
+                              {date}
+                              {hasPlan ? ' · 일정 있음' : ' · 새 일정'}
                             </option>
                           );
                         })}
                       </select>
                       <button
                         type="button"
-                        disabled={!newDayDate || !travelDates.includes(newDayDate) || createPlan.isPending}
+                        disabled={
+                          !newDayDate || !travelDates.includes(newDayDate) || createPlan.isPending
+                        }
                         onClick={handleAddDay}
                         className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-40"
                       >
@@ -486,7 +506,11 @@ export default function TripItineraryPage({ params }: Props) {
                         >
                           검색
                         </button>
-                        <button type="button" onClick={closePlaceAdd} className="px-1 text-xs text-gray-400">
+                        <button
+                          type="button"
+                          onClick={closePlaceAdd}
+                          className="px-1 text-xs text-gray-400"
+                        >
                           닫기
                         </button>
                       </div>
@@ -519,8 +543,12 @@ export default function TripItineraryPage({ params }: Props) {
                                 </span>
                               )}
                               <span className="min-w-0">
-                                <span className="block truncate text-xs font-semibold text-gray-800">{place.title}</span>
-                                <span className="mt-0.5 block truncate text-[11px] text-gray-400">{place.address}</span>
+                                <span className="block truncate text-xs font-semibold text-gray-800">
+                                  {place.title}
+                                </span>
+                                <span className="mt-0.5 block truncate text-[11px] text-gray-400">
+                                  {place.address}
+                                </span>
                               </span>
                               <span className="shrink-0 text-xs font-medium text-blue-600">
                                 {createPlanPlace.isPending ? '추가 중…' : '추가'}
@@ -528,7 +556,9 @@ export default function TripItineraryPage({ params }: Props) {
                             </button>
                           ))}
                           {placeSearchQuery.data.places.length === 0 && (
-                            <p className="py-3 text-center text-xs text-gray-400">검색 결과가 없습니다.</p>
+                            <p className="py-3 text-center text-xs text-gray-400">
+                              검색 결과가 없습니다.
+                            </p>
                           )}
                         </div>
                       )}
@@ -829,12 +859,25 @@ export default function TripItineraryPage({ params }: Props) {
                         <p className="text-xs text-gray-400">{selectedPlace.address}</p>
                       </div>
 
-                      <Link
-                        href={`/places/${selectedPlace.id}`}
-                        className="mt-3 inline-block text-xs text-blue-500 hover:text-blue-700"
-                      >
-                        {t('placeDetail')}
-                      </Link>
+                      {selectedPlaceImage && (
+                        <div className="mt-3">
+                          {!showPlaceDetail ? (
+                            <button
+                              type="button"
+                              onClick={() => setShowPlaceDetail(true)}
+                              className="text-xs font-medium text-blue-500 hover:text-blue-700"
+                            >
+                              {t('placeDetail')}
+                            </button>
+                          ) : placeDetailQuery.isPending ? (
+                            <p className="text-xs text-gray-400">상세 정보를 불러오는 중…</p>
+                          ) : placeDetailQuery.isError ? (
+                            <p className="text-xs text-red-400">상세 정보를 불러오지 못했어요</p>
+                          ) : (
+                            <PlaceDetailInline detail={placeDetailQuery.data} />
+                          )}
+                        </div>
+                      )}
 
                       <button
                         type="button"
@@ -943,5 +986,108 @@ export default function TripItineraryPage({ params }: Props) {
         />
       )}
     </>
+  );
+}
+
+const PLACE_DETAIL_FIELD_KO: Record<string, string> = {
+  checkintime: '체크인',
+  checkouttime: '체크아웃',
+  parkinglodging: '주차',
+  parking: '주차',
+  reservationurl: '예약',
+  infocenter: '문의',
+  usetime: '이용시간',
+  restdate: '휴무일',
+};
+
+function PlaceDetailInline({ detail }: { detail: PlaceDetailResponse | undefined }) {
+  if (!detail) {
+    return <p className="text-xs text-gray-400">상세 정보가 없어요</p>;
+  }
+
+  const googlePlace = detail.googlePlace;
+  const detailEntries = Object.entries(detail.details ?? {}).filter(([, value]) => value);
+
+  if (detailEntries.length === 0 && !googlePlace) {
+    return <p className="text-xs text-gray-400">상세 정보가 없어요</p>;
+  }
+
+  return (
+    <div className="space-y-3 rounded-xl bg-gray-50 p-3">
+      {detailEntries.length > 0 && (
+        <div className="space-y-1">
+          {detailEntries.map(([key, value]) => (
+            <p
+              key={key}
+              className="text-xs text-gray-600"
+            >
+              <span className="text-gray-400">{PLACE_DETAIL_FIELD_KO[key] ?? key}</span>{' '}
+              {key === 'reservationurl' ? (
+                <a
+                  href={value}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="break-all text-blue-500 hover:underline"
+                >
+                  {value}
+                </a>
+              ) : (
+                value
+              )}
+            </p>
+          ))}
+        </div>
+      )}
+
+      {googlePlace && (
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-gray-900">리뷰</span>
+            <span className="text-xs font-medium text-yellow-500">
+              ★ {googlePlace.rating.toFixed(1)}
+            </span>
+            <span className="text-[11px] text-gray-400">
+              ({googlePlace.reviewCount.toLocaleString()})
+            </span>
+          </div>
+
+          {googlePlace.openingHours.length > 0 && (
+            <div className="mt-1.5 space-y-0.5">
+              {googlePlace.openingHours.map((line) => (
+                <p
+                  key={line}
+                  className="text-[11px] text-gray-500"
+                >
+                  {line}
+                </p>
+              ))}
+            </div>
+          )}
+
+          <div className="mt-2 space-y-2">
+            {googlePlace.reviews.map((review) => (
+              <div
+                key={`${review.authorName}-${review.publishTime}`}
+                className="rounded-lg bg-white p-2.5"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-[11px] font-semibold text-gray-700">{review.authorName}</p>
+                  <p className="shrink-0 text-[11px] text-gray-400">
+                    {review.relativePublishTimeDescription}
+                  </p>
+                </div>
+                <p className="mt-0.5 text-[11px] text-yellow-500">
+                  {'★'.repeat(Math.max(0, Math.min(5, review.rating)))}
+                </p>
+                <p className="mt-1 text-xs leading-relaxed text-gray-600">{review.text}</p>
+              </div>
+            ))}
+            {googlePlace.reviews.length === 0 && (
+              <p className="text-xs text-gray-400">등록된 리뷰가 없어요</p>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

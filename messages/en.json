@@ -130,7 +130,7 @@
         "booked_desc": "I've already booked a place",
         "candidate_label": "Preferred area only",
         "candidate_desc": "Not booked yet, just have an area in mind",
-        "regionHint": "Select preferred area (multiple allowed)",
+        "regionHint": "Select accommodation area (multiple allowed)",
         "haeundae_marine": "Haeundae · Marine City",
         "seomyeon_bujeon": "Seomyeon · Bujeon",
         "nampo_junggu": "Nampo · Jung-gu",
@@ -253,8 +253,17 @@
       "labelTags": "Tags",
       "tagPlaceholder": "#tag",
       "addTag": "Add",
+      "labelStay": "Time spent (min)",
       "save": "Save",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "saved": "Review saved",
+      "deleted": "Review deleted",
+      "saveError": "Couldn't save the review",
+      "deleteError": "Couldn't delete the review",
+      "loadError": "Couldn't load the review",
+      "planLoadError": "Couldn't load the itinerary",
+      "noPlaces": "No places in the itinerary yet"
     },
     "reboot": {
       "fabLabel": "Reboot Schedule",

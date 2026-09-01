@@ -30,10 +30,7 @@ export default function Step10Accommodation({ data, onChange }: Props) {
   };
 
   const selectStatus = (status: AccommodationStatus) => {
-    onChange({
-      accommodationStatus: status,
-      accommodationRegions: status === 'booked' ? [] : data.accommodationRegions,
-    });
+    onChange({ accommodationStatus: status });
   };
 
   return (
@@ -50,7 +47,7 @@ export default function Step10Accommodation({ data, onChange }: Props) {
         ))}
       </div>
 
-      {data.accommodationStatus === 'candidate' && (
+      {data.accommodationStatus !== null && (
         <div className="space-y-2 rounded-2xl border border-gray-100 bg-gray-50/70 p-4 backdrop-blur-sm">
           <p className="text-xs font-medium text-gray-500">{t('regionHint')}</p>
           <div className="grid grid-cols-2 gap-2">
