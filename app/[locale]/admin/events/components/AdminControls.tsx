@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, type ReactNode, type ButtonHTMLAttributes } from 'react';
 import { X } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import { button } from '@/components/ui/Button';
 
 export function Action({
   children,
