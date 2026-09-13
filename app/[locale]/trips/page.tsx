@@ -481,7 +481,6 @@ function TripList({
               </div>
               <div className="mt-4 flex items-center justify-between text-xs text-gray-400">
                 <span>{travel.role === 'LEADER' ? '내가 만든 여행' : '초대받은 여행'}</span>
-                <span className="text-blue-500">상세 보기 →</span>
               </div>
             </Link>
           );
