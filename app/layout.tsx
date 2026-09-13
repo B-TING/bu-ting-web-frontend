@@ -3,6 +3,7 @@ import { Geist_Mono, Noto_Sans_KR } from 'next/font/google';
 import { Toaster } from 'sonner';
 
 import { AuthHydrator } from '@/components/common/auth-hydrator';
+import { AuthRouteGuard } from '@/components/common/auth-route-guard';
 import { QueryProvider } from '@/components/common/query-provider';
 import { routing } from '@/i18n/routing';
 
@@ -37,6 +38,7 @@ export default function RootLayout({
       <body className="flex min-h-full flex-col">
         <QueryProvider>
           <AuthHydrator />
+          <AuthRouteGuard />
           {children}
         </QueryProvider>
         <Toaster
