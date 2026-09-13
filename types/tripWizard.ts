@@ -53,18 +53,39 @@ export type AccommodationRegion =
 
 export type GenerationMethod = 'ai' | 'manual';
 
+export interface SelectedPlace {
+  provider: 'GOOGLE';
+  providerPlaceId: string;
+  placeName: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  /** 부산 관광공사 contentTypeId 기준 분류. AI 플랜 API의 정확한 enum 값 확인 필요. */
+  type:
+    | 'TOURIST_SPOT'
+    | 'CULTURE'
+    | 'FESTIVAL'
+    | 'COURSE'
+    | 'LEISURE_SPORTS'
+    | 'ACCOMMODATION'
+    | 'SHOPPING'
+    | 'RESTAURANT';
+}
+
 export interface TripWizardData {
   title: string;
   startDate: string;
   endDate: string;
   headCount: number;
   companionType: CompanionType | null;
-  travelStyle: TravelStyle | null;
+  travelStyles: TravelStyle[];
   pace: TravelPace | null;
   constraints: TravelConstraint[];
   attractions: Attraction[];
+  selectedPlaces: SelectedPlace[];
   foods: FoodPreference[];
   accommodationStatus: AccommodationStatus | null;
   accommodationRegions: AccommodationRegion[];
+  bookedAccommodationName: string;
   generationMethod: GenerationMethod | null;
 }
