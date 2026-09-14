@@ -13,10 +13,7 @@ export function usePlaceList(params: PlaceListSearchParams) {
     queryFn: ({ pageParam }) => getPlaceList({ ...params, page: pageParam }),
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => {
-      const loadedCount = allPages.reduce(
-        (sum, page) => sum + page.places.length,
-        0,
-      );
+      const loadedCount = allPages.reduce((sum, page) => sum + page.places.length, 0);
       return loadedCount < lastPage.totalCount ? allPages.length + 1 : undefined;
     },
   });
@@ -27,6 +24,8 @@ export function usePlaceDetail(request: PlaceDetailRequest | null) {
     queryKey: ['place-detail', request],
     queryFn: () => getPlaceDetail(request as PlaceDetailRequest),
     enabled: request !== null,
+    // 장소 API가 간헐적으로 5xx/지연이 있어 기본 3회 재시도는 과함
+    retry: 1,
   });
 }
 

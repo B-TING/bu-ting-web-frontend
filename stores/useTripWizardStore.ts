@@ -4,7 +4,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { TripWizardData } from '@/types/tripWizard';
 
-const TOTAL_STEPS = 11;
+export const TOTAL_STEPS = 12;
 
 const initialData: TripWizardData = {
   title: '',
@@ -12,19 +12,20 @@ const initialData: TripWizardData = {
   endDate: '',
   headCount: 1,
   companionType: null,
-  travelStyle: null,
+  travelStyles: [],
   pace: null,
   constraints: [],
   attractions: [],
+  selectedPlaces: [],
   foods: [],
   accommodationStatus: null,
   accommodationRegions: [],
+  bookedAccommodationName: '',
   generationMethod: null,
 };
 
 interface TripWizardStore {
   currentStep: number;
-  totalSteps: number;
   data: TripWizardData;
   nextStep: () => void;
   prevStep: () => void;
@@ -37,7 +38,6 @@ export const useTripWizardStore = create<TripWizardStore>()(
   persist(
     (set) => ({
       currentStep: 1,
-      totalSteps: TOTAL_STEPS,
       data: initialData,
       nextStep: () =>
         set((state) => ({
@@ -59,6 +59,7 @@ export const useTripWizardStore = create<TripWizardStore>()(
     }),
     {
       name: 'trip-wizard',
+      partialize: (state) => ({ data: state.data }),
     }
   )
 );

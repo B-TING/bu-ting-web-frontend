@@ -22,14 +22,22 @@ interface Props {
 export default function Step5TravelStyle({ data, onChange }: Props) {
   const t = useTranslations('trip.wizard.travelStyle');
 
+  const toggle = (option: TravelStyle) => {
+    const current = data.travelStyles;
+    const next = current.includes(option)
+      ? current.filter((v) => v !== option)
+      : [...current, option];
+    onChange({ travelStyles: next });
+  };
+
   return (
     <div className="grid grid-cols-2 gap-2.5">
       {OPTIONS.map((option) => (
         <OptionButton
           key={option}
           label={t(option)}
-          selected={data.travelStyle === option}
-          onClick={() => onChange({ travelStyle: option })}
+          selected={data.travelStyles.includes(option)}
+          onClick={() => toggle(option)}
         />
       ))}
     </div>

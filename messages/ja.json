@@ -32,7 +32,7 @@
       },
       "step5": {
         "title": "旅行スタイルは？",
-        "subtitle": "旅のテーマ · 一つだけ選択"
+        "subtitle": "旅のテーマ · 複数選択可"
       },
       "step6": {
         "title": "旅行のペースはどうしますか？",
@@ -47,14 +47,18 @@
         "subtitle": "釜山の人気スポット · 複数選択"
       },
       "step9": {
+        "title": "行きたい場所を検索してみましょう",
+        "subtitle": "検索して追加・1件以上選択"
+      },
+      "step10": {
         "title": "好きな食べ物は？",
         "subtitle": "グルメ推薦に反映"
       },
-      "step10": {
+      "step11": {
         "title": "宿泊先は決まりましたか？",
         "subtitle": "予約済みまたは候補エリアを選択"
       },
-      "step11": {
+      "step12": {
         "title": "スケジュール作成方法",
         "subtitle": "AI自動生成または候補から選択"
       },
@@ -130,12 +134,14 @@
         "booked_desc": "すでに宿泊先を予約しました",
         "candidate_label": "候補エリアのみ",
         "candidate_desc": "まだ予約前、エリアだけ決めました",
-        "regionHint": "希望エリア選択（複数可）",
+        "regionHint": "宿泊エリア選択（複数可）",
         "haeundae_marine": "海雲台・マリンシティ",
         "seomyeon_bujeon": "西面・釜田",
         "nampo_junggu": "南浦・中区",
         "gwangalli": "広安里",
-        "yeongdo": "影島"
+        "yeongdo": "影島",
+        "bookedNameLabel": "宿泊先の名前",
+        "bookedNamePlaceholder": "例：海雲台〇〇ホテル"
       },
       "generation": {
         "ai_label": "AIでスケジュール生成",
@@ -253,8 +259,17 @@
       "labelTags": "タグ",
       "tagPlaceholder": "#タグ入力",
       "addTag": "追加",
+      "labelStay": "滞在時間（分）",
       "save": "保存",
-      "cancel": "キャンセル"
+      "cancel": "キャンセル",
+      "delete": "削除",
+      "saved": "レビューを保存しました",
+      "deleted": "レビューを削除しました",
+      "saveError": "レビューを保存できませんでした",
+      "deleteError": "レビューを削除できませんでした",
+      "loadError": "レビューを読み込めませんでした",
+      "planLoadError": "旅程を読み込めませんでした",
+      "noPlaces": "旅程に登録された場所がありません"
     },
     "reboot": {
       "fabLabel": "日程リブート",
@@ -282,7 +297,12 @@
       "rebootTitle": "リブート",
       "detailTitle": "旅行詳細",
       "detailLoading": "旅行情報を読み込み中...",
-      "detailNotFound": "旅行情報が見つかりません。"
+      "detailNotFound": "旅行情報が見つかりません。",
+      "aiResult": {
+        "loading": "AIが旅行日程を作成しています...",
+        "errorTitle": "日程を作成できませんでした。",
+        "retry": "再試行"
+      }
     },
     "status": {
       "PLANNED": "予定",

@@ -32,7 +32,7 @@
       },
       "step5": {
         "title": "What's your travel style?",
-        "subtitle": "Travel theme · Choose one"
+        "subtitle": "Travel theme · Choose multiple"
       },
       "step6": {
         "title": "What pace do you prefer?",
@@ -47,14 +47,18 @@
         "subtitle": "Top Busan spots · Multiple selections"
       },
       "step9": {
+        "title": "Search for places you'd like to visit",
+        "subtitle": "Add places you search for · select at least one"
+      },
+      "step10": {
         "title": "What food do you like?",
         "subtitle": "Used for restaurant recommendations"
       },
-      "step10": {
+      "step11": {
         "title": "Have you decided on accommodation?",
         "subtitle": "Select booked or preferred area"
       },
-      "step11": {
+      "step12": {
         "title": "How would you like to create your itinerary?",
         "subtitle": "AI auto-generate or choose from suggestions"
       },
@@ -130,12 +134,14 @@
         "booked_desc": "I've already booked a place",
         "candidate_label": "Preferred area only",
         "candidate_desc": "Not booked yet, just have an area in mind",
-        "regionHint": "Select preferred area (multiple allowed)",
+        "regionHint": "Select accommodation area (multiple allowed)",
         "haeundae_marine": "Haeundae · Marine City",
         "seomyeon_bujeon": "Seomyeon · Bujeon",
         "nampo_junggu": "Nampo · Jung-gu",
         "gwangalli": "Gwangalli",
-        "yeongdo": "Yeongdo"
+        "yeongdo": "Yeongdo",
+        "bookedNameLabel": "Accommodation name",
+        "bookedNamePlaceholder": "e.g. Haeundae OO Hotel"
       },
       "generation": {
         "ai_label": "AI-generated itinerary",
@@ -253,8 +259,17 @@
       "labelTags": "Tags",
       "tagPlaceholder": "#tag",
       "addTag": "Add",
+      "labelStay": "Time spent (min)",
       "save": "Save",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "saved": "Review saved",
+      "deleted": "Review deleted",
+      "saveError": "Couldn't save the review",
+      "deleteError": "Couldn't delete the review",
+      "loadError": "Couldn't load the review",
+      "planLoadError": "Couldn't load the itinerary",
+      "noPlaces": "No places in the itinerary yet"
     },
     "reboot": {
       "fabLabel": "Reboot Schedule",
@@ -282,7 +297,12 @@
       "rebootTitle": "Reboot",
       "detailTitle": "Trip Details",
       "detailLoading": "Loading trip info...",
-      "detailNotFound": "Trip not found."
+      "detailNotFound": "Trip not found.",
+      "aiResult": {
+        "loading": "AI is building your itinerary...",
+        "errorTitle": "Could not generate a plan.",
+        "retry": "Retry"
+      }
     },
     "status": {
       "PLANNED": "Planned",

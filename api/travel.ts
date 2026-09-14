@@ -1,5 +1,6 @@
 import { apiRequest } from '@/lib/api-client';
 import type {
+  AiPlanCreateRequest,
   PlanCreateRequest,
   PlanPlaceResponse,
   PlanPlaceCreateRequest,
@@ -18,6 +19,13 @@ export function createTravel(request: TravelCreateRequest) {
 
 export function getTravelPlans(travelId: string) {
   return apiRequest<TravelPlansResponse>(`/api/v1/travels/${travelId}/plans`);
+}
+
+export function createAiPlan(travelId: string, request: AiPlanCreateRequest) {
+  return apiRequest<TravelPlansResponse>(`/api/v1/travels/${travelId}/ai-plans`, {
+    method: 'POST',
+    body: JSON.stringify(request),
+  });
 }
 
 export function createTravelPlan(travelId: string, request: PlanCreateRequest) {

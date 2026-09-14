@@ -6,7 +6,7 @@ import type {
   TravelCreateRequest,
 } from '@/types/travel';
 
-const TRAVEL_STYLE_MAP: Record<NonNullable<TripWizardData['travelStyle']>, ApiTravelStyle> = {
+export const TRAVEL_STYLE_MAP: Record<TripWizardData['travelStyles'][number], ApiTravelStyle> = {
   culture_history: 'TOURISM',
   nature_healing: 'REST',
   food_dining: 'FOOD',
@@ -24,7 +24,7 @@ const COMPANION_TYPE_MAP: Record<NonNullable<TripWizardData['companionType']>, A
   colleagues: 'GROUP',
 };
 
-const PACE_MAP: Record<NonNullable<TripWizardData['pace']>, ApiTravelPace> = {
+export const PACE_MAP: Record<NonNullable<TripWizardData['pace']>, ApiTravelPace> = {
   relaxed: 'RELAXED',
   balanced: 'BALANCED',
   tight: 'TIGHT',
@@ -35,26 +35,28 @@ interface MapOptions {
   accommodationRegionLabels: string[];
 }
 
+/** 부산 지역 특화 서비스이므로 여행 지역(destination)은 고정값이다. */
+const DEFAULT_DESTINATION = '부산';
+
 export function mapTripWizardDataToTravelCreateRequest(
   data: TripWizardData,
   { foodLabels, accommodationRegionLabels }: MapOptions
 ): TravelCreateRequest {
   return {
     title: data.title || null,
+    destination: DEFAULT_DESTINATION,
     startDate: data.startDate,
     endDate: data.endDate,
     hasHeavyBaggage: data.constraints.includes('heavy_luggage'),
     hasPets: data.constraints.includes('pet'),
     preferFlatTerrain:
       data.constraints.includes('stroller') || data.constraints.includes('wheelchair'),
-    travelStyle: data.travelStyle ? TRAVEL_STYLE_MAP[data.travelStyle] : null,
+    travelStyle: data.travelStyles.length > 0 ? TRAVEL_STYLE_MAP[data.travelStyles[0]] : null,
     pace: data.pace ? PACE_MAP[data.pace] : null,
     companionCount: data.headCount,
     preferredFoods: foodLabels.length > 0 ? foodLabels.join(', ') : null,
     companionType: data.companionType ? COMPANION_TYPE_MAP[data.companionType] : null,
     accommodationArea:
-      data.accommodationStatus === 'candidate' && accommodationRegionLabels.length > 0
-        ? accommodationRegionLabels.join(', ')
-        : null,
+      accommodationRegionLabels.length > 0 ? accommodationRegionLabels.join(', ') : null,
   };
 }
