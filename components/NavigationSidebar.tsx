@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { useAuthStore } from '@/stores/auth-store';
+import { HelpDeskMenuButton } from '@/app/[locale]/ai-helpdesk/components/HelpDeskMenuButton';
 
 const NAV_ITEMS = [
   { label: '짐 보관소', href: '/luggage' },
@@ -108,6 +109,7 @@ export default function NavigationSidebar({
 
         <nav className="p-4">
           <ul className="flex flex-col gap-1">
+            <li><HelpDeskMenuButton /></li>
             {NAV_ITEMS.map((item) => (
               <li key={item.href}>
                 <Link
