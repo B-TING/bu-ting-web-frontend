@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import EventAdmin from './components/EventAdmin';
+import EventAdmin from './components/ServerEventAdmin';
 
 export const metadata: Metadata = {
   title: '구역 이벤트 운영 | B-TING',

@@ -48,9 +48,10 @@ export function Pill({
     </span>
   );
 }
-export function Panel({ children }: { children: ReactNode }) {
+export function Panel({ children, title }: { children: ReactNode; title?: string }) {
   return (
     <section className="min-w-0 rounded-2xl border border-slate-200 bg-white p-5 md:p-6">
+      {title && <h2 className="mb-4 text-lg font-semibold">{title}</h2>}
       {children}
     </section>
   );
