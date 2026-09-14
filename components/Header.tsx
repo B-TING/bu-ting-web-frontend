@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Menu, UserRound } from 'lucide-react';
 
 import NavigationSidebar from './NavigationSidebar';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/auth-store';
 
@@ -24,7 +25,14 @@ export default function Header({ title }: HeaderProps) {
         <div className="flex items-center gap-2">
           <Link href="/">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500">
-              <span className="text-sm font-bold text-white">부팅</span>
+              <Image
+                src="/logo.png"
+                alt="B-ting 로고"
+                width={36}
+                height={36}
+                className="rounded-xl"
+                priority
+              />
             </div>
           </Link>
           {title && <h1 className="text-base font-bold text-gray-900 pl-2">{title}</h1>}
