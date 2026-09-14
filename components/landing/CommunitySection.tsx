@@ -1,4 +1,5 @@
 import { Luggage, Timer, Zap } from 'lucide-react';
+import Link from 'next/link';
 
 const LUGGAGE_SPOTS = [
   { name: '해운대역 2번 출구', detail: '대형 캐리어 가능' },
@@ -74,10 +75,16 @@ export default function CommunitySection() {
         <div className="flex flex-col gap-3">
           <span className="text-base font-semibold text-blue-500">지역 이벤트 · 데이터 활용</span>
           <h2 className="text-2xl font-bold leading-snug text-gray-900">
-            우리가 함께 만드는
+            함께 만드는
             <br />
-            부산 여행이 궁금할까요?
+            부산 여행
           </h2>
+          <Link
+            href="https://play.google.com/store/apps/details?id=com.butingmobile&hl=ko"
+            className="inline-flex w-fit rounded-full bg-blue-500 px-5 py-2.5 text-base font-semibold text-white transition-colors hover:bg-blue-400"
+          >
+            앱 다운받기
+          </Link>
         </div>
 
         <div className="flex flex-col gap-4">
