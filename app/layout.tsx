@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getLocale } from 'next-intl/server';
 import { Geist_Mono, Noto_Sans_KR } from 'next/font/google';
 import { Toaster } from 'sonner';
 
@@ -6,6 +7,7 @@ import { AuthHydrator } from '@/components/common/auth-hydrator';
 import { AuthRouteGuard } from '@/components/common/auth-route-guard';
 import { QueryProvider } from '@/components/common/query-provider';
 import { routing } from '@/i18n/routing';
+import { LOCALE_SEO_COPY, SITE_NAME, SITE_URL } from '@/lib/seo';
 
 import './globals.css';
 
@@ -20,19 +22,37 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+const defaultCopy = LOCALE_SEO_COPY[routing.defaultLocale];
+
 export const metadata: Metadata = {
-  title: 'B-ting | 부산 여행 플래너',
-  description: '취향에 맞는 부산 여행을 계획해 보세요.',
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: defaultCopy.title,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: defaultCopy.description,
+  keywords: defaultCopy.keywords,
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/logo.png',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+
   return (
     <html
-      lang={routing.defaultLocale}
+      lang={locale}
       className={`${notoSansKr.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
