@@ -6,7 +6,7 @@ import type {
   TravelCreateRequest,
 } from '@/types/travel';
 
-const TRAVEL_STYLE_MAP: Record<NonNullable<TripWizardData['travelStyle']>, ApiTravelStyle> = {
+export const TRAVEL_STYLE_MAP: Record<TripWizardData['travelStyles'][number], ApiTravelStyle> = {
   culture_history: 'TOURISM',
   nature_healing: 'REST',
   food_dining: 'FOOD',
@@ -24,7 +24,7 @@ const COMPANION_TYPE_MAP: Record<NonNullable<TripWizardData['companionType']>, A
   colleagues: 'GROUP',
 };
 
-const PACE_MAP: Record<NonNullable<TripWizardData['pace']>, ApiTravelPace> = {
+export const PACE_MAP: Record<NonNullable<TripWizardData['pace']>, ApiTravelPace> = {
   relaxed: 'RELAXED',
   balanced: 'BALANCED',
   tight: 'TIGHT',
@@ -51,7 +51,7 @@ export function mapTripWizardDataToTravelCreateRequest(
     hasPets: data.constraints.includes('pet'),
     preferFlatTerrain:
       data.constraints.includes('stroller') || data.constraints.includes('wheelchair'),
-    travelStyle: data.travelStyle ? TRAVEL_STYLE_MAP[data.travelStyle] : null,
+    travelStyle: data.travelStyles.length > 0 ? TRAVEL_STYLE_MAP[data.travelStyles[0]] : null,
     pace: data.pace ? PACE_MAP[data.pace] : null,
     companionCount: data.headCount,
     preferredFoods: foodLabels.length > 0 ? foodLabels.join(', ') : null,

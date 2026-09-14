@@ -32,7 +32,7 @@
       },
       "step5": {
         "title": "What's your travel style?",
-        "subtitle": "Travel theme · Choose one"
+        "subtitle": "Travel theme · Choose multiple"
       },
       "step6": {
         "title": "What pace do you prefer?",
@@ -47,14 +47,18 @@
         "subtitle": "Top Busan spots · Multiple selections"
       },
       "step9": {
+        "title": "Search for places you'd like to visit",
+        "subtitle": "Add places you search for · select at least one"
+      },
+      "step10": {
         "title": "What food do you like?",
         "subtitle": "Used for restaurant recommendations"
       },
-      "step10": {
+      "step11": {
         "title": "Have you decided on accommodation?",
         "subtitle": "Select booked or preferred area"
       },
-      "step11": {
+      "step12": {
         "title": "How would you like to create your itinerary?",
         "subtitle": "AI auto-generate or choose from suggestions"
       },
@@ -135,7 +139,9 @@
         "seomyeon_bujeon": "Seomyeon · Bujeon",
         "nampo_junggu": "Nampo · Jung-gu",
         "gwangalli": "Gwangalli",
-        "yeongdo": "Yeongdo"
+        "yeongdo": "Yeongdo",
+        "bookedNameLabel": "Accommodation name",
+        "bookedNamePlaceholder": "e.g. Haeundae OO Hotel"
       },
       "generation": {
         "ai_label": "AI-generated itinerary",
@@ -291,7 +297,12 @@
       "rebootTitle": "Reboot",
       "detailTitle": "Trip Details",
       "detailLoading": "Loading trip info...",
-      "detailNotFound": "Trip not found."
+      "detailNotFound": "Trip not found.",
+      "aiResult": {
+        "loading": "AI is building your itinerary...",
+        "errorTitle": "Could not generate a plan.",
+        "retry": "Retry"
+      }
     },
     "status": {
       "PLANNED": "Planned",

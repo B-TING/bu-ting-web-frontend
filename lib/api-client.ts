@@ -41,7 +41,11 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
   const rawBody = await response.text();
   const body = (rawBody ? JSON.parse(rawBody) : null) as T | ApiErrorResponse | null;
 
-  if (!response.ok) {
+  // 일부 엔드포인트는 실패 시에도 HTTP 200과 함께 { success: false, message }를 내려준다.
+  const isEnvelopeFailure =
+    !!body && typeof body === 'object' && 'success' in body && body.success === false;
+
+  if (!response.ok || isEnvelopeFailure) {
     if (response.status === 401 && usesStoredAuthorization) {
       useAuthStore.getState().clearSession();
     }

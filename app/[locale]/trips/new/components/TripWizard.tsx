@@ -1,8 +1,9 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useTripWizardStore } from '@/stores/useTripWizardStore';
+import { TOTAL_STEPS, useTripWizardStore } from '@/stores/useTripWizardStore';
 import { useCreateTravel } from '@/hooks/use-create-travel';
 import { getTravelCreateErrorMessage } from '@/lib/travel-error-message';
 import { mapTripWizardDataToTravelCreateRequest } from '@/lib/trip-wizard-to-travel-request';
@@ -15,6 +16,7 @@ import Step5TravelStyle from './steps/Step5TravelStyle';
 import Step6TravelPace from './steps/Step6TravelPace';
 import Step7Constraints from './steps/Step7Constraints';
 import Step8Attractions from './steps/Step8Attractions';
+import Step9PlaceSearch from './steps/Step9PlaceSearch';
 import Step9Food from './steps/Step9Food';
 import Step10Accommodation from './steps/Step10Accommodation';
 import Step11GenerationMethod from './steps/Step11GenerationMethod';
@@ -31,7 +33,8 @@ type StepKey =
   | 'step8'
   | 'step9'
   | 'step10'
-  | 'step11';
+  | 'step11'
+  | 'step12';
 
 const STEP_KEYS: StepKey[] = [
   'step1',
@@ -45,6 +48,7 @@ const STEP_KEYS: StepKey[] = [
   'step9',
   'step10',
   'step11',
+  'step12',
 ];
 
 function getCanProceed(step: number, data: TripWizardData): boolean {
@@ -58,7 +62,7 @@ function getCanProceed(step: number, data: TripWizardData): boolean {
     case 4:
       return data.companionType !== null;
     case 5:
-      return data.travelStyle !== null;
+      return data.travelStyles.length > 0;
     case 6:
       return data.pace !== null;
     case 7:
@@ -66,10 +70,16 @@ function getCanProceed(step: number, data: TripWizardData): boolean {
     case 8:
       return data.attractions.length > 0;
     case 9:
-      return data.foods.length > 0;
+      return data.selectedPlaces.length > 0;
     case 10:
-      return data.accommodationStatus !== null && data.accommodationRegions.length > 0;
+      return data.foods.length > 0;
     case 11:
+      return (
+        data.accommodationStatus !== null &&
+        data.accommodationRegions.length > 0 &&
+        (data.accommodationStatus !== 'booked' || data.bookedAccommodationName.trim().length > 0)
+      );
+    case 12:
       return data.generationMethod !== null;
     default:
       return false;
@@ -85,6 +95,7 @@ const STEP_COMPONENTS = [
   Step6TravelPace,
   Step7Constraints,
   Step8Attractions,
+  Step9PlaceSearch,
   Step9Food,
   Step10Accommodation,
   Step11GenerationMethod,
@@ -95,8 +106,13 @@ export default function TripWizard() {
   const t = useTranslations('trip.wizard');
   const tFood = useTranslations('trip.wizard.food');
   const tAccommodation = useTranslations('trip.wizard.accommodation');
-  const { currentStep, totalSteps, data, updateData, nextStep, prevStep } = useTripWizardStore();
+  const { currentStep, data, updateData, nextStep, prevStep } = useTripWizardStore();
+  const totalSteps = TOTAL_STEPS;
   const { mutate: createTravel, isPending, error } = useCreateTravel();
+
+  useEffect(() => {
+    useTripWizardStore.getState().reset();
+  }, []);
 
   const stepKey = STEP_KEYS[currentStep - 1];
   const StepComponent = STEP_COMPONENTS[currentStep - 1];
@@ -117,12 +133,14 @@ export default function TripWizard() {
 
       createTravel(payload, {
         onSuccess: (travel) => {
-          useTripWizardStore.getState().reset();
-          router.push(
-            data.generationMethod === 'ai'
-              ? `/trips/new/ai?travelId=${travel.travelId}`
-              : `/trips/${travel.travelId}`
-          );
+          if (data.generationMethod === 'ai') {
+            // AI 플랜 생성 화면에서 위저드 데이터(선택 장소·목적 등)를 그대로 써야 하므로
+            // 여기서는 reset하지 않고, 플랜 생성이 끝난 뒤 그 화면에서 reset한다.
+            router.push(`/trips/new/ai?travelId=${travel.travelId}`);
+          } else {
+            useTripWizardStore.getState().reset();
+            router.push(`/trips/${travel.travelId}`);
+          }
         },
       });
     } else {

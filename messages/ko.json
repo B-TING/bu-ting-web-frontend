@@ -32,7 +32,7 @@
       },
       "step5": {
         "title": "선호하는 여행 스타일은?",
-        "subtitle": "여행 테마 · 하나만 선택"
+        "subtitle": "여행 테마 · 복수 선택"
       },
       "step6": {
         "title": "여행 페이스는 어떻게 할까요?",
@@ -47,14 +47,18 @@
         "subtitle": "부산 대표 스팟 · 복수 선택"
       },
       "step9": {
+        "title": "가고 싶은 장소를 검색해보세요",
+        "subtitle": "직접 검색해서 담기 · 최소 1곳 선택"
+      },
+      "step10": {
         "title": "좋아하는 음식",
         "subtitle": "맛집 추천에 반영"
       },
-      "step10": {
+      "step11": {
         "title": "숙소는 정하셨나요?",
         "subtitle": "예약 완료 또는 후보 지역 선택"
       },
-      "step11": {
+      "step12": {
         "title": "일정 생성 방식",
         "subtitle": "AI 자동 생성 또는 후보에서 선택"
       },
@@ -135,7 +139,9 @@
         "seomyeon_bujeon": "서면·부전",
         "nampo_junggu": "남포·중구",
         "gwangalli": "광안리",
-        "yeongdo": "영도"
+        "yeongdo": "영도",
+        "bookedNameLabel": "숙소 이름",
+        "bookedNamePlaceholder": "예: 해운대 OO호텔"
       },
       "generation": {
         "ai_label": "AI가 일정 생성",
@@ -291,7 +297,12 @@
       "rebootTitle": "리부트",
       "detailTitle": "여행계획 상세",
       "detailLoading": "여행 정보를 불러오는 중...",
-      "detailNotFound": "여행 정보를 찾을 수 없습니다."
+      "detailNotFound": "여행 정보를 찾을 수 없습니다.",
+      "aiResult": {
+        "loading": "AI가 여행 일정을 만들고 있어요...",
+        "errorTitle": "일정을 만들지 못했어요.",
+        "retry": "다시 시도"
+      }
     },
     "status": {
       "PLANNED": "예정",

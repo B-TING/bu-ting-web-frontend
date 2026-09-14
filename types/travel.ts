@@ -114,6 +114,37 @@ export interface TravelPlansResponse {
   days: TravelPlanDay[];
 }
 
+export type ApiSchedulePace = 'RELAXED' | 'BALANCED' | 'TIGHT';
+
+export type ApiSelectedPlaceType =
+  | 'TOURIST_SPOT'
+  | 'CULTURE'
+  | 'FESTIVAL'
+  | 'COURSE'
+  | 'LEISURE_SPORTS'
+  | 'ACCOMMODATION'
+  | 'SHOPPING'
+  | 'RESTAURANT';
+
+export interface AiPlanSelectedPlace {
+  provider: ApiPlaceProvider;
+  providerPlaceId: string;
+  placeName: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  type: ApiSelectedPlaceType;
+}
+
+export interface AiPlanCreateRequest {
+  selectedPlaces: AiPlanSelectedPlace[];
+  foodIds: string[];
+  schedulePace: ApiSchedulePace;
+  purposes: string[];
+  bookedAccommodation?: string | null;
+  accommodationAreaIds: string[];
+}
+
 export interface MyTravelResponse {
   travelId: string;
   title?: string | null;

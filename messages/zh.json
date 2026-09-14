@@ -32,7 +32,7 @@
       },
       "step5": {
         "title": "您喜欢哪种旅行风格？",
-        "subtitle": "旅行主题 · 仅可单选"
+        "subtitle": "旅行主题 · 可多选"
       },
       "step6": {
         "title": "希望的旅行节奏是？",
@@ -47,14 +47,18 @@
         "subtitle": "釜山代表景点 · 可多选"
       },
       "step9": {
+        "title": "搜索一下想去的地方吧",
+        "subtitle": "搜索后添加・至少选择1个"
+      },
+      "step10": {
         "title": "喜欢什么食物？",
         "subtitle": "用于餐厅推荐"
       },
-      "step10": {
+      "step11": {
         "title": "住宿定好了吗？",
         "subtitle": "选择已预订或意向地区"
       },
-      "step11": {
+      "step12": {
         "title": "行程生成方式",
         "subtitle": "AI自动生成或从候选中选择"
       },
@@ -135,7 +139,9 @@
         "seomyeon_bujeon": "西面·釜田",
         "nampo_junggu": "南浦·中区",
         "gwangalli": "广安里",
-        "yeongdo": "影岛"
+        "yeongdo": "影岛",
+        "bookedNameLabel": "住宿名称",
+        "bookedNamePlaceholder": "例如：海云台OO酒店"
       },
       "generation": {
         "ai_label": "AI生成行程",
@@ -291,7 +297,12 @@
       "rebootTitle": "重启",
       "detailTitle": "行程详情",
       "detailLoading": "正在加载旅行信息...",
-      "detailNotFound": "未找到旅行信息。"
+      "detailNotFound": "未找到旅行信息。",
+      "aiResult": {
+        "loading": "AI正在生成旅行日程...",
+        "errorTitle": "未能生成日程。",
+        "retry": "重试"
+      }
     },
     "status": {
       "PLANNED": "计划中",
