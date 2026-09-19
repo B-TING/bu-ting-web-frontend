@@ -8,6 +8,7 @@ export type ApiTravelStatus = 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED';
 
 export interface TravelCreateRequest {
   title?: string | null;
+  destination: string;
   startDate: string;
   endDate: string;
   hasHeavyBaggage?: boolean | null;
@@ -111,6 +112,37 @@ export interface TravelPlansResponse {
   travelId: string;
   title?: string | null;
   days: TravelPlanDay[];
+}
+
+export type ApiSchedulePace = 'RELAXED' | 'BALANCED' | 'TIGHT';
+
+export type ApiSelectedPlaceType =
+  | 'TOURIST_SPOT'
+  | 'CULTURE'
+  | 'FESTIVAL'
+  | 'COURSE'
+  | 'LEISURE_SPORTS'
+  | 'ACCOMMODATION'
+  | 'SHOPPING'
+  | 'RESTAURANT';
+
+export interface AiPlanSelectedPlace {
+  provider: ApiPlaceProvider;
+  providerPlaceId: string;
+  placeName: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  type: ApiSelectedPlaceType;
+}
+
+export interface AiPlanCreateRequest {
+  selectedPlaces: AiPlanSelectedPlace[];
+  foodIds: string[];
+  schedulePace: ApiSchedulePace;
+  purposes: string[];
+  bookedAccommodation?: string | null;
+  accommodationAreaIds: string[];
 }
 
 export interface MyTravelResponse {

@@ -2,100 +2,29 @@
 
 import { use, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { useMyTravels } from '@/hooks/use-my-travels';
+import { useTravelPlans } from '@/hooks/use-travel-plans';
+import {
+  useDeletePlanPlaceReview,
+  usePlanPlaceReviews,
+  useSavePlanPlaceReview,
+} from '@/hooks/use-plan-place-review';
+import { mapTravelPlansResponseToDays } from '@/lib/travel-plans-to-itinerary';
+import type { PlanPlaceReviewRequest, PlanPlaceReviewResponse } from '@/types/review';
 import { TripTabHeader } from '../../components/TripTabHeader';
 import { RebootFab } from '../../components/RebootFab';
-import type { PlaceRecord } from '@/types/record';
 
-// ─── Mock data ────────────────────────────────────────────────────────────────
-
-const MOCK_TRIP = {
-  title: 'B-Side of Busan',
-  totalMinutes: 656,
-};
-
-const MOCK_RECORDS: PlaceRecord[] = [
-  {
-    id: 'p1',
-    name: '해운대 해수욕장',
-    category: '해변',
-    rating: 4,
-    review: '바다가 시원합니다~',
-    tags: ['#힐링'],
-    day: 1,
-    date: '6/25',
-  },
-  {
-    id: 'p2',
-    name: '광안리',
-    category: '해변·야경',
-    rating: 4,
-    review: '바다 따라 걷기 좋았어요~',
-    tags: ['#뷰맛집', '#힐링'],
-    day: 1,
-    date: '6/25',
-  },
-  {
-    id: 'p3',
-    name: '태종대',
-    category: '관광지',
-    rating: 4,
-    review: '',
-    tags: ['#사진스팟', '#힐링', '#추천'],
-    day: 1,
-    date: '6/25',
-  },
-  {
-    id: 'p4',
-    name: '자갈치시장',
-    category: '시장',
-    rating: 5,
-    review: '회가 너무 신선하고 맛있었어요!',
-    tags: ['#맛집', '#현지음식'],
-    day: 2,
-    date: '6/26',
-  },
-  {
-    id: 'p5',
-    name: '국제시장',
-    category: '시장',
-    rating: 3,
-    review: '',
-    tags: ['#쇼핑'],
-    day: 2,
-    date: '6/26',
-  },
-  {
-    id: 'p6',
-    name: '남포동',
-    category: '도심',
-    rating: 0,
-    review: '',
-    tags: [],
-    day: 2,
-    date: '6/26',
-  },
-  {
-    id: 'p7',
-    name: '용두산 공원',
-    category: '공원',
-    rating: 0,
-    review: '',
-    tags: [],
-    day: 3,
-    date: '6/27',
-  },
-  {
-    id: 'p8',
-    name: '감천문화마을',
-    category: '관광지',
-    rating: 5,
-    review: '색깔이 너무 예뻐요. 사진 명소!',
-    tags: ['#사진스팟', '#추천'],
-    day: 3,
-    date: '6/27',
-  },
-];
+interface RecordPlace {
+  planPlaceId: string;
+  name: string;
+  address: string;
+  stayMinutes: number;
+  day: number;
+  shortDate: string;
+  dayOfWeek: string;
+}
 
 // ─── Star Rating (read-only) ──────────────────────────────────────────────────
 
@@ -121,43 +50,73 @@ function StarDisplay({ rating, size = 'md' }: { rating: number; size?: 'sm' | 'm
 
 function ReviewModal({
   place,
+  review,
+  isSaving,
+  isDeleting,
   onClose,
   onSave,
+  onDelete,
 }: {
-  place: PlaceRecord;
+  place: RecordPlace;
+  review: PlanPlaceReviewResponse | null;
+  isSaving: boolean;
+  isDeleting: boolean;
   onClose: () => void;
-  onSave: (id: string, rating: number, review: string, tags: string[]) => void;
+  onSave: (request: PlanPlaceReviewRequest, exists: boolean) => void;
+  onDelete: () => void;
 }) {
   const t = useTranslations('trip.records');
-  const [rating, setRating] = useState(place.rating);
+  const [rating, setRating] = useState(review?.rating ?? 0);
   const [hoverRating, setHoverRating] = useState(0);
-  const [review, setReview] = useState(place.review);
+  const [content, setContent] = useState(review?.content ?? '');
+  const [stayMinutes, setStayMinutes] = useState(
+    String(review?.stayMinutes ?? place.stayMinutes ?? 0)
+  );
   const [tagInput, setTagInput] = useState('');
-  const [tags, setTags] = useState<string[]>(place.tags);
+  const [tags, setTags] = useState<string[]>(review?.tags ?? []);
+
+  const busy = isSaving || isDeleting;
+  const canSave = rating > 0 && !busy;
 
   const addTag = () => {
-    const tag = tagInput.trim().replace(/^#?/, '#');
-    if (tag !== '#' && !tags.includes(tag)) setTags((t) => [...t, tag]);
+    const tag = tagInput.trim().replace(/^#+/, '');
+    if (tag && !tags.includes(tag)) setTags((current) => [...current, tag]);
     setTagInput('');
   };
 
-  const removeTag = (tag: string) => setTags((t) => t.filter((v) => v !== tag));
+  const removeTag = (tag: string) => setTags((current) => current.filter((v) => v !== tag));
+
+  const handleSave = () => {
+    if (!canSave) return;
+    const parsedStay = Number.parseInt(stayMinutes, 10);
+    onSave(
+      {
+        rating,
+        content: content.trim(),
+        tags,
+        stayMinutes: Number.isFinite(parsedStay) && parsedStay > 0 ? parsedStay : 0,
+      },
+      Boolean(review)
+    );
+  };
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
+      onClick={(e) => e.target === e.currentTarget && !busy && onClose()}
     >
-      <div className="w-full max-w-lg mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden">
-        <div className="px-6 pt-6 pb-4 border-b border-gray-100">
-          <p className="text-xs text-gray-400 mb-0.5">{place.category}</p>
+      <div className="mx-4 w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl">
+        <div className="border-b border-gray-100 px-6 pb-4 pt-6">
+          <p className="mb-0.5 text-xs text-gray-400">
+            Day {place.day} · {place.dayOfWeek} {place.shortDate}
+          </p>
           <h2 className="text-lg font-bold text-gray-900">{place.name}</h2>
         </div>
 
-        <div className="px-6 py-5 space-y-5">
+        <div className="max-h-[60vh] space-y-5 overflow-y-auto px-6 py-5">
           {/* 별점 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="mb-2 block text-sm font-medium text-gray-700">
               {t('labelRating')}
             </label>
             <div className="flex gap-2">
@@ -182,28 +141,41 @@ function ReviewModal({
 
           {/* 후기 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="mb-2 block text-sm font-medium text-gray-700">
               {t('labelReview')}
             </label>
             <textarea
               rows={4}
               placeholder={t('reviewPlaceholder')}
-              value={review}
-              onChange={(e) => setReview(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className="w-full resize-none rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* 체류 시간 */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-700">{t('labelStay')}</label>
+            <input
+              type="number"
+              min="0"
+              inputMode="numeric"
+              value={stayMinutes}
+              onChange={(e) => setStayMinutes(e.target.value)}
+              className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           {/* 태그 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">{t('labelTags')}</label>
-            <div className="flex flex-wrap gap-2 mb-2">
+            <label className="mb-2 block text-sm font-medium text-gray-700">{t('labelTags')}</label>
+            <div className="mb-2 flex flex-wrap gap-2">
               {tags.map((tag) => (
                 <span
                   key={tag}
-                  className="flex items-center gap-1 bg-blue-50 text-blue-600 text-xs px-2.5 py-1 rounded-full font-medium"
+                  className="flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-600"
                 >
-                  {tag}
+                  #{tag}
                   <button
                     type="button"
                     onClick={() => removeTag(tag)}
@@ -221,12 +193,12 @@ function ReviewModal({
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-                className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button
                 type="button"
                 onClick={addTag}
-                className="px-3 py-2 bg-gray-100 text-gray-600 rounded-xl text-sm hover:bg-gray-200 transition-colors"
+                className="rounded-xl bg-gray-100 px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-200"
               >
                 {t('addTag')}
               </button>
@@ -234,25 +206,35 @@ function ReviewModal({
           </div>
         </div>
 
-        <div className="px-6 pb-6 pt-4 border-t border-gray-100 space-y-2">
+        <div className="space-y-2 border-t border-gray-100 px-6 pb-6 pt-4">
           <button
-            onClick={() => {
-              onSave(place.id, rating, review, tags);
-              onClose();
-            }}
-            disabled={rating === 0 && !review.trim()}
+            type="button"
+            onClick={handleSave}
+            disabled={!canSave}
             className={cn(
-              'w-full py-3 rounded-xl font-semibold text-sm transition-all',
-              rating > 0 || review.trim()
+              'w-full rounded-xl py-3 text-sm font-semibold transition-all',
+              canSave
                 ? 'bg-blue-600 text-white hover:bg-blue-700'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'cursor-not-allowed bg-gray-100 text-gray-400'
             )}
           >
-            {t('save')}
+            {isSaving ? `${t('save')}…` : t('save')}
           </button>
+          {review && (
+            <button
+              type="button"
+              onClick={onDelete}
+              disabled={busy}
+              className="w-full py-2 text-sm font-medium text-red-500 hover:text-red-700 disabled:opacity-50"
+            >
+              {isDeleting ? `${t('delete')}…` : t('delete')}
+            </button>
+          )}
           <button
+            type="button"
             onClick={onClose}
-            className="w-full py-2 text-sm text-gray-500 hover:text-gray-700"
+            disabled={busy}
+            className="w-full py-2 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50"
           >
             {t('cancel')}
           </button>
@@ -264,35 +246,44 @@ function ReviewModal({
 
 // ─── Place Record Card ────────────────────────────────────────────────────────
 
-function PlaceRecordCard({ record, onEdit }: { record: PlaceRecord; onEdit: () => void }) {
+function PlaceRecordCard({
+  place,
+  review,
+  onEdit,
+}: {
+  place: RecordPlace;
+  review: PlanPlaceReviewResponse | null;
+  onEdit: () => void;
+}) {
   const t = useTranslations('trip.records');
-  const hasReview = record.rating > 0 || record.review || record.tags.length > 0;
+  const hasReview = Boolean(review);
 
   return (
     <div
       className={cn(
-        'bg-white rounded-2xl border transition-all',
+        'rounded-2xl border bg-white transition-all',
         hasReview ? 'border-gray-100 shadow-sm' : 'border-dashed border-gray-200'
       )}
     >
       <div className="p-5">
         <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs text-gray-400">{record.category}</span>
+          <div className="min-w-0 flex-1">
+            <div className="mb-1 flex items-center gap-2">
+              <span className="truncate text-xs text-gray-400">{place.address}</span>
               <span className="text-xs text-gray-200">·</span>
-              <span className="text-xs text-gray-400">
-                Day {record.day} · {record.date}
+              <span className="shrink-0 text-xs text-gray-400">
+                Day {place.day} · {place.shortDate}
               </span>
             </div>
-            <h3 className="font-bold text-gray-900 text-base">{record.name}</h3>
+            <h3 className="text-base font-bold text-gray-900">{place.name}</h3>
           </div>
           <button
+            type="button"
             onClick={onEdit}
             className={cn(
-              'shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors',
+              'shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors',
               hasReview
-                ? 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
+                ? 'text-gray-400 hover:bg-blue-50 hover:text-blue-600'
                 : 'bg-blue-600 text-white hover:bg-blue-700'
             )}
           >
@@ -300,30 +291,92 @@ function PlaceRecordCard({ record, onEdit }: { record: PlaceRecord; onEdit: () =
           </button>
         </div>
 
-        {hasReview && (
+        {review ? (
           <div className="mt-3 space-y-2">
-            {record.rating > 0 && <StarDisplay rating={record.rating} />}
-            {record.review && (
-              <p className="text-sm text-gray-600 leading-relaxed">{record.review}</p>
+            {review.rating > 0 && <StarDisplay rating={review.rating} />}
+            {review.content && (
+              <p className="text-sm leading-relaxed text-gray-600">{review.content}</p>
             )}
-            {record.tags.length > 0 && (
+            {review.tags.length > 0 && (
               <div className="flex flex-wrap gap-1.5">
-                {record.tags.map((tag) => (
+                {review.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="text-xs text-blue-500 bg-blue-50 px-2 py-0.5 rounded-full font-medium"
+                    className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-500"
                   >
-                    {tag}
+                    #{tag}
                   </span>
                 ))}
               </div>
             )}
+            {review.mediaUrls.length > 0 && (
+              <div className="flex flex-wrap gap-2 pt-1">
+                {review.mediaUrls.map((url) => (
+                  <img
+                    key={url}
+                    src={url}
+                    alt=""
+                    className="size-16 rounded-lg object-cover"
+                    loading="lazy"
+                  />
+                ))}
+              </div>
+            )}
           </div>
+        ) : (
+          <p className="mt-2 text-sm text-gray-400">{t('noReview')}</p>
         )}
-
-        {!hasReview && <p className="mt-2 text-sm text-gray-400">{t('noReview')}</p>}
       </div>
     </div>
+  );
+}
+
+// ─── Review Modal Container (mutation 연결) ───────────────────────────────────
+
+function ReviewModalContainer({
+  tripId,
+  place,
+  review,
+  onClose,
+}: {
+  tripId: string;
+  place: RecordPlace;
+  review: PlanPlaceReviewResponse | null;
+  onClose: () => void;
+}) {
+  const t = useTranslations('trip.records');
+  const saveReview = useSavePlanPlaceReview(tripId, place.planPlaceId);
+  const deleteReview = useDeletePlanPlaceReview(tripId, place.planPlaceId);
+
+  return (
+    <ReviewModal
+      place={place}
+      review={review}
+      isSaving={saveReview.isPending}
+      isDeleting={deleteReview.isPending}
+      onClose={onClose}
+      onSave={(request, exists) =>
+        saveReview.mutate(
+          { request, exists },
+          {
+            onSuccess: () => {
+              toast.success(t('saved'));
+              onClose();
+            },
+            onError: () => toast.error(t('saveError')),
+          }
+        )
+      }
+      onDelete={() =>
+        deleteReview.mutate(undefined, {
+          onSuccess: () => {
+            toast.success(t('deleted'));
+            onClose();
+          },
+          onError: () => toast.error(t('deleteError')),
+        })
+      }
+    />
   );
 }
 
@@ -337,80 +390,122 @@ export default function TripRecordsPage({ params }: TripRecordsPageProps) {
   const { tripId } = use(params);
   const t = useTranslations('trip.records');
 
-  const [records, setRecords] = useState<PlaceRecord[]>(MOCK_RECORDS);
-  const [editingPlace, setEditingPlace] = useState<PlaceRecord | null>(null);
+  const travelsQuery = useMyTravels();
+  const plansQuery = useTravelPlans(tripId);
 
-  const completedCount = records.filter(
-    (r) => r.rating > 0 || r.review || r.tags.length > 0
-  ).length;
-  const totalCount = records.length;
-  const progressPct = Math.round((completedCount / totalCount) * 100);
-  const allDone = completedCount === totalCount;
+  const trip = travelsQuery.data?.find((item) => item.travelId === tripId);
+  const days = plansQuery.data ? mapTravelPlansResponseToDays(plansQuery.data) : [];
+  const places: RecordPlace[] = days.flatMap((day) =>
+    day.items
+      .filter((item): item is Extract<typeof item, { type: 'place' }> => item.type === 'place')
+      .map((item) => ({
+        planPlaceId: item.id,
+        name: item.name,
+        address: item.address,
+        stayMinutes: item.stayMinutes,
+        day: day.day,
+        shortDate: day.shortDate,
+        dayOfWeek: day.dayOfWeek,
+      }))
+  );
 
-  const totalH = Math.floor(MOCK_TRIP.totalMinutes / 60);
-  const totalM = MOCK_TRIP.totalMinutes % 60;
+  const { reviews } = usePlanPlaceReviews(
+    tripId,
+    places.map((place) => place.planPlaceId)
+  );
 
-  const saveReview = (id: string, rating: number, review: string, tags: string[]) => {
-    setRecords((prev) => prev.map((r) => (r.id === id ? { ...r, rating, review, tags } : r)));
-  };
+  const [editingPlaceId, setEditingPlaceId] = useState<string | null>(null);
+  const editingPlace = places.find((place) => place.planPlaceId === editingPlaceId) ?? null;
+  const editingReview = editingPlaceId ? (reviews.get(editingPlaceId) ?? null) : null;
+
+  const totalCount = places.length;
+  const completedCount = places.filter((place) => reviews.get(place.planPlaceId)).length;
+  const progressPct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+  const allDone = totalCount > 0 && completedCount === totalCount;
+
+  const totalMinutes = places.reduce((sum, place) => sum + place.stayMinutes, 0);
+  const totalH = Math.floor(totalMinutes / 60);
+  const totalM = totalMinutes % 60;
 
   return (
     <div className="min-h-screen bg-gray-50">
       <TripTabHeader
-        tripTitle={MOCK_TRIP.title}
+        tripTitle={trip?.title ?? t('title')}
         tripId={tripId}
         backHref="/trips"
       />
 
-      <main className="max-w-5xl mx-auto px-6 py-8 space-y-6">
-        {/* 상단 요약 카드 */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-1">{t('title')}</h2>
-          <p className="text-sm text-gray-400 mb-1">{t('desc')}</p>
-          <p className="text-sm font-semibold text-blue-600 mb-5">
+      <main className="mx-auto max-w-5xl space-y-6 px-6 py-8">
+        <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+          <h2 className="mb-1 text-lg font-bold text-gray-900">{t('title')}</h2>
+          <p className="mb-1 text-sm text-gray-400">{t('desc')}</p>
+          <p className="mb-5 text-sm font-semibold text-blue-600">
             {t('totalDuration', { duration: t('hours', { h: totalH, m: totalM }) })}
           </p>
 
-          {/* 진행 현황 */}
-          <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+          <div className="space-y-2 rounded-xl bg-gray-50 p-4">
             <div className="flex items-center justify-between">
               <p className="text-sm font-semibold text-gray-700">
                 {t('progressLabel', { completed: completedCount, total: totalCount })}
               </p>
               <span className="text-xs text-gray-400">{progressPct}%</span>
             </div>
-            <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div className="h-2 overflow-hidden rounded-full bg-gray-200">
               <div
-                className="h-full bg-blue-600 rounded-full transition-all duration-500"
+                className="h-full rounded-full bg-blue-600 transition-all duration-500"
                 style={{ width: `${progressPct}%` }}
               />
             </div>
-            {allDone && <p className="text-xs text-blue-600 font-medium">{t('allDone')}</p>}
+            {allDone && <p className="text-xs font-medium text-blue-600">{t('allDone')}</p>}
           </div>
         </div>
 
-        {/* 장소별 카드 목록 */}
-        <div className="space-y-3">
-          {records.map((record) => (
-            <PlaceRecordCard
-              key={record.id}
-              record={record}
-              onEdit={() => setEditingPlace(record)}
-            />
-          ))}
-        </div>
+        {plansQuery.isPending ? (
+          <StateBox text={t('desc')} />
+        ) : plansQuery.isError ? (
+          <StateBox
+            text={t('planLoadError')}
+            error
+          />
+        ) : places.length === 0 ? (
+          <StateBox text={t('noPlaces')} />
+        ) : (
+          <div className="space-y-3">
+            {places.map((place) => (
+              <PlaceRecordCard
+                key={place.planPlaceId}
+                place={place}
+                review={reviews.get(place.planPlaceId) ?? null}
+                onEdit={() => setEditingPlaceId(place.planPlaceId)}
+              />
+            ))}
+          </div>
+        )}
       </main>
 
-      {/* 후기 작성 모달 */}
       {editingPlace && (
-        <ReviewModal
+        <ReviewModalContainer
+          tripId={tripId}
           place={editingPlace}
-          onClose={() => setEditingPlace(null)}
-          onSave={saveReview}
+          review={editingReview}
+          onClose={() => setEditingPlaceId(null)}
         />
       )}
 
       <RebootFab tripId={tripId} />
+    </div>
+  );
+}
+
+function StateBox({ text, error = false }: { text: string; error?: boolean }) {
+  return (
+    <div
+      className={cn(
+        'rounded-2xl bg-white p-10 text-center text-sm',
+        error ? 'text-red-500' : 'text-gray-400'
+      )}
+    >
+      {text}
     </div>
   );
 }

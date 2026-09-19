@@ -30,10 +30,7 @@ export default function Step10Accommodation({ data, onChange }: Props) {
   };
 
   const selectStatus = (status: AccommodationStatus) => {
-    onChange({
-      accommodationStatus: status,
-      accommodationRegions: status === 'booked' ? [] : data.accommodationRegions,
-    });
+    onChange({ accommodationStatus: status });
   };
 
   return (
@@ -50,7 +47,19 @@ export default function Step10Accommodation({ data, onChange }: Props) {
         ))}
       </div>
 
-      {data.accommodationStatus === 'candidate' && (
+      {data.accommodationStatus === 'booked' && (
+        <div className="space-y-1.5">
+          <label className="text-xs font-medium text-gray-500">{t('bookedNameLabel')}</label>
+          <input
+            value={data.bookedAccommodationName}
+            onChange={(e) => onChange({ bookedAccommodationName: e.target.value })}
+            placeholder={t('bookedNamePlaceholder')}
+            className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-700 outline-none focus:border-blue-400"
+          />
+        </div>
+      )}
+
+      {data.accommodationStatus !== null && (
         <div className="space-y-2 rounded-2xl border border-gray-100 bg-gray-50/70 p-4 backdrop-blur-sm">
           <p className="text-xs font-medium text-gray-500">{t('regionHint')}</p>
           <div className="grid grid-cols-2 gap-2">
