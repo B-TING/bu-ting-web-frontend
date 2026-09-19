@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { StoryRouteMap } from './StoryRouteMap';
+import { StoryPlaceReview } from './StoryPlaceReview';
 import {
   useMyTravelRecordBookmarks,
   useTravelRecordComments,
@@ -132,7 +133,11 @@ export function StoryDetail({ storyId }: { storyId: string }) {
                 <article key={place.id} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                   <h2 className="text-xl font-bold text-slate-950">{place.order}. {place.name}</h2>
                   <p className="mt-2 text-sm text-slate-500">{place.address}</p>
-                  <p className="mt-4 leading-7 text-slate-700">{place.review}</p>
+                  <StoryPlaceReview
+                    storyId={storyId}
+                    placeId={place.id}
+                    providerPlaceId={detail.data.days.flatMap((day) => day.places).find((item) => item.travelRecordPlaceId === place.id)?.providerPlaceId}
+                  />
                 </article>
               ))}
             </section>

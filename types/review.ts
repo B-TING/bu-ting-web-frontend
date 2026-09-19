@@ -26,3 +26,28 @@ export interface PlanPlaceReviewResponse {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface PublicPlaceReviewResponse {
+  placeReviewId: string;
+  travelRecordId: string;
+  travelRecordTitle: string | null;
+  authorId: string;
+  authorNickname: string;
+  travelRecordPlaceId: string;
+  placeName: string;
+  rating: number;
+  stayMinutes: number | null;
+  content: string | null;
+  tags: string[];
+  mediaUrls: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PublicPlaceReviewSummaryResponse {
+  placeId: string;
+  reviewCount: number;
+  averageRating: number;
+  ratingCounts: Record<string, number>;
+  reviews: PublicPlaceReviewResponse[];
+}
