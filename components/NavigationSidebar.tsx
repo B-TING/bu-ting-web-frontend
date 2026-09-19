@@ -4,6 +4,7 @@ import { X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import { useOperatorAccess } from '@/hooks/use-operator-access';
 import { useAuthStore } from '@/stores/auth-store';
 import { HelpDeskMenuButton } from '@/app/[locale]/ai-helpdesk/components/HelpDeskMenuButton';
 
@@ -29,6 +30,8 @@ export default function NavigationSidebar({
   const accessToken = useAuthStore((state) => state.accessToken);
   const clearSession = useAuthStore((state) => state.clearSession);
   const isLoggedIn = Boolean(accessToken);
+  const operatorAccess = useOperatorAccess();
+  const canAccessAdmin = operatorAccess.data === true;
 
   const handleLogout = () => {
     clearSession();
@@ -86,6 +89,15 @@ export default function NavigationSidebar({
                   로그아웃
                 </button>
               </div>
+              {canAccessAdmin ? (
+                <Link
+                  href="/admin/events"
+                  onClick={onClose}
+                  className="block rounded-lg bg-teal-700 py-2 text-center text-sm font-semibold text-white hover:bg-teal-800"
+                >
+                  관리자 페이지
+                </Link>
+              ) : null}
             </div>
           ) : (
             <div className="flex gap-2">
