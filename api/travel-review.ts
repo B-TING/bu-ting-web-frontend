@@ -1,5 +1,9 @@
 import { ApiError, apiRequest } from '@/lib/api-client';
-import type { PlanPlaceReviewRequest, PlanPlaceReviewResponse } from '@/types/review';
+import type {
+  PlanPlaceReviewRequest,
+  PlanPlaceReviewResponse,
+  PublicPlaceReviewSummaryResponse,
+} from '@/types/review';
 
 function reviewPath(travelId: string, planPlaceId: string) {
   return `/api/v1/travels/${travelId}/plans/places/${planPlaceId}/review`;
@@ -44,4 +48,9 @@ export function updatePlanPlaceReview(
 
 export function deletePlanPlaceReview(travelId: string, planPlaceId: string) {
   return apiRequest<unknown>(reviewPath(travelId, planPlaceId), { method: 'DELETE' });
+}
+
+export function getPublicPlaceReviews(providerPlaceId: string) {
+  const params = new URLSearchParams({ placeId: providerPlaceId });
+  return apiRequest<PublicPlaceReviewSummaryResponse>(`/api/v1/places/reviews?${params}`);
 }

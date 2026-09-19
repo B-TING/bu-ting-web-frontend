@@ -26,6 +26,8 @@ export interface TravelRecordFeedPage {
 
 export interface TravelRecordPlace {
   travelRecordPlaceId: string;
+  planPlaceId?: string | null;
+  providerPlaceId?: string | null;
   sequence: number | null;
   placeName: string;
   address: string | null;

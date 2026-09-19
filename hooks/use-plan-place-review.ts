@@ -5,12 +5,27 @@ import {
   createPlanPlaceReview,
   deletePlanPlaceReview,
   getPlanPlaceReview,
+  getPublicPlaceReviews,
   updatePlanPlaceReview,
 } from '@/api/travel-review';
 import type { PlanPlaceReviewRequest, PlanPlaceReviewResponse } from '@/types/review';
 
 export function planPlaceReviewKey(travelId: string, planPlaceId: string) {
   return ['plan-place-review', travelId, planPlaceId] as const;
+}
+
+export function publicPlaceReviewsKey(providerPlaceId: string) {
+  return ['public-place-reviews', providerPlaceId] as const;
+}
+
+export function usePublicPlaceReviews(providerPlaceId: string | null | undefined) {
+  return useQuery({
+    queryKey: publicPlaceReviewsKey(providerPlaceId ?? ''),
+    queryFn: () => getPublicPlaceReviews(providerPlaceId!),
+    enabled: Boolean(providerPlaceId),
+    staleTime: 60_000,
+    retry: false,
+  });
 }
 
 export function usePlanPlaceReview(travelId: string, planPlaceId: string) {

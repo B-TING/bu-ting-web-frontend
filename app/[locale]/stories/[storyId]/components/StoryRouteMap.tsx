@@ -9,7 +9,9 @@ interface KakaoLatLng {
   new (latitude: number, longitude: number): KakaoLatLngInstance;
 }
 
-interface KakaoLatLngInstance {}
+interface KakaoLatLngInstance {
+  readonly __kakaoLatLngBrand?: never;
+}
 
 interface KakaoMap {
   setBounds: (
@@ -32,6 +34,7 @@ interface KakaoCustomOverlayConstructor {
   new (options: {
     position: KakaoLatLngInstance;
     content: HTMLElement;
+    xAnchor: number;
     yAnchor: number;
     zIndex: number;
   }): {
@@ -191,13 +194,13 @@ export function StoryRouteMap({ places }: { places: StoryPlaceReview[] }) {
               fontSize: '14px',
               fontWeight: '700',
               boxShadow: '0 10px 20px rgba(2, 132, 199, 0.25)',
-              transform: 'translate(-50%, -50%)',
             });
             badge.textContent = String(index + 1);
 
             const overlay = new runtimeKakao.maps.CustomOverlay({
               position,
               content: badge,
+              xAnchor: 0.5,
               yAnchor: 1,
               zIndex: 10,
             });
